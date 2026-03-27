@@ -7,7 +7,7 @@
     "build": "next build",
     "build:mobile": "NEXT_PUBLIC_BUILD_TARGET=mobile NEXT_PUBLIC_API_URL=https://iguebananas.onrender.com next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint .",
     "test": "jest",
     "db:seed": "tsx prisma/seed.ts"
   },
