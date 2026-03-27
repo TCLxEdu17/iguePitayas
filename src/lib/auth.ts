@@ -48,7 +48,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     jwt({ token, user }) {
       if (user) {
-        token.role = (user as any).role  // keep this one — user type is extended but authorize returns custom shape
+        token.role = (user as { role?: string }).role  // keep this one — user type is extended but authorize returns custom shape
         token.id = user.id
       }
       return token
