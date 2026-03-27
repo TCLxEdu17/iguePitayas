@@ -4,6 +4,7 @@ import { useRef, useState } from 'react'
 import { PlotMap } from '@/components/plots/PlotMap'
 import { Button } from '@/components/ui/button'
 import { useSession } from 'next-auth/react'
+import { getApiUrl } from '@/lib/api-url'
 
 export default function MapaPage() {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -17,7 +18,7 @@ export default function MapaPage() {
     setUploading(true)
     const form = new FormData()
     form.append('file', file)
-    const res = await fetch('/api/farm/map', { method: 'POST', body: form })
+    const res = await fetch(getApiUrl('/api/farm/map'), { method: 'POST', body: form })
     setUploading(false)
     if (res.ok) window.location.reload()
   }

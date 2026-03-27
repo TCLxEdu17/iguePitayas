@@ -19,6 +19,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
 import { ACTIVITY_LABELS } from '@/types'
+import { getApiUrl } from '@/lib/api-url'
 
 const formSchema = z.object({
   plotId:      z.string().min(1, 'Selecione o talhão'),
@@ -42,7 +43,7 @@ export function ActivityForm() {
 
   const { data: plots } = useQuery({
     queryKey: ['plots'],
-    queryFn:  () => fetch('/api/plots').then(r => r.json()),
+    queryFn:  () => fetch(getApiUrl('/api/plots')).then(r => r.json()),
   })
 
   const form = useForm<FormValues>({
@@ -76,7 +77,7 @@ export function ActivityForm() {
 
     if (isOnline) {
       try {
-        const res = await fetch('/api/activities', {
+        const res = await fetch(getApiUrl('/api/activities'), {
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
           body:    JSON.stringify({ ...record, syncStatus: 'SYNCED' }),

@@ -18,6 +18,7 @@ import { Textarea } from '@/components/ui/textarea'
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
+import { getApiUrl } from '@/lib/api-url'
 
 const formSchema = z.object({
   plotId:       z.string().min(1, 'Selecione o talhão'),
@@ -40,7 +41,7 @@ export function HarvestForm() {
 
   const { data: plots } = useQuery({
     queryKey: ['plots'],
-    queryFn:  () => fetch('/api/plots').then(r => r.json()),
+    queryFn:  () => fetch(getApiUrl('/api/plots')).then(r => r.json()),
   })
 
   const form = useForm<FormValues>({
@@ -90,7 +91,7 @@ export function HarvestForm() {
 
     if (isOnline) {
       try {
-        const res = await fetch('/api/harvests', {
+        const res = await fetch(getApiUrl('/api/harvests'), {
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
           body:    JSON.stringify({ ...record, syncStatus: 'SYNCED' }),

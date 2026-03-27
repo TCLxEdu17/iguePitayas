@@ -4,9 +4,10 @@ import { useQuery } from '@tanstack/react-query'
 import { PlotCard } from './PlotCard'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { getApiUrl } from '@/lib/api-url'
 
 async function fetchPlots() {
-  const res = await fetch('/api/plots')
+  const res = await fetch(getApiUrl('/api/plots'))
   if (!res.ok) throw new Error('Failed to fetch plots')
   return res.json()
 }

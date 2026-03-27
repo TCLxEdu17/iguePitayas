@@ -6,6 +6,7 @@ import { KPICard } from './KPICard'
 import { Button } from '@/components/ui/button'
 import { ACTIVITY_LABELS } from '@/types'
 import type { Activity } from '@/types'
+import { getApiUrl } from '@/lib/api-url'
 
 type ActivityType = Activity['type']
 
@@ -24,7 +25,7 @@ export function DashboardGrid() {
 
   const { data, isLoading } = useQuery({
     queryKey:        ['dashboard', period],
-    queryFn:         () => fetch(`/api/dashboard?period=${period}`).then(r => r.json()),
+    queryFn:         () => fetch(getApiUrl(`/api/dashboard?period=${period}`)).then(r => r.json()),
     refetchInterval: 60_000,
   })
 

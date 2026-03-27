@@ -3,11 +3,12 @@
 import { useQuery } from '@tanstack/react-query'
 import { ProductBadge } from '@/components/ui/product-badge'
 import { UNIT_LABELS } from '@/types'
+import { getApiUrl } from '@/lib/api-url'
 
 export function HarvestList() {
   const { data: harvests, isLoading } = useQuery({
     queryKey: ['harvests'],
-    queryFn:  () => fetch('/api/harvests').then(r => r.json()),
+    queryFn:  () => fetch(getApiUrl('/api/harvests')).then(r => r.json()),
   })
 
   const totalRevenue = (harvests ?? []).reduce(

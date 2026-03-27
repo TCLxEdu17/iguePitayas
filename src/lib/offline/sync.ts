@@ -1,4 +1,5 @@
 import { offlineDb } from './db'
+import { getApiUrl } from '@/lib/api-url'
 
 export async function getPendingCount(): Promise<number> {
   const [activities, harvests] = await Promise.all([
@@ -15,7 +16,7 @@ export async function syncActivities(): Promise<void> {
 
   for (const record of pending) {
     try {
-      const res = await fetch('/api/activities', {
+      const res = await fetch(getApiUrl('/api/activities'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(record),
@@ -39,7 +40,7 @@ export async function syncHarvests(): Promise<void> {
 
   for (const record of pending) {
     try {
-      const res = await fetch('/api/harvests', {
+      const res = await fetch(getApiUrl('/api/harvests'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(record),

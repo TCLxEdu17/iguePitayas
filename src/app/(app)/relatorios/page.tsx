@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { ReportFilter } from '@/components/reports/ReportFilter'
 import { ReportTable } from '@/components/reports/ReportTable'
+import { getApiUrl } from '@/lib/api-url'
 
 export default function RelatoriosPage() {
   const [data, setData] = useState<any>(null)
@@ -13,7 +14,7 @@ export default function RelatoriosPage() {
     setLoading(true)
     setError(null)
     try {
-      const res  = await fetch(`/api/reports?startDate=${startDate}T00:00:00.000Z&endDate=${endDate}T23:59:59.999Z`)
+      const res  = await fetch(getApiUrl(`/api/reports?startDate=${startDate}T00:00:00.000Z&endDate=${endDate}T23:59:59.999Z`))
       const json = await res.json()
       setData(json)
     } catch (err) {

@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import dynamic from 'next/dynamic'
 import { PRODUCT_COLORS } from '@/types'
 import { Button } from '@/components/ui/button'
+import { getApiUrl } from '@/lib/api-url'
 
 // Dynamically import Konva components to avoid SSR issues
 const Stage = dynamic(() => import('react-konva').then(m => m.Stage), { ssr: false })
@@ -41,13 +42,13 @@ function useMapImage(url: string | null | undefined) {
 }
 
 async function fetchFarm(): Promise<FarmData | null> {
-  const res = await fetch('/api/farm')
+  const res = await fetch(getApiUrl('/api/farm'))
   if (!res.ok) return null
   return res.json()
 }
 
 async function savePlotPolygon({ plotId, polygon }: { plotId: string; polygon: Point[] }) {
-  const res = await fetch(`/api/plots/${plotId}`, {
+  const res = await fetch(getApiUrl(`/api/plots/${plotId}`), {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ polygon }),

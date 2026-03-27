@@ -6,13 +6,14 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { ProductBadge } from '@/components/ui/product-badge'
 import { ACTIVITY_LABELS } from '@/types'
+import { getApiUrl } from '@/lib/api-url'
 
 export function ActivityList() {
   const [search, setSearch] = useState('')
 
   const { data: activities, isLoading } = useQuery({
     queryKey: ['activities'],
-    queryFn:  () => fetch('/api/activities').then(r => r.json()),
+    queryFn:  () => fetch(getApiUrl('/api/activities')).then(r => r.json()),
   })
 
   const filtered = (activities ?? []).filter((a: any) => {
