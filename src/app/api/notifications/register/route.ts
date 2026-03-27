@@ -4,7 +4,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
 
-export const dynamic = 'force-static'
+export const dynamic = process.env.NEXT_PUBLIC_BUILD_TARGET === 'mobile' ? 'force-static' : 'force-dynamic'
 export const revalidate = 0
 
 export async function POST(req: NextRequest) {
@@ -14,7 +14,9 @@ export async function POST(req: NextRequest) {
   const body = await req.json()
   const { token, platform } = body
 
-  if (!token || !platform) {
+  const ALLOWED_PLATFORMS = ['ios', 'android']
+
+  if (!token || !platform || !ALLOWED_PLATFORMS.includes(platform)) {
     return NextResponse.json({ error: 'token and platform required' }, { status: 400 })
   }
 

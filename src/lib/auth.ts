@@ -6,17 +6,19 @@ import { db } from '@/lib/db'
 export const authOptions: NextAuthOptions = {
   session: { strategy: 'jwt' },
   pages: { signIn: '/login' },
-  cookies: {
-    sessionToken: {
-      name: `next-auth.session-token`,
-      options: {
-        httpOnly: true,
-        sameSite: 'none' as const,
-        path: '/',
-        secure: true,
+  ...(process.env.NEXT_PUBLIC_BUILD_TARGET === 'mobile' && {
+    cookies: {
+      sessionToken: {
+        name: 'next-auth.session-token',
+        options: {
+          httpOnly: true,
+          sameSite: 'none' as const,
+          path: '/',
+          secure: true,
+        },
       },
     },
-  },
+  }),
   providers: [
     CredentialsProvider({
       name: 'credentials',
