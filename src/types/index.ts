@@ -1,6 +1,6 @@
-import type { User, Plot, Activity, Harvest, Farm } from '@prisma/client'
+import type { User, Plot, Activity, Harvest, Farm, ProductType } from '@prisma/client'
 
-export type { User, Plot, Activity, Harvest, Farm }
+export type { User, Plot, Activity, Harvest, Farm, ProductType }
 
 export type UserWithoutPassword = Omit<User, 'passwordHash'>
 

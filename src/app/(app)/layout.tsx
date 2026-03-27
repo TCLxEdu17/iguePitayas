@@ -16,7 +16,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     }
   }, [status, router])
 
-  if (status === 'loading') {
+  if (status === 'loading' || status === 'unauthenticated') {
     return (
       <div className="flex items-center justify-center h-screen bg-surface">
         <div className="text-primary text-lg font-medium">Carregando...</div>
