@@ -3,8 +3,13 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
 
+export const dynamic = 'force-static'
+export const revalidate = 0
+
 export async function GET() {
-  const session = await getServerSession(authOptions)
+  if (process.env.NEXT_PUBLIC_BUILD_TARGET === 'mobile') return NextResponse.json(null)
+  let session = null
+  try { session = await getServerSession(authOptions) } catch { return NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) }
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const farm = await db.farm.findFirst({

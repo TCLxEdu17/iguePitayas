@@ -4,6 +4,9 @@ import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { updateHarvestSchema } from '@/lib/validations/harvest'
 
+export const dynamic = 'force-static'
+export const revalidate = 0
+
 export async function PUT(
   req: Request,
   { params }: { params: Promise<{ id: string }> }

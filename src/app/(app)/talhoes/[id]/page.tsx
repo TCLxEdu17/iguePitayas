@@ -1,5 +1,7 @@
 import TalhaoDetailClient from './TalhaoDetailClient'
 
+export const revalidate = 0
+
 export async function generateStaticParams() {
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? ''
