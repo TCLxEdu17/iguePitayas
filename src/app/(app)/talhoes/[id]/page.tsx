@@ -1,29 +1,64 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { redirect, notFound } from 'next/navigation'
-import { db } from '@/lib/db'
+// src/app/(app)/talhoes/[id]/page.tsx
+'use client'
+
+import { use } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { getApiUrl } from '@/lib/api-url'
 import { PRODUCT_LABELS, PRODUCT_COLORS } from '@/types'
+import type { ProductType } from '@/types'
 
-export default async function TalhaoDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const session = await getServerSession(authOptions)
-  if (!session) redirect('/login')
+interface Plot {
+  id: string
+  code: string
+  name: string
+  area: number | null
+  productType: ProductType
+  status: string
+  notes: string | null
+  activities: { id: string }[]
+  harvests: { id: string }[]
+}
 
-  const { id } = await params
-  const plot = await db.plot.findUnique({
-    where: { id },
-    include: {
-      activities: { orderBy: { date: 'desc' }, take: 10 },
-      harvests: { orderBy: { date: 'desc' }, take: 10 },
-    }
+export async function generateStaticParams() {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? ''
+    const res = await fetch(`${apiUrl}/api/plots`)
+    if (!res.ok) return []
+    const plots: { id: string }[] = await res.json()
+    return plots.map((p) => ({ id: p.id }))
+  } catch {
+    return []
+  }
+}
+
+export default function TalhaoDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
+
+  const { data: plot, isLoading, isError } = useQuery<Plot>({
+    queryKey: ['plot', id],
+    queryFn: () =>
+      fetch(getApiUrl(`/api/plots/${id}`)).then((r) => {
+        if (!r.ok) throw new Error('Plot not found')
+        return r.json()
+      }),
   })
 
-  if (!plot) notFound()
+  if (isLoading) {
+    return <div className="p-6 text-gray-500">Carregando talhão...</div>
+  }
+
+  if (isError || !plot) {
+    return <div className="p-6 text-red-500">Talhão não encontrado.</div>
+  }
 
   return (
     <main className="p-6 space-y-6">
       <div className="flex items-center gap-3">
         <h1 className="text-2xl font-bold">{plot.name}</h1>
-        <span className="text-sm px-2 py-1 rounded-full text-white" style={{ backgroundColor: PRODUCT_COLORS[plot.productType] }}>
+        <span
+          className="text-sm px-2 py-1 rounded-full text-white"
+          style={{ backgroundColor: PRODUCT_COLORS[plot.productType] }}
+        >
           {PRODUCT_LABELS[plot.productType]}
         </span>
       </div>
