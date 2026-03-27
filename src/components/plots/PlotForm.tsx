@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
+import { getApiUrl } from '@/lib/api-url'
 import { createPlotSchema, type CreatePlotInput } from '@/lib/validations/plot'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -30,7 +31,7 @@ export function PlotForm({ defaultValues, plotId }: PlotFormProps) {
 
   const mutation = useMutation({
     mutationFn: async (data: CreatePlotInput) => {
-      const url    = plotId ? `/api/plots/${plotId}` : '/api/plots'
+      const url    = plotId ? getApiUrl(`/api/plots/${plotId}`) : getApiUrl('/api/plots')
       const method = plotId ? 'PUT' : 'POST'
       const res = await fetch(url, {
         method,
