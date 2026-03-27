@@ -13,11 +13,14 @@ export async function GET(req: Request) {
   const startDate = searchParams.get('startDate')
   const endDate   = searchParams.get('endDate')
 
+  const dateFilter: Record<string, Date> = {}
+  if (startDate) dateFilter.gte = new Date(startDate)
+  if (endDate) dateFilter.lte = new Date(endDate)
+
   const harvests = await db.harvest.findMany({
     where: {
-      ...(plotId    ? { plotId }    : {}),
-      ...(startDate ? { date: { gte: new Date(startDate) } } : {}),
-      ...(endDate   ? { date: { lte: new Date(endDate)   } } : {}),
+      ...(plotId ? { plotId } : {}),
+      ...(Object.keys(dateFilter).length ? { date: dateFilter } : {}),
     },
     include: {
       plot: { select: { code: true, name: true, productType: true } },
@@ -32,6 +35,10 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  if ((session.user as any).role === 'VIEWER') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
 
   const body   = await req.json()
   const parsed = createHarvestSchema.safeParse(body)

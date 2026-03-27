@@ -4,6 +4,10 @@ import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { KPICard } from './KPICard'
 import { Button } from '@/components/ui/button'
+import { ACTIVITY_LABELS } from '@/types'
+import type { Activity } from '@/types'
+
+type ActivityType = Activity['type']
 
 const PERIODS = [
   { value: 'day',   label: 'Hoje'   },
@@ -87,7 +91,7 @@ export function DashboardGrid() {
             {data.recentActivities.map((a: any) => (
               <div key={a.id} className="flex items-center justify-between rounded-lg border bg-white p-3">
                 <div>
-                  <p className="text-sm font-medium">{a.type}</p>
+                  <p className="text-sm font-medium">{ACTIVITY_LABELS[a.type as ActivityType] ?? a.type}</p>
                   <p className="text-xs text-muted-foreground">{a.plot?.code} — {a.responsible}</p>
                 </div>
                 <p className="text-xs text-muted-foreground">

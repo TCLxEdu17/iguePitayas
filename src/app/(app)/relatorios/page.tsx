@@ -7,13 +7,18 @@ import { ReportTable } from '@/components/reports/ReportTable'
 export default function RelatoriosPage() {
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   async function handleFilter({ startDate, endDate }: { startDate: string; endDate: string }) {
     setLoading(true)
+    setError(null)
     try {
       const res  = await fetch(`/api/reports?startDate=${startDate}T00:00:00.000Z&endDate=${endDate}T23:59:59.999Z`)
       const json = await res.json()
       setData(json)
+    } catch (err) {
+      console.error('Failed to fetch report', err)
+      setError('Falha ao carregar relatório. Tente novamente.')
     } finally {
       setLoading(false)
     }
@@ -28,6 +33,10 @@ export default function RelatoriosPage() {
 
       <ReportFilter onFilter={handleFilter} loading={loading} />
 
+      {error && (
+        <p className="text-center text-red-600 py-4 text-sm">{error}</p>
+      )}
+
       {loading && (
         <div className="space-y-3">
           {[1, 2, 3].map(i => <div key={i} className="h-16 rounded-lg bg-muted animate-pulse" />)}
@@ -36,7 +45,7 @@ export default function RelatoriosPage() {
 
       {data && !loading && <ReportTable data={data} />}
 
-      {!data && !loading && (
+      {!data && !loading && !error && (
         <p className="text-center text-muted-foreground py-12 text-sm">
           Selecione um período e clique em "Gerar Relatório"
         </p>

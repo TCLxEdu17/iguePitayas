@@ -11,6 +11,10 @@ export async function PUT(
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  if ((session.user as any).role === 'VIEWER') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
   const { id } = await params
   const body   = await req.json()
   const parsed = updateHarvestSchema.safeParse(body)
@@ -30,11 +34,15 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _: Request,
+  req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  if ((session.user as any).role === 'VIEWER') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
 
   const { id } = await params
   await db.harvest.delete({ where: { id } })
