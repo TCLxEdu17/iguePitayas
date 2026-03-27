@@ -1,0 +1,42 @@
+import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { db } from '@/lib/db'
+import { updateHarvestSchema } from '@/lib/validations/harvest'
+
+export async function PUT(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await getServerSession(authOptions)
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const { id } = await params
+  const body   = await req.json()
+  const parsed = updateHarvestSchema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 })
+  }
+
+  const harvest = await db.harvest.update({
+    where: { id },
+    data:  {
+      ...parsed.data,
+      ...(parsed.data.date ? { date: new Date(parsed.data.date) } : {}),
+    },
+  })
+
+  return NextResponse.json(harvest)
+}
+
+export async function DELETE(
+  _: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await getServerSession(authOptions)
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const { id } = await params
+  await db.harvest.delete({ where: { id } })
+  return new NextResponse(null, { status: 204 })
+}
