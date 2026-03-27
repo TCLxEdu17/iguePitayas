@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  OPERATOR
+  VIEWER
+}
+
+enum ProductType {
+  BANANA_PRATA
+  BANANA_NANICA
+  PITAYA
+}
+
+enum PlotStatus {
+  ACTIVE
+  INACTIVE
+  MAINTENANCE
+}
+
+enum ActivityType {
+  PULVERIZACAO
+  ROCAGEM
+  RETIRADA_BANANA
+  RETIRADA_CAIXAS
+  OUTRO
+}
+
+enum Unit {
+  CAIXA
+  UNIDADE
+}
+
+enum SyncStatus {
+  PENDING
+  SYNCED
+  CONFLICT
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(OPERATOR)
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  activities Activity[]
+  harvests   Harvest[]
+}
+
+model Farm {
+  id           String  @id @default(cuid())
+  name         String
+  mapImageUrl  String?
+  mapImagePath String?
+
+  plots Plot[]
+}
+
+model Plot {
+  id          String      @id @default(cuid())
+  farmId      String
+  code        String
+  name        String
+  area        Float?
+  productType ProductType
+  status      PlotStatus  @default(ACTIVE)
+  polygon     Json?
+  notes       String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  farm       Farm       @relation(fields: [farmId], references: [id])
+  activities Activity[]
+  harvests   Harvest[]
+}
+
+model Activity {
+  id          String       @id @default(cuid())
+  localId     String       @unique
+  plotId      String
+  userId      String
+  date        DateTime
+  type        ActivityType
+  responsible String
+  quantity    Float?
+  unit        Unit?
+  cost        Float?
+  notes       String?
+  confirmed   Boolean      @default(false)
+  syncStatus  SyncStatus   @default(SYNCED)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  plot Plot @relation(fields: [plotId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Harvest {
+  id           String     @id @default(cuid())
+  localId      String     @unique
+  plotId       String
+  userId       String
+  date         DateTime
+  quantity     Float
+  unit         Unit
+  pricePerUnit Float
+  totalRevenue Float
+  notes        String?
+  syncStatus   SyncStatus @default(SYNCED)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  plot Plot @relation(fields: [plotId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+}
