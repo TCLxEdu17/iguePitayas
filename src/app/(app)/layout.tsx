@@ -5,9 +5,11 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { AppShell } from '@/components/layout/AppShell'
+import { usePushNotifications } from '@/hooks/usePushNotifications'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession()
+  usePushNotifications()
   const router = useRouter()
 
   useEffect(() => {
