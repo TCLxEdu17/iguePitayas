@@ -56,6 +56,7 @@ model User {
 
   activities Activity[]
   harvests   Harvest[]
+  pushTokens PushToken[]
 }
 
 model Farm {
@@ -104,6 +105,17 @@ model Activity {
 
   plot Plot @relation(fields: [plotId], references: [id])
   user User @relation(fields: [userId], references: [id])
+}
+
+model PushToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  platform  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Harvest {
