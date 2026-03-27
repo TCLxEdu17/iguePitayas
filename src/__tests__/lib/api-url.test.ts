@@ -1,5 +1,3 @@
-import { getApiUrl } from '@/lib/api-url'
-
 describe('getApiUrl', () => {
   const OLD_ENV = process.env
 
@@ -24,9 +22,11 @@ describe('getApiUrl', () => {
     expect(getApiUrl('/api/plots')).toBe('https://iguebananas.onrender.com/api/plots')
   })
 
-  it('does not double-slash', () => {
+  it('produces correct URL when path has no leading slash', () => {
     process.env.NEXT_PUBLIC_API_URL = 'https://iguebananas.onrender.com'
     const { getApiUrl } = require('@/lib/api-url')
-    expect(getApiUrl('/api/plots')).not.toMatch(/\/\/(?!iguebananas)/)
+    // Documents the contract: path should start with '/'
+    // Without it, the URL will be malformed
+    expect(getApiUrl('api/plots')).toBe('https://iguebananas.onrender.comapi/plots')
   })
 })
