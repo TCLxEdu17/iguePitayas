@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { ACTIVITY_LABELS } from '@/types'
 import type { Activity } from '@/types'
 import { getApiUrl } from '@/lib/api-url'
+import { WeatherWidget } from './WeatherWidget'
 
 type ActivityType = Activity['type']
 
@@ -31,6 +32,9 @@ export function DashboardGrid() {
 
   return (
     <div className="space-y-6">
+      {/* Weather */}
+      <WeatherWidget />
+
       {/* Period selector */}
       <div className="flex gap-2">
         {PERIODS.map(p => (
