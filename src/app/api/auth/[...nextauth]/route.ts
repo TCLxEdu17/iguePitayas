@@ -2,7 +2,7 @@ import NextAuth from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { NextResponse } from 'next/server'
 
-export const dynamic = process.env.NEXT_PUBLIC_BUILD_TARGET === 'mobile' ? 'force-static' : 'force-dynamic'
+export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 const handler = NextAuth(authOptions)

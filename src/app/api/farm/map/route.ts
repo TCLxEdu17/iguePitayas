@@ -5,7 +5,7 @@ import { db } from '@/lib/db'
 import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
 
-export const dynamic = process.env.NEXT_PUBLIC_BUILD_TARGET === 'mobile' ? 'force-static' : 'force-dynamic'
+export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 export async function POST(req: Request) {

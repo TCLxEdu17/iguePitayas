@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { updateActivitySchema } from '@/lib/validations/activity'
 
-export const dynamic = process.env.NEXT_PUBLIC_BUILD_TARGET === 'mobile' ? 'force-static' : 'force-dynamic'
+export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 export async function PUT(
