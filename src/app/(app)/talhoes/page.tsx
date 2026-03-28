@@ -7,7 +7,7 @@ import { authOptions } from '@/lib/auth'
 export default async function TalhoesPage() {
   const isMobile = process.env.NEXT_PUBLIC_BUILD_TARGET === 'mobile'
   const session = isMobile ? null : await getServerSession(authOptions)
-  const isAdmin = !isMobile && (session?.user as any)?.role === 'ADMIN'
+  const isAdmin = !isMobile && session?.user?.role === 'ADMIN'
 
   return (
     <div className="p-6">
