@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npx prisma generate && next build",
     "build:mobile": "NEXT_PUBLIC_BUILD_TARGET=mobile NEXT_PUBLIC_API_URL=https://iguebananas.onrender.com next build",
     "start": "next start",
     "lint": "eslint .",
