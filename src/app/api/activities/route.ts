@@ -3,6 +3,8 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { createActivitySchema } from '@/lib/validations/activity'
+import { logAction } from '@/lib/audit'
+import { sendToAdmins } from '@/lib/push'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -63,7 +65,12 @@ export async function POST(req: Request) {
       date:   new Date(parsed.data.date),
       userId: session.user.id ?? 'system',
     },
+    include: { plot: { select: { name: true } } },
   })
+
+  const description = `${session.user.name ?? session.user.email} criou atividade ${activity.type} no ${activity.plot?.name ?? 'talhão'}`
+  await logAction({ userId: session.user.id, action: 'CREATE_ACTIVITY', entityType: 'Activity', entityId: activity.id, description })
+  await sendToAdmins('Nova atividade', description)
 
   return NextResponse.json(activity, { status: 201 })
 }
