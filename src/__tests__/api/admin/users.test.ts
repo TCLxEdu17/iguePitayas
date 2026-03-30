@@ -90,6 +90,19 @@ describe('POST /api/admin/users', () => {
     expect(res.status).toBe(400)
   })
 
+  it('returns 409 when email already exists', async () => {
+    mockSession.mockResolvedValue({ user: { id: 'u1', role: 'ADMIN' } })
+    const prismaError = Object.assign(new Error('Unique constraint'), { code: 'P2002' })
+    ;(db.user.create as jest.Mock).mockRejectedValue(prismaError)
+    const req = new NextRequest('http://localhost/api/admin/users', {
+      method: 'POST',
+      body: JSON.stringify({ name: 'Maria', email: 'm@b.com', password: 'secret123', role: 'VIEWER' }),
+      headers: { 'content-type': 'application/json' },
+    })
+    const res = await POST(req)
+    expect(res.status).toBe(409)
+  })
+
   it('creates user and returns 201', async () => {
     mockSession.mockResolvedValue({ user: { id: 'u1', role: 'ADMIN' } })
     ;(db.user.create as jest.Mock).mockResolvedValue({
@@ -107,6 +120,17 @@ describe('POST /api/admin/users', () => {
 
 describe('PUT /api/admin/users/[id]', () => {
   beforeEach(() => jest.clearAllMocks())
+
+  it('returns 401 when not authenticated', async () => {
+    mockSession.mockResolvedValue(null)
+    const req = new NextRequest('http://localhost/api/admin/users/u2', {
+      method: 'PUT',
+      body: JSON.stringify({ name: 'New' }),
+      headers: { 'content-type': 'application/json' },
+    })
+    const res = await PUT(req, { params: Promise.resolve({ id: 'u2' }) })
+    expect(res.status).toBe(401)
+  })
 
   it('returns 403 when not ADMIN', async () => {
     mockSession.mockResolvedValue({ user: { id: 'u1', role: 'OPERATOR' } })

@@ -37,10 +37,18 @@ export async function POST(req: NextRequest) {
   const { name, email, password, role } = parsed.data
   const passwordHash = await hash(password, 10)
 
-  const user = await db.user.create({
-    data: { name, email, passwordHash, role },
-    select: USER_SELECT,
-  })
+  let user
+  try {
+    user = await db.user.create({
+      data: { name, email, passwordHash, role },
+      select: USER_SELECT,
+    })
+  } catch (e: unknown) {
+    if ((e as { code?: string }).code === 'P2002') {
+      return NextResponse.json({ error: 'Email already in use' }, { status: 409 })
+    }
+    throw e
+  }
 
   const description = `${session.user.name ?? session.user.email} criou usuário ${name}`
   await logAction({ userId: session.user.id, action: 'CREATE_USER', entityType: 'User', entityId: user.id, description })

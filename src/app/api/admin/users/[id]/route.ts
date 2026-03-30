@@ -43,11 +43,19 @@ export async function PUT(
   if (data.active !== undefined) updateData.active = data.active
   if (data.password) updateData.passwordHash = await hash(data.password, 10)
 
-  const user = await db.user.update({
-    where: { id },
-    data: updateData,
-    select: USER_SELECT,
-  })
+  let user
+  try {
+    user = await db.user.update({
+      where: { id },
+      data: updateData,
+      select: USER_SELECT,
+    })
+  } catch (e: unknown) {
+    if ((e as { code?: string }).code === 'P2025') {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+    throw e
+  }
 
   const description = `${session.user.name ?? session.user.email} editou usuário ${user.name}`
   await logAction({ userId: session.user.id, action: 'EDIT_USER', entityType: 'User', entityId: id, description })
