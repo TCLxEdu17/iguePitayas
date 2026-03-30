@@ -63,7 +63,7 @@ export async function DELETE(
 
   await db.activity.delete({ where: { id } })
 
-  const description = `${session.user.name ?? session.user.email} removeu atividade no ${activity?.plot?.name ?? 'talhão'}`
+  const description = `${session.user.name ?? session.user.email} removeu atividade ${activity?.type ?? ''} no ${activity?.plot?.name ?? 'talhão'}`
   await logAction({ userId: session.user.id, action: 'DELETE_ACTIVITY', entityType: 'Activity', entityId: id, description })
   await sendToAdmins('Atividade removida', description)
 
