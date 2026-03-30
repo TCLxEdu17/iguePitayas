@@ -14,7 +14,8 @@ const NAV_ITEMS = [
 ]
 
 const ADMIN_ITEMS = [
-  { label: 'Configurações', href: '/configuracoes', icon: '⚙️' },
+  { label: 'Usuários',      href: '/admin/usuarios', icon: '👥' },
+  { label: 'Configurações', href: '/configuracoes',  icon: '⚙️' },
 ]
 
 export function Sidebar() {
