@@ -60,6 +60,19 @@ describe('PUT /api/harvests/[id]', () => {
     expect(res.status).toBe(403)
   })
 
+  it('returns 404 when harvest not found on PUT', async () => {
+    ;(getServerSession as jest.Mock).mockResolvedValue({ user: { id: 'u1', name: 'João', role: 'ADMIN' } })
+    const prismaError = Object.assign(new Error('Not found'), { code: 'P2025' })
+    ;(db.harvest.update as jest.Mock).mockRejectedValue(prismaError)
+    const req = new NextRequest('http://localhost/api/harvests/nonexistent', {
+      method: 'PUT',
+      body: JSON.stringify({ notes: 'updated' }),
+      headers: { 'content-type': 'application/json' },
+    })
+    const res = await PUT(req, { params: Promise.resolve({ id: 'nonexistent' }) })
+    expect(res.status).toBe(404)
+  })
+
   it('updates harvest, calls logAction with EDIT_HARVEST and sendToAdmins with Colheita editada, returns 200', async () => {
     ;(getServerSession as jest.Mock).mockResolvedValue(mockSession)
     ;(db.harvest.update as jest.Mock).mockResolvedValue({
@@ -94,6 +107,16 @@ describe('DELETE /api/harvests/[id]', () => {
     const req = new NextRequest('http://localhost/api/harvests/h1', { method: 'DELETE' })
     const res = await DELETE(req, { params: Promise.resolve({ id: 'h1' }) })
     expect(res.status).toBe(403)
+  })
+
+  it('returns 404 when harvest not found on DELETE', async () => {
+    ;(getServerSession as jest.Mock).mockResolvedValue({ user: { id: 'u1', name: 'João', role: 'ADMIN' } })
+    ;(db.harvest.findUnique as jest.Mock).mockResolvedValue(null)
+    const req = new NextRequest('http://localhost/api/harvests/nonexistent', {
+      method: 'DELETE',
+    })
+    const res = await DELETE(req, { params: Promise.resolve({ id: 'nonexistent' }) })
+    expect(res.status).toBe(404)
   })
 
   it('deletes harvest, calls logAction with DELETE_HARVEST and sendToAdmins with Colheita removida, returns 204', async () => {

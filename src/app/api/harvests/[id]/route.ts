@@ -27,14 +27,22 @@ export async function PUT(
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 })
   }
 
-  const harvest = await db.harvest.update({
-    where: { id },
-    data:  {
-      ...parsed.data,
-      ...(parsed.data.date ? { date: new Date(parsed.data.date) } : {}),
-    },
-    include: { plot: { select: { name: true } } },
-  })
+  let harvest
+  try {
+    harvest = await db.harvest.update({
+      where: { id },
+      data:  {
+        ...parsed.data,
+        ...(parsed.data.date ? { date: new Date(parsed.data.date) } : {}),
+      },
+      include: { plot: { select: { name: true } } },
+    })
+  } catch (e: unknown) {
+    if ((e as { code?: string }).code === 'P2025') {
+      return NextResponse.json({ error: 'Harvest not found' }, { status: 404 })
+    }
+    throw e
+  }
 
   const description = `${session.user.name ?? session.user.email} editou colheita no ${harvest.plot?.name ?? 'talhão'}`
   await logAction({ userId: session.user.id, action: 'EDIT_HARVEST', entityType: 'Harvest', entityId: id, description })
@@ -59,6 +67,9 @@ export async function DELETE(
     where: { id },
     include: { plot: { select: { name: true } } },
   })
+  if (!harvest) {
+    return NextResponse.json({ error: 'Harvest not found' }, { status: 404 })
+  }
   await db.harvest.delete({ where: { id } })
 
   const description = `${session.user.name ?? session.user.email} removeu colheita no ${harvest?.plot?.name ?? 'talhão'}`
