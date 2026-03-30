@@ -119,6 +119,8 @@ model PushToken {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+// Users are soft-deleted (active = false), never hard-deleted.
+// ON DELETE RESTRICT on userId is intentional — preserves audit trail integrity.
 model AuditLog {
   id          String   @id @default(cuid())
   userId      String
@@ -129,6 +131,8 @@ model AuditLog {
   createdAt   DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
 
 model Harvest {
