@@ -19,7 +19,7 @@ interface User {
   email: string
   role: UserRole
   active: boolean
-  createdAt: Date
+  createdAt: string
 }
 
 interface Props {
