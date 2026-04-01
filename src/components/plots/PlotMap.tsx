@@ -56,7 +56,11 @@ async function savePlotPolygon({ plotId, polygon }: { plotId: string; polygon: P
   return res.json()
 }
 
-export function PlotMap() {
+interface PlotMapProps {
+  siteId?: string
+}
+
+export function PlotMap({ siteId }: PlotMapProps = {}) {
   const queryClient = useQueryClient()
   const containerRef = useRef<HTMLDivElement>(null)
   const [stageSize, setStageSize] = useState({ width: 800, height: 600 })
