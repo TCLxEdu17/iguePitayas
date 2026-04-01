@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { PlotList } from '@/components/plots/PlotList'
 import { SiteFilter } from '@/components/common/SiteFilter'
@@ -8,6 +9,8 @@ import Link from 'next/link'
 
 export default function TalhoesPage() {
   const [selectedSiteId, setSelectedSiteId] = useState<string | null>(null)
+  const { data: session } = useSession()
+  const isAdmin = session?.user?.role === 'ADMIN'
 
   return (
     <div className="p-6">
@@ -17,6 +20,11 @@ export default function TalhoesPage() {
           <p className="text-muted-foreground text-sm">Gerencie os talhões do sítio</p>
         </div>
         <div className="flex gap-2 flex-wrap">
+          {isAdmin && (
+            <Button asChild>
+              <Link href="/talhoes/novo">+ Novo Talhão</Link>
+            </Button>
+          )}
           <Button asChild variant="outline">
             <Link href="/talhoes/mapa">Ver Mapa</Link>
           </Button>
