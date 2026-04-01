@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { createPlotSchema } from '@/lib/validations/plot'
+import { notifyPrimaryAdmins } from '@/lib/push'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -42,6 +43,11 @@ export async function POST(req: Request) {
   const plot = await db.plot.create({
     data: { ...parsed.data, farmId: farm.id },
   })
+
+  notifyPrimaryAdmins(
+    '🗺️ Novo Talhão Criado',
+    `Talhão ${plot.code} — ${plot.name} foi adicionado por ${session.user.name}`
+  )
 
   return NextResponse.json(plot, { status: 201 })
 }
