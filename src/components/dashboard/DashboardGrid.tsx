@@ -8,6 +8,7 @@ import { ACTIVITY_LABELS } from '@/types'
 import type { Activity } from '@/types'
 import { getApiUrl } from '@/lib/api-url'
 import { WeatherWidget } from './WeatherWidget'
+import { DailyTipCard } from './DailyTipCard'
 
 type ActivityType = Activity['type']
 
@@ -85,6 +86,9 @@ export function DashboardGrid() {
           />
         </div>
       )}
+
+      {/* Daily tip */}
+      <DailyTipCard />
 
       {/* Recent activities */}
       {data?.recentActivities?.length > 0 && (
