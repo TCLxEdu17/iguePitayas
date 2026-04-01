@@ -6,16 +6,22 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { getApiUrl } from '@/lib/api-url'
 
-async function fetchPlots() {
-  const res = await fetch(getApiUrl('/api/plots'))
-  if (!res.ok) throw new Error('Failed to fetch plots')
-  return res.json()
+interface PlotListProps {
+  siteId?: string | null
 }
 
-export function PlotList() {
+export function PlotList({ siteId }: PlotListProps = {}) {
   const { data: plots, isLoading, error } = useQuery({
-    queryKey: ['plots'],
-    queryFn: fetchPlots,
+    queryKey: ['plots', siteId ?? null],
+    queryFn: () => {
+      const url = siteId
+        ? getApiUrl(`/api/plots?siteId=${siteId}`)
+        : getApiUrl('/api/plots')
+      return fetch(url).then(r => {
+        if (!r.ok) throw new Error('Failed to fetch plots')
+        return r.json()
+      })
+    },
   })
 
   if (isLoading) return (

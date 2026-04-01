@@ -9,6 +9,7 @@ import type { Activity } from '@/types'
 import { getApiUrl } from '@/lib/api-url'
 import { WeatherWidget } from './WeatherWidget'
 import { DailyTipCard } from './DailyTipCard'
+import { SiteFilter } from '@/components/common/SiteFilter'
 
 type ActivityType = Activity['type']
 
@@ -24,10 +25,16 @@ function fmt(n: number) {
 
 export function DashboardGrid() {
   const [period, setPeriod] = useState('month')
+  const [selectedSiteId, setSelectedSiteId] = useState<string | null>(null)
 
   const { data, isLoading } = useQuery({
-    queryKey:        ['dashboard', period],
-    queryFn:         () => fetch(getApiUrl(`/api/dashboard?period=${period}`)).then(r => r.json()),
+    queryKey:        ['dashboard', period, selectedSiteId],
+    queryFn:         () => {
+      const url = selectedSiteId
+        ? getApiUrl(`/api/dashboard?period=${period}&siteId=${selectedSiteId}`)
+        : getApiUrl(`/api/dashboard?period=${period}`)
+      return fetch(url).then(r => r.json())
+    },
     refetchInterval: 60_000,
   })
 
@@ -37,20 +44,23 @@ export function DashboardGrid() {
       <WeatherWidget />
 
       {/* Period selector */}
-      <div className="flex gap-2">
-        {PERIODS.map(p => (
-          <Button
-            key={p.value}
-            size="sm"
-            variant={period === p.value ? 'default' : 'outline'}
-            onClick={() => setPeriod(p.value)}
-            style={period === p.value
-              ? { backgroundColor: 'var(--color-primary)', color: 'white' }
-              : {}}
-          >
-            {p.label}
-          </Button>
-        ))}
+      <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex gap-2">
+          {PERIODS.map(p => (
+            <Button
+              key={p.value}
+              size="sm"
+              variant={period === p.value ? 'default' : 'outline'}
+              onClick={() => setPeriod(p.value)}
+              style={period === p.value
+                ? { backgroundColor: 'var(--color-primary)', color: 'white' }
+                : {}}
+            >
+              {p.label}
+            </Button>
+          ))}
+        </div>
+        <SiteFilter value={selectedSiteId} onChange={setSelectedSiteId} />
       </div>
 
       {/* KPI grid */}

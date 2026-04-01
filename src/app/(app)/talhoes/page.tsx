@@ -1,13 +1,13 @@
+'use client'
+
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { PlotList } from '@/components/plots/PlotList'
+import { SiteFilter } from '@/components/common/SiteFilter'
 import Link from 'next/link'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 
-export default async function TalhoesPage() {
-  const isMobile = process.env.NEXT_PUBLIC_BUILD_TARGET === 'mobile'
-  const session = isMobile ? null : await getServerSession(authOptions)
-  const isAdmin = !isMobile && session?.user?.role === 'ADMIN'
+export default function TalhoesPage() {
+  const [selectedSiteId, setSelectedSiteId] = useState<string | null>(null)
 
   return (
     <div className="p-6">
@@ -20,14 +20,12 @@ export default async function TalhoesPage() {
           <Button asChild variant="outline">
             <Link href="/talhoes/mapa">Ver Mapa</Link>
           </Button>
-          {isAdmin && (
-            <Button asChild style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}>
-              <Link href="/talhoes/novo">+ Novo Talhão</Link>
-            </Button>
-          )}
         </div>
       </div>
-      <PlotList />
+      <div className="mb-4">
+        <SiteFilter value={selectedSiteId} onChange={setSelectedSiteId} />
+      </div>
+      <PlotList siteId={selectedSiteId} />
     </div>
   )
 }
