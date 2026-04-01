@@ -39,10 +39,11 @@ export const authOptions: NextAuthOptions = {
         if (!valid) return null
 
         return {
-          id:    user.id,
-          name:  user.name,
-          email: user.email,
-          role:  user.role,
+          id:             user.id,
+          name:           user.name,
+          email:          user.email,
+          role:           user.role,
+          isPrimaryAdmin: user.isPrimaryAdmin,
         }
       },
     }),
@@ -50,15 +51,17 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     jwt({ token, user }) {
       if (user) {
-        token.role = (user as { role?: string }).role  // keep this one — user type is extended but authorize returns custom shape
-        token.id = user.id
+        token.role           = (user as { role?: string; isPrimaryAdmin?: boolean }).role
+        token.id             = user.id
+        token.isPrimaryAdmin = (user as { isPrimaryAdmin?: boolean }).isPrimaryAdmin ?? false
       }
       return token
     },
     session({ session, token }) {
       if (session.user) {
-        session.user.role = token.role ?? ''
-        session.user.id = token.id ?? ''
+        session.user.role           = token.role           ?? ''
+        session.user.id             = token.id             ?? ''
+        session.user.isPrimaryAdmin = token.isPrimaryAdmin ?? false
       }
       return session
     },
