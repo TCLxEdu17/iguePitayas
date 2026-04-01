@@ -5,28 +5,34 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Campo Verde Design System Tokens */
+/* Campo & Natureza Design System Tokens */
 @theme {
-  --color-primary: #1B4332;
+  /* Campo & Natureza palette */
+  --color-primary:            #3D5A2E;
   --color-primary-foreground: #ffffff;
-  --color-primary-50: #E8F5EE;
-  --color-primary-100: #C6E8D4;
-  --color-primary-700: #1B4332;
-  --color-primary-800: #163728;
-  --color-primary-900: #0F2A1E;
+  --color-primary-50:         #EEF2E9;
+  --color-primary-100:        #D4E0C8;
+  --color-primary-700:        #3D5A2E;
+  --color-primary-800:        #2E4522;
+  --color-primary-900:        #1F2E15;
 
-  --color-accent: #F4D03F;
-  --color-accent-foreground: #1A1A1A;
+  --color-accent:             #C17A4A;
+  --color-accent-foreground:  #ffffff;
 
-  --color-surface: #F0F4F0;
+  --color-surface:            #F5ECD7;
+  --color-muted-custom:       #D4B896;
+  --color-dark:               #2C3E1F;
+  --color-sidebar-bg:         #1F2E15;
 
-  --color-banana-prata: #27AE60;
-  --color-banana-nanica: #F4D03F;
+  /* Produtos */
+  --color-banana-prata:  #8DB87A;
+  --color-banana-nanica: #D4A843;
   --color-banana-pitaya: #E91E8C;
 
-  --color-sync-pending: #F39C12;
+  /* Sync status */
+  --color-sync-pending:  #F39C12;
   --color-sync-conflict: #C0392B;
-  --color-sync-synced: #27AE60;
+  --color-sync-synced:   #8DB87A;
 
   --font-sans: "Inter", sans-serif;
   --radius: 0.5rem;
@@ -77,38 +83,38 @@
 }
 
 :root {
-  --background: oklch(0.963 0.01 145);
-  --foreground: oklch(0.15 0.02 145);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0.02 145);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.02 145);
-  --primary: oklch(0.32 0.09 155);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.95 0.01 145);
-  --secondary-foreground: oklch(0.32 0.09 155);
-  --muted: oklch(0.93 0.015 145);
-  --muted-foreground: oklch(0.50 0.03 145);
-  --accent: oklch(0.85 0.16 90);
-  --accent-foreground: oklch(0.15 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.88 0.02 145);
-  --input: oklch(0.88 0.02 145);
-  --ring: oklch(0.32 0.09 155);
-  --chart-1: oklch(0.32 0.09 155);
-  --chart-2: oklch(0.56 0.16 155);
-  --chart-3: oklch(0.85 0.16 90);
-  --chart-4: oklch(0.70 0.18 30);
-  --chart-5: oklch(0.55 0.20 15);
-  --radius: 0.5rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
+  --background:              oklch(0.961 0.025 80);
+  --foreground:              oklch(0.18 0.04 130);
+  --card:                    oklch(0.98 0.01 80);
+  --card-foreground:         oklch(0.18 0.04 130);
+  --popover:                 oklch(0.98 0.01 80);
+  --popover-foreground:      oklch(0.18 0.04 130);
+  --primary:                 oklch(0.37 0.08 140);
+  --primary-foreground:      oklch(0.985 0 0);
+  --secondary:               oklch(0.92 0.025 80);
+  --secondary-foreground:    oklch(0.37 0.08 140);
+  --muted:                   oklch(0.87 0.03 75);
+  --muted-foreground:        oklch(0.50 0.04 100);
+  --accent:                  oklch(0.60 0.10 50);
+  --accent-foreground:       oklch(0.985 0 0);
+  --destructive:             oklch(0.577 0.245 27.325);
+  --border:                  oklch(0.85 0.03 75);
+  --input:                   oklch(0.85 0.03 75);
+  --ring:                    oklch(0.37 0.08 140);
+  --chart-1:                 oklch(0.37 0.08 140);
+  --chart-2:                 oklch(0.56 0.12 140);
+  --chart-3:                 oklch(0.60 0.10 50);
+  --chart-4:                 oklch(0.70 0.14 70);
+  --chart-5:                 oklch(0.55 0.18 15);
+  --radius:                  0.5rem;
+  --sidebar:                 oklch(0.18 0.04 130);
+  --sidebar-foreground:      oklch(0.92 0.02 80);
+  --sidebar-primary:         oklch(0.60 0.10 50);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar-accent:          oklch(0.25 0.05 130);
+  --sidebar-accent-foreground: oklch(0.92 0.02 80);
+  --sidebar-border:          oklch(0.28 0.04 130);
+  --sidebar-ring:            oklch(0.60 0.10 50);
 }
 
 .dark {
@@ -156,4 +162,41 @@
   html {
     @apply font-sans;
   }
+}
+
+/* PrimaryAdmin effects */
+@keyframes breathe-glow {
+  0%, 100% { box-shadow: 0 0 6px 2px rgba(193, 122, 74, 0.3); }
+  50%       { box-shadow: 0 0 14px 5px rgba(193, 122, 74, 0.65); }
+}
+
+@keyframes shimmer-gold {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes leaf-pulse {
+  0%, 100% { transform: scale(1) rotate(-5deg); opacity: 0.9; }
+  50%       { transform: scale(1.2) rotate(5deg); opacity: 1; }
+}
+
+.primary-admin-glow {
+  animation: breathe-glow 2.8s ease-in-out infinite;
+  border-radius: 9999px;
+}
+
+.primary-admin-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(193, 122, 74, 0.15) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-gold 3s linear infinite;
+}
+
+.primary-admin-leaf {
+  display: inline-block;
+  animation: leaf-pulse 2s ease-in-out infinite;
 }
