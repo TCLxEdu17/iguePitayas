@@ -50,8 +50,9 @@ model User {
   email        String   @unique
   passwordHash String
   role         Role     @default(OPERATOR)
-  active       Boolean  @default(true)
-  createdAt    DateTime @default(now())
+  active          Boolean  @default(true)
+  isPrimaryAdmin  Boolean  @default(false)
+  createdAt       DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   activities Activity[]
@@ -67,11 +68,25 @@ model Farm {
   mapImagePath String?
 
   plots Plot[]
+  sites Site[]
+}
+
+model Site {
+  id           String   @id @default(cuid())
+  name         String
+  mapImageUrl  String?
+  mapImagePath String?
+  farmId       String
+  farm         Farm     @relation(fields: [farmId], references: [id])
+  plots        Plot[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Plot {
   id          String      @id @default(cuid())
   farmId      String
+  siteId      String?
   code        String
   name        String
   area        Float?
@@ -83,6 +98,7 @@ model Plot {
   updatedAt   DateTime    @updatedAt
 
   farm       Farm       @relation(fields: [farmId], references: [id])
+  site       Site?      @relation(fields: [siteId], references: [id])
   activities Activity[]
   harvests   Harvest[]
 }
@@ -91,6 +107,7 @@ model Activity {
   id          String       @id @default(cuid())
   localId     String       @unique
   plotId      String
+  siteId      String?
   userId      String
   date        DateTime
   type        ActivityType
@@ -139,6 +156,7 @@ model Harvest {
   id           String     @id @default(cuid())
   localId      String     @unique
   plotId       String
+  siteId       String?
   userId       String
   date         DateTime
   quantity     Float
