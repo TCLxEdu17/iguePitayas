@@ -15,6 +15,7 @@ export async function GET(req: Request) {
 
   const { searchParams } = new URL(req.url)
   const period = searchParams.get('period') ?? 'month'
+  const siteId = searchParams.get('siteId')
   const { startDate, endDate } = buildDateRange(period)
   const dateFilter = { gte: startDate, lte: endDate }
 
@@ -25,22 +26,22 @@ export async function GET(req: Request) {
     costAgg,
     recentActivities,
   ] = await Promise.all([
-    db.activity.count({ where: { date: dateFilter } }),
+    db.activity.count({ where: { date: dateFilter, ...(siteId ? { plot: { siteId } } : {}) } }),
 
-    db.harvest.count({ where: { date: dateFilter } }),
+    db.harvest.count({ where: { date: dateFilter, ...(siteId ? { plot: { siteId } } : {}) } }),
 
     db.harvest.aggregate({
-      where: { date: dateFilter },
+      where: { date: dateFilter, ...(siteId ? { plot: { siteId } } : {}) },
       _sum:  { totalRevenue: true },
     }),
 
     db.activity.aggregate({
-      where: { date: dateFilter, cost: { not: null } },
+      where: { date: dateFilter, cost: { not: null }, ...(siteId ? { plot: { siteId } } : {}) },
       _sum:  { cost: true },
     }),
 
     db.activity.findMany({
-      where:   { date: dateFilter },
+      where:   { date: dateFilter, ...(siteId ? { plot: { siteId } } : {}) },
       orderBy: { date: 'desc' },
       take:    5,
       include: {
