@@ -4,6 +4,8 @@ import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { buildDateRange } from '@/lib/dashboard'
 import { REVENUE_ACTIVITY_TYPES } from '@/types'
+import { ActivityType } from '@prisma/client'
+const REVENUE_TYPES = REVENUE_ACTIVITY_TYPES as ActivityType[]
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -41,7 +43,7 @@ export async function GET(req: Request) {
       where: {
         date: dateFilter,
         cost: { not: null },
-        type: { notIn: REVENUE_ACTIVITY_TYPES },
+        type: { notIn: REVENUE_TYPES },
         ...(siteId ? { plot: { siteId } } : {}),
       },
       _sum: { cost: true },
@@ -51,7 +53,7 @@ export async function GET(req: Request) {
       where: {
         date: dateFilter,
         cost: { not: null },
-        type: { in: REVENUE_ACTIVITY_TYPES },
+        type: { in: REVENUE_TYPES },
         ...(siteId ? { plot: { siteId } } : {}),
       },
       _sum: { cost: true },
