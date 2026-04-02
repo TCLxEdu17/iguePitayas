@@ -6,7 +6,7 @@ export async function POST(req: Request) {
   const { data, startDate, endDate } = await req.json()
 
   const buffer = await renderToBuffer(
-    createElement(ReportPDF, { data, startDate, endDate })
+    createElement(ReportPDF, { data, startDate, endDate }) as any
   )
 
   const fileName = `relatorio-igue-${startDate}-${endDate}.pdf`
