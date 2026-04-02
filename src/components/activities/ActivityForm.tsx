@@ -40,8 +40,6 @@ export function ActivityForm() {
   const setPending = useSyncStore(s => s.setPending)
   const [saved, setSaved] = useState(false)
   const [saving, setSaving] = useState(false)
-  const selectedType = form.watch('type')
-  const isRevenue = REVENUE_ACTIVITY_TYPES.includes(selectedType)
 
   const { data: plots } = useQuery({
     queryKey: ['plots'],
@@ -52,6 +50,9 @@ export function ActivityForm() {
     resolver: zodResolver(formSchema) as any,
     defaultValues: { date: new Date().toISOString().split('T')[0] },
   })
+
+  const selectedType = form.watch('type')
+  const isRevenue = REVENUE_ACTIVITY_TYPES.includes(selectedType)
 
   async function onSubmit(values: FormValues) {
     setSaving(true)
