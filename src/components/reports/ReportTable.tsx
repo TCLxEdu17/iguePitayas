@@ -17,17 +17,17 @@ export function ReportTable({ data }: { data: ReportData }) {
   return (
     <div className="space-y-6">
       {/* Summary cards */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="rounded-lg border border-green-200 bg-green-50 p-4 text-center">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4">
+        <div className="rounded-lg border border-green-200 bg-green-50 p-3 sm:p-4 text-center">
           <p className="text-xs text-muted-foreground">Receita</p>
-          <p className="text-xl font-bold text-green-700">{fmt(data.summary.totalRevenue)}</p>
+          <p className="text-sm sm:text-xl font-bold text-green-700 break-all">{fmt(data.summary.totalRevenue)}</p>
         </div>
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-center">
+        <div className="rounded-lg border border-red-200 bg-red-50 p-3 sm:p-4 text-center">
           <p className="text-xs text-muted-foreground">Custo</p>
-          <p className="text-xl font-bold text-red-700">{fmt(data.summary.totalCost)}</p>
+          <p className="text-sm sm:text-xl font-bold text-red-700 break-all">{fmt(data.summary.totalCost)}</p>
         </div>
         <div
-          className="rounded-lg p-4 text-center"
+          className="rounded-lg p-3 sm:p-4 text-center"
           style={{
             backgroundColor: data.summary.margin >= 0
               ? 'color-mix(in srgb, var(--color-primary) 8%, transparent)'
@@ -39,7 +39,7 @@ export function ReportTable({ data }: { data: ReportData }) {
         >
           <p className="text-xs text-muted-foreground">Margem</p>
           <p
-            className="text-xl font-bold"
+            className="text-sm sm:text-xl font-bold break-all"
             style={{ color: data.summary.margin >= 0 ? 'var(--color-primary)' : '#dc2626' }}
           >
             {fmt(data.summary.margin)}

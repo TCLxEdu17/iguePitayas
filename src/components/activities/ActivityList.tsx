@@ -39,7 +39,7 @@ export function ActivityList() {
         placeholder="Buscar por talhão, responsável ou tipo..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="max-w-sm"
+        className="w-full sm:max-w-sm"
       />
 
       {filtered.length === 0 ? (

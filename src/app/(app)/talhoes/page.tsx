@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { PlotList } from '@/components/plots/PlotList'
 import { SiteFilter } from '@/components/common/SiteFilter'
+import { PageTitle } from '@/components/layout/PageTitle'
 import Link from 'next/link'
 
 export default function TalhoesPage() {
@@ -13,19 +14,16 @@ export default function TalhoesPage() {
   const isAdmin = session?.user?.role === 'ADMIN'
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6 gap-4">
-        <div>
-          <h1 className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>Talhões</h1>
-          <p className="text-muted-foreground text-sm">Gerencie os talhões do sítio</p>
-        </div>
-        <div className="flex gap-2 flex-wrap">
+    <div className="p-4 md:p-6">
+      <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center sm:justify-between">
+        <PageTitle title="Talhões" subtitle="Gerencie os talhões do sítio" />
+        <div className="flex gap-2">
           {isAdmin && (
-            <Button asChild>
+            <Button asChild size="sm">
               <Link href="/talhoes/novo">+ Novo Talhão</Link>
             </Button>
           )}
-          <Button asChild variant="outline">
+          <Button asChild variant="outline" size="sm">
             <Link href="/talhoes/mapa">Ver Mapa</Link>
           </Button>
         </div>

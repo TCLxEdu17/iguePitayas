@@ -7,11 +7,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useTypewriter } from '@/hooks/useTypewriter'
 
 export default function LoginPage() {
   const router = useRouter()
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const { displayed: tagline, done: taglineDone } = useTypewriter('Gestão do sítio', 60, 400)
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -43,7 +45,12 @@ export default function LoginPage() {
         <CardHeader className="text-center">
           <div className="text-4xl mb-2">🍌</div>
           <CardTitle style={{ color: 'var(--color-primary)' }} className="text-2xl">IGUE Bananas</CardTitle>
-          <p className="text-sm text-muted-foreground">Gestão do sítio</p>
+          <p className="text-sm text-muted-foreground min-h-[1.25rem]">
+            {tagline}
+            {!taglineDone && (
+              <span className="inline-block w-0.5 h-3.5 ml-0.5 align-middle animate-pulse bg-current" />
+            )}
+          </p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

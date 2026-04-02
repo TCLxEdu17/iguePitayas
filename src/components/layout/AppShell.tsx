@@ -17,7 +17,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         >
           <SyncBadge />
         </header>
-        <main className="flex-1 overflow-auto pb-16 md:pb-0">
+        <main className="flex-1 overflow-auto pb-20 md:pb-0" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 4rem)' }}>
           {children}
         </main>
       </div>

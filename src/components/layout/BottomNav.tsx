@@ -18,7 +18,11 @@ export function BottomNav() {
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 z-50 flex md:hidden border-t"
-      style={{ backgroundColor: 'var(--color-primary)', borderColor: 'rgba(255,255,255,0.1)' }}
+      style={{
+        backgroundColor: 'var(--color-primary)',
+        borderColor: 'rgba(255,255,255,0.1)',
+        paddingBottom: 'env(safe-area-inset-bottom)',
+      }}
     >
       {BOTTOM_ITEMS.map((item) => {
         const isActive = pathname.startsWith(item.href)
@@ -26,7 +30,7 @@ export function BottomNav() {
           <Link
             key={item.href}
             href={item.href}
-            className="flex flex-1 flex-col items-center gap-1 py-2 text-xs transition-colors"
+            className="flex flex-1 flex-col items-center gap-1 pt-2 pb-1 text-xs transition-colors"
             style={{ color: isActive ? 'var(--color-accent)' : 'rgba(255,255,255,0.7)' }}
           >
             <span className="text-lg">{item.icon}</span>

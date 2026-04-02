@@ -13,7 +13,7 @@ export function KPICard({ label, value, icon, subtitle, positive }: KPICardProps
         <div className="space-y-1">
           <p className="text-sm text-muted-foreground">{label}</p>
           <p
-            className="text-2xl font-bold"
+            className="text-lg sm:text-2xl font-bold break-all"
             style={{ color: 'var(--color-primary)' }}
           >
             {value}
