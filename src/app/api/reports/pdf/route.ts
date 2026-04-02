@@ -1,0 +1,20 @@
+import { renderToBuffer } from '@react-pdf/renderer'
+import { createElement } from 'react'
+import { ReportPDF } from '@/components/reports/ReportPDF'
+
+export async function POST(req: Request) {
+  const { data, startDate, endDate } = await req.json()
+
+  const buffer = await renderToBuffer(
+    createElement(ReportPDF, { data, startDate, endDate })
+  )
+
+  const fileName = `relatorio-igue-${startDate}-${endDate}.pdf`
+
+  return new Response(buffer, {
+    headers: {
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="${fileName}"`,
+    },
+  })
+}
