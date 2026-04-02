@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Stage, Layer, Image as KonvaImage, Line, Circle, Rect, Text } from 'react-konva'
+import { Stage, Layer, Group, Image as KonvaImage, Line, Circle, Rect, Text } from 'react-konva'
 import { PRODUCT_COLORS } from '@/types'
 import { Button } from '@/components/ui/button'
 
@@ -203,7 +203,7 @@ export default function KonvaMapInner({ plots, mapImageUrl, onSave, saving }: Pr
               if (!rect) return null
               const color = PRODUCT_COLORS[plot.productType] ?? '#888'
               return (
-                <Layer key={plot.id}>
+                <Group key={plot.id}>
                   <Rect x={rect.x} y={rect.y} width={rect.w} height={rect.h}
                     fill={color + '33'} stroke={color} strokeWidth={2}
                     cornerRadius={6} dash={[6, 3]} />
@@ -211,7 +211,7 @@ export default function KonvaMapInner({ plots, mapImageUrl, onSave, saving }: Pr
                     fontSize={13} fontStyle="bold" fill={color} />
                   <Text x={rect.x + 8} y={rect.y + 26} text={plot.name}
                     fontSize={9} fill={color + 'cc'} width={rect.w - 16} ellipsis />
-                </Layer>
+                </Group>
               )
             })}
           </Layer>
@@ -223,11 +223,11 @@ export default function KonvaMapInner({ plots, mapImageUrl, onSave, saving }: Pr
               const flat  = plot.polygon.flatMap(p => [p.x, p.y])
               const color = PRODUCT_COLORS[plot.productType] ?? '#888'
               return (
-                <Layer key={plot.id}>
+                <Group key={plot.id}>
                   <Line points={flat} closed fill={color + '44'} stroke={color} strokeWidth={2} />
                   <Text x={plot.polygon[0].x + 4} y={plot.polygon[0].y + 4}
                     text={plot.code} fontSize={12} fill={color} fontStyle="bold" />
-                </Layer>
+                </Group>
               )
             })}
           </Layer>
