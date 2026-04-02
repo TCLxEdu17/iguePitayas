@@ -29,6 +29,9 @@ export const ACTIVITY_LABELS: Record<string, string> = {
   OUTRO:           'Outro',
 }
 
+// Activity types that generate revenue (sale/withdrawal), not expense
+export const REVENUE_ACTIVITY_TYPES = ['RETIRADA_CAIXAS', 'RETIRADA_BANANA']
+
 export const UNIT_LABELS: Record<string, string> = {
   CAIXA:   'Caixa',
   UNIDADE: 'Unidade',

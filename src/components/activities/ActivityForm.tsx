@@ -18,7 +18,7 @@ import { Textarea } from '@/components/ui/textarea'
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
-import { ACTIVITY_LABELS } from '@/types'
+import { ACTIVITY_LABELS, REVENUE_ACTIVITY_TYPES } from '@/types'
 import { getApiUrl } from '@/lib/api-url'
 
 const formSchema = z.object({
@@ -40,6 +40,8 @@ export function ActivityForm() {
   const setPending = useSyncStore(s => s.setPending)
   const [saved, setSaved] = useState(false)
   const [saving, setSaving] = useState(false)
+  const selectedType = form.watch('type')
+  const isRevenue = REVENUE_ACTIVITY_TYPES.includes(selectedType)
 
   const { data: plots } = useQuery({
     queryKey: ['plots'],
@@ -183,9 +185,14 @@ export function ActivityForm() {
             </div>
           </div>
           <div className="space-y-1">
-            <Label htmlFor="cost">Custo (R$)</Label>
+            <Label htmlFor="cost">
+              {isRevenue ? 'Valor recebido (R$)' : 'Custo (R$)'}
+            </Label>
             <Input id="cost" type="number" step="0.01"
               {...form.register('cost', { valueAsNumber: true })} placeholder="0,00" />
+            {isRevenue && (
+              <p className="text-xs text-green-600">Este valor será contabilizado como receita</p>
+            )}
           </div>
           <div className="space-y-1">
             <Label htmlFor="notes">Observações</Label>

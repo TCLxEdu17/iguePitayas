@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { REVENUE_ACTIVITY_TYPES } from '@/types'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -38,8 +39,14 @@ export async function GET(req: Request) {
     }),
   ])
 
-  const totalRevenue = harvests.reduce((s, h) => s + h.totalRevenue, 0)
-  const totalCost    = activities.reduce((s, a) => s + (a.cost ?? 0), 0)
+  const harvestRevenue   = harvests.reduce((s, h) => s + h.totalRevenue, 0)
+  const activityRevenue  = activities
+    .filter(a => REVENUE_ACTIVITY_TYPES.includes(a.type))
+    .reduce((s, a) => s + (a.cost ?? 0), 0)
+  const totalRevenue     = harvestRevenue + activityRevenue
+  const totalCost        = activities
+    .filter(a => !REVENUE_ACTIVITY_TYPES.includes(a.type))
+    .reduce((s, a) => s + (a.cost ?? 0), 0)
 
   // Group harvests by product type
   const byProduct: Record<string, { quantity: number; revenue: number; count: number }> = {}

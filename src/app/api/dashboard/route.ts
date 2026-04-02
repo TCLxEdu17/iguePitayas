@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { buildDateRange } from '@/lib/dashboard'
+import { REVENUE_ACTIVITY_TYPES } from '@/types'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -22,8 +23,9 @@ export async function GET(req: Request) {
   const [
     totalActivities,
     totalHarvests,
-    revenueAgg,
+    harvestRevenueAgg,
     costAgg,
+    activityRevenueAgg,
     recentActivities,
   ] = await Promise.all([
     db.activity.count({ where: { date: dateFilter, ...(siteId ? { plot: { siteId } } : {}) } }),
@@ -36,8 +38,23 @@ export async function GET(req: Request) {
     }),
 
     db.activity.aggregate({
-      where: { date: dateFilter, cost: { not: null }, ...(siteId ? { plot: { siteId } } : {}) },
-      _sum:  { cost: true },
+      where: {
+        date: dateFilter,
+        cost: { not: null },
+        type: { notIn: REVENUE_ACTIVITY_TYPES },
+        ...(siteId ? { plot: { siteId } } : {}),
+      },
+      _sum: { cost: true },
+    }),
+
+    db.activity.aggregate({
+      where: {
+        date: dateFilter,
+        cost: { not: null },
+        type: { in: REVENUE_ACTIVITY_TYPES },
+        ...(siteId ? { plot: { siteId } } : {}),
+      },
+      _sum: { cost: true },
     }),
 
     db.activity.findMany({
@@ -50,7 +67,7 @@ export async function GET(req: Request) {
     }),
   ])
 
-  const totalRevenue = revenueAgg._sum.totalRevenue ?? 0
+  const totalRevenue = (harvestRevenueAgg._sum.totalRevenue ?? 0) + (activityRevenueAgg._sum.cost ?? 0)
   const totalCost    = costAgg._sum.cost ?? 0
 
   return NextResponse.json({
