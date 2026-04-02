@@ -11,7 +11,7 @@ export async function POST(req: Request) {
 
   const fileName = `relatorio-igue-${startDate}-${endDate}.pdf`
 
-  return new Response(buffer, {
+  return new Response(new Uint8Array(buffer), {
     headers: {
       'Content-Type': 'application/pdf',
       'Content-Disposition': `attachment; filename="${fileName}"`,
