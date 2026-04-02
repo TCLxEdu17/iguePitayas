@@ -46,15 +46,19 @@ function useMapImage(url: string | null | undefined) {
 }
 
 interface Props {
-  plots:       PlotData[]
+  plots:        PlotData[]
   mapImageUrl?: string | null
-  onSave:      (plotId: string, polygon: Point[]) => void
-  saving:      boolean
+  onSave:       (plotId: string, polygon: Point[]) => void
+  saving:       boolean
 }
 
 export default function KonvaMapInner({ plots, mapImageUrl, onSave, saving }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [stageSize, setStageSize]           = useState({ width: 300, height: 400 })
+
+  // Use viewport width as safe initial value so Stage is never 0-wide on mobile
+  const initW = typeof window !== 'undefined' ? Math.min(window.innerWidth - 32, 800) : 400
+  const initH = initW < 500 ? 360 : 480
+  const [stageSize, setStageSize]           = useState({ width: initW, height: initH })
   const [selectedPlotId, setSelectedPlotId] = useState<string | null>(null)
   const [drawingPoints, setDrawingPoints]   = useState<Point[]>([])
   const [isDrawing, setIsDrawing]           = useState(false)
@@ -63,17 +67,19 @@ export default function KonvaMapInner({ plots, mapImageUrl, onSave, saving }: Pr
 
   useEffect(() => {
     function measure() {
-      if (containerRef.current) {
-        const w = containerRef.current.offsetWidth
-        // Shorter height on narrow screens (mobile)
-        const h = w < 500 ? 360 : 480
-        setStageSize({ width: w, height: h })
-      }
+      const el = containerRef.current
+      if (!el) return
+      const w = el.offsetWidth || el.getBoundingClientRect().width
+      if (!w) return
+      const h = w < 500 ? 360 : 480
+      setStageSize({ width: w, height: h })
     }
+    // Try immediately, then after a frame (layout may not be complete yet)
     measure()
+    const raf = requestAnimationFrame(measure)
     const obs = new ResizeObserver(measure)
     if (containerRef.current) obs.observe(containerRef.current)
-    return () => obs.disconnect()
+    return () => { cancelAnimationFrame(raf); obs.disconnect() }
   }, [])
 
   function handleStageClick(e: any) {
@@ -96,40 +102,42 @@ export default function KonvaMapInner({ plots, mapImageUrl, onSave, saving }: Pr
     setIsDrawing(true)
   }
 
-  const autoRects  = autoLayout(plots, stageSize.width, stageSize.height)
-  const hasImage   = !!mapImageUrl && !!mapImage
+  const autoRects = autoLayout(plots, stageSize.width, stageSize.height)
+  const hasImage  = !!mapImageUrl && !!mapImage
 
   return (
     <div className="space-y-3">
       {/* Toolbar */}
-      <div className="flex gap-2 flex-wrap items-center">
-        <span className="text-xs text-muted-foreground">Marcar no mapa:</span>
-        {plots.map(plot => (
-          <Button
-            key={plot.id}
-            size="sm"
-            variant={selectedPlotId === plot.id ? 'default' : 'outline'}
-            onClick={() => startDrawing(plot.id)}
-            style={selectedPlotId === plot.id
-              ? { backgroundColor: PRODUCT_COLORS[plot.productType], color: 'white', borderColor: PRODUCT_COLORS[plot.productType] }
-              : { borderColor: PRODUCT_COLORS[plot.productType], color: PRODUCT_COLORS[plot.productType] }
-            }
-          >
-            {plot.code}
-          </Button>
-        ))}
-        {isDrawing && drawingPoints.length >= 3 && (
-          <Button size="sm" onClick={finishDrawing} disabled={saving}
-            style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}>
-            ✓ Salvar
-          </Button>
-        )}
-        {isDrawing && (
-          <Button size="sm" variant="outline" onClick={() => { setIsDrawing(false); setDrawingPoints([]) }}>
-            Cancelar
-          </Button>
-        )}
-      </div>
+      {plots.length > 0 && (
+        <div className="flex gap-2 flex-wrap items-center">
+          <span className="text-xs text-muted-foreground">Marcar no mapa:</span>
+          {plots.map(plot => (
+            <Button
+              key={plot.id}
+              size="sm"
+              variant={selectedPlotId === plot.id ? 'default' : 'outline'}
+              onClick={() => startDrawing(plot.id)}
+              style={selectedPlotId === plot.id
+                ? { backgroundColor: PRODUCT_COLORS[plot.productType], color: 'white', borderColor: PRODUCT_COLORS[plot.productType] }
+                : { borderColor: PRODUCT_COLORS[plot.productType], color: PRODUCT_COLORS[plot.productType] }
+              }
+            >
+              {plot.code}
+            </Button>
+          ))}
+          {isDrawing && drawingPoints.length >= 3 && (
+            <Button size="sm" onClick={finishDrawing} disabled={saving}
+              style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}>
+              ✓ Salvar
+            </Button>
+          )}
+          {isDrawing && (
+            <Button size="sm" variant="outline" onClick={() => { setIsDrawing(false); setDrawingPoints([]) }}>
+              Cancelar
+            </Button>
+          )}
+        </div>
+      )}
 
       {isDrawing && (
         <p className="text-xs text-muted-foreground">
@@ -137,11 +145,16 @@ export default function KonvaMapInner({ plots, mapImageUrl, onSave, saving }: Pr
         </p>
       )}
 
-      {/* Canvas */}
+      {/* Canvas container — explicit height so canvas is always visible */}
       <div
         ref={containerRef}
         className="w-full rounded-xl overflow-hidden border"
-        style={{ borderColor: '#d1e8d0', cursor: isDrawing ? 'crosshair' : 'default' }}
+        style={{
+          height: stageSize.height,
+          borderColor: '#d1e8d0',
+          cursor: isDrawing ? 'crosshair' : 'default',
+          backgroundColor: '#e8f5e0', // fallback color while Konva loads
+        }}
       >
         <Stage
           width={stageSize.width}
@@ -158,15 +171,26 @@ export default function KonvaMapInner({ plots, mapImageUrl, onSave, saving }: Pr
                 <Rect x={0} y={0} width={stageSize.width} height={stageSize.height} fill="#e8f5e0" />
                 {Array.from({ length: 14 }).map((_, i) => (
                   <Rect key={i} x={0} y={i * 40} width={stageSize.width} height={20}
-                    fill={i % 2 === 0 ? 'rgba(180,220,160,0.18)' : 'rgba(140,190,120,0.12)'} />
+                    fill={i % 2 === 0 ? 'rgba(180,220,160,0.22)' : 'rgba(140,190,120,0.14)'} />
                 ))}
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Rect key={i} x={(stageSize.width / 5) * i} y={0} width={1} height={stageSize.height}
-                    fill="rgba(120,160,100,0.2)" />
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <Rect key={i} x={(stageSize.width / 6) * i} y={0} width={1} height={stageSize.height}
+                    fill="rgba(120,160,100,0.18)" />
                 ))}
-                <Text x={10} y={10}
-                  text="Mapa fictício — faça upload em Configurações → Mapa"
-                  fontSize={9} fill="rgba(80,120,60,0.5)" />
+                {plots.length === 0 && (
+                  <Text
+                    x={stageSize.width / 2 - 120}
+                    y={stageSize.height / 2 - 20}
+                    text={'Nenhum talhão cadastrado ainda.\nCadastre talhões em Talhões → Novo Talhão.'}
+                    fontSize={13}
+                    fill="rgba(60,100,50,0.65)"
+                    align="center"
+                    width={240}
+                  />
+                )}
+                <Text x={10} y={8}
+                  text="Sem imagem — faça upload em Configurações → Mapa"
+                  fontSize={9} fill="rgba(80,120,60,0.45)" />
               </>
             )}
           </Layer>
