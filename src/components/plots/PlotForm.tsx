@@ -2,7 +2,7 @@
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { getApiUrl } from '@/lib/api-url'
 import { createPlotSchema, type CreatePlotInput } from '@/lib/validations/plot'
@@ -14,6 +14,8 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
 
+interface Site { id: string; name: string }
+
 interface PlotFormProps {
   defaultValues?: Partial<CreatePlotInput>
   plotId?: string
@@ -22,6 +24,11 @@ interface PlotFormProps {
 export function PlotForm({ defaultValues, plotId }: PlotFormProps) {
   const router = useRouter()
   const queryClient = useQueryClient()
+
+  const { data: sites = [] } = useQuery<Site[]>({
+    queryKey: ['sites'],
+    queryFn:  () => fetch(getApiUrl('/api/sites')).then(r => r.json()),
+  })
 
   const form = useForm<CreatePlotInput>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -43,13 +50,14 @@ export function PlotForm({ defaultValues, plotId }: PlotFormProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['plots'] })
+      queryClient.invalidateQueries({ queryKey: ['sites'] })
       router.push('/talhoes')
     },
   })
 
   return (
     <form onSubmit={form.handleSubmit((d) => mutation.mutate(d))} className="space-y-4 max-w-lg">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="code">Código *</Label>
           <Input id="code" {...form.register('code')} placeholder="T01" />
@@ -86,7 +94,25 @@ export function PlotForm({ defaultValues, plotId }: PlotFormProps) {
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="space-y-2">
+        <Label htmlFor="siteId">Sítio</Label>
+        <Select
+          defaultValue={defaultValues?.siteId ?? '__none__'}
+          onValueChange={(v) => form.setValue('siteId', v === '__none__' ? null : v)}
+        >
+          <SelectTrigger id="siteId">
+            <SelectValue placeholder="Sem sítio vinculado" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__none__">— Sem sítio —</SelectItem>
+            {sites.map(s => (
+              <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="area">Área (m²)</Label>
           <Input

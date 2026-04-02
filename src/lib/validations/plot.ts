@@ -4,6 +4,7 @@ export const createPlotSchema = z.object({
   code:        z.string().min(1, 'Código obrigatório'),
   name:        z.string().min(1, 'Nome obrigatório'),
   productType: z.enum(['BANANA_PRATA', 'BANANA_NANICA', 'PITAYA']),
+  siteId:      z.string().optional().nullable(),
   area:        z.number().positive().optional(),
   status:      z.enum(['ACTIVE', 'INACTIVE', 'MAINTENANCE']).default('ACTIVE'),
   notes:       z.string().optional(),
