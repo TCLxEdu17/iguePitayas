@@ -1,5 +1,43 @@
-import { offlineDb } from './db'
+import { offlineDb, type LocalSite } from './db'
 import { getApiUrl } from '@/lib/api-url'
+
+export async function cacheSite(siteId: string): Promise<void> {
+  try {
+    const res = await fetch(getApiUrl(`/api/sites/${siteId}`))
+    if (!res.ok) return
+    const site = await res.json()
+    const local: LocalSite = {
+      id:          site.id,
+      farmId:      site.farmId,
+      name:        site.name,
+      mapImageUrl: site.mapImageUrl ?? null,
+      plots:       (site.plots ?? []).map((p: any) => ({
+        id:          p.id,
+        siteId:      p.siteId ?? null,
+        farmId:      p.farmId,
+        code:        p.code,
+        name:        p.name,
+        area:        p.area ?? null,
+        productType: p.productType ?? null,
+        status:      p.status,
+        polygon:     p.polygon ?? null,
+        notes:       p.notes ?? null,
+      })),
+      cachedAt: Date.now(),
+    }
+    await offlineDb.sites.put(local)
+  } catch {
+    // network error — skip cache
+  }
+}
+
+export async function getCachedSite(siteId: string): Promise<LocalSite | undefined> {
+  try {
+    return await offlineDb.sites.get(siteId)
+  } catch {
+    return undefined
+  }
+}
 
 export async function getPendingCount(): Promise<number> {
   const [activities, harvests] = await Promise.all([

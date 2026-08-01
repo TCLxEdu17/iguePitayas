@@ -21,6 +21,7 @@ export async function GET(req: Request) {
     where: siteId ? { siteId } : {},
     orderBy: { code: 'asc' },
     include: {
+      site:   { select: { id: true, name: true } },
       _count: { select: { activities: true, harvests: true } },
     },
   })

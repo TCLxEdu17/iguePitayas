@@ -34,9 +34,15 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>
 
-export function ActivityForm() {
+interface ActivityFormProps {
+  defaultPlotId?: string
+  onSuccess?:     () => void
+}
+
+export function ActivityForm({ defaultPlotId, onSuccess }: ActivityFormProps = {}) {
   const router = useRouter()
   const { data: session } = useSession()
+  const isAdmin    = (session?.user as any)?.role === 'ADMIN'
   const setPending = useSyncStore(s => s.setPending)
   const [saved, setSaved] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -48,7 +54,10 @@ export function ActivityForm() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema) as any,
-    defaultValues: { date: new Date().toISOString().split('T')[0] },
+    defaultValues: {
+      date:   new Date().toISOString().split('T')[0],
+      plotId: defaultPlotId ?? '',
+    },
   })
 
   const selectedType = form.watch('type')
@@ -97,7 +106,11 @@ export function ActivityForm() {
     setPending(count)
     setSaving(false)
     setSaved(true)
-    setTimeout(() => router.back(), 1500)
+    if (onSuccess) {
+      setTimeout(onSuccess, 1500)
+    } else {
+      setTimeout(() => router.back(), 1500)
+    }
   }
 
   if (saved) return (
@@ -116,13 +129,15 @@ export function ActivityForm() {
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-lg">
       <div className="space-y-2">
         <Label htmlFor="plotId">Talhão *</Label>
-        <Select onValueChange={(v) => form.setValue('plotId', v)}>
+        <Select defaultValue={defaultPlotId} onValueChange={(v) => form.setValue('plotId', v)}>
           <SelectTrigger id="plotId">
             <SelectValue placeholder="Selecione o talhão" />
           </SelectTrigger>
           <SelectContent>
             {(plots ?? []).map((p: any) => (
-              <SelectItem key={p.id} value={p.id}>{p.code} — {p.name}</SelectItem>
+              <SelectItem key={p.id} value={p.id}>
+                {p.name}{p.site?.name ? ` — ${p.site.name}` : ''}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -185,16 +200,18 @@ export function ActivityForm() {
               </Select>
             </div>
           </div>
-          <div className="space-y-1">
-            <Label htmlFor="cost">
-              {isRevenue ? 'Valor recebido (R$)' : 'Custo (R$)'}
-            </Label>
-            <Input id="cost" type="number" step="0.01"
-              {...form.register('cost', { valueAsNumber: true })} placeholder="0,00" />
-            {isRevenue && (
-              <p className="text-xs text-green-600">Este valor será contabilizado como receita</p>
-            )}
-          </div>
+          {isAdmin && (
+            <div className="space-y-1">
+              <Label htmlFor="cost">
+                {isRevenue ? 'Valor recebido (R$)' : 'Custo (R$)'}
+              </Label>
+              <Input id="cost" type="number" step="0.01"
+                {...form.register('cost', { valueAsNumber: true })} placeholder="0,00" />
+              {isRevenue && (
+                <p className="text-xs text-green-600">Este valor será contabilizado como receita</p>
+              )}
+            </div>
+          )}
           <div className="space-y-1">
             <Label htmlFor="notes">Observações</Label>
             <Textarea id="notes" {...form.register('notes')} rows={2} />

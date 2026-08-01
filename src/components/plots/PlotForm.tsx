@@ -75,26 +75,6 @@ export function PlotForm({ defaultValues, plotId }: PlotFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="productType">Produto *</Label>
-        <Select
-          defaultValue={defaultValues?.productType}
-          onValueChange={(v) => form.setValue('productType', v as any)}
-        >
-          <SelectTrigger id="productType">
-            <SelectValue placeholder="Selecione o produto" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="BANANA_PRATA">Banana Prata</SelectItem>
-            <SelectItem value="BANANA_NANICA">Banana Nanica</SelectItem>
-            <SelectItem value="PITAYA">Pitaya</SelectItem>
-          </SelectContent>
-        </Select>
-        {form.formState.errors.productType && (
-          <p className="text-xs text-destructive">{form.formState.errors.productType.message}</p>
-        )}
-      </div>
-
-      <div className="space-y-2">
         <Label htmlFor="siteId">Sítio</Label>
         <Select
           defaultValue={defaultValues?.siteId ?? '__none__'}

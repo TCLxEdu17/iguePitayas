@@ -34,7 +34,7 @@ export default function SitiosPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {sites.map(site => (
-            <Link key={site.id} href={`/sitios/${site.id}`}>
+            <Link key={site.id} href={`/sitios/${site.id}/mapa`}>
               <div
                 className="rounded-xl p-5 border cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5"
                 style={{ backgroundColor: '#F5ECD7', borderColor: '#D4B896' }}
@@ -44,7 +44,7 @@ export default function SitiosPage() {
                   {site.name}
                 </h2>
                 <p className="text-sm mt-1" style={{ color: 'var(--color-accent)' }}>
-                  {site._count.plots} talhão{site._count.plots !== 1 ? 'ões' : ''}
+                  {site._count.plots} {site._count.plots !== 1 ? 'talhões' : 'talhão'}
                 </p>
                 <p className="text-xs mt-3 font-medium" style={{ color: 'var(--color-primary)' }}>
                   Ver mapa e talhões →

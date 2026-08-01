@@ -1,11 +1,14 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
+import { useSession } from 'next-auth/react'
 import { ProductBadge } from '@/components/ui/product-badge'
 import { UNIT_LABELS } from '@/types'
 import { getApiUrl } from '@/lib/api-url'
 
 export function HarvestList() {
+  const { data: session }             = useSession()
+  const isAdmin                       = (session?.user as any)?.role === 'ADMIN'
   const { data: harvests, isLoading } = useQuery({
     queryKey: ['harvests'],
     queryFn:  () => fetch(getApiUrl('/api/harvests')).then(r => r.json()),
@@ -23,7 +26,7 @@ export function HarvestList() {
 
   return (
     <div className="space-y-4">
-      {(harvests ?? []).length > 0 && (
+      {isAdmin && (harvests ?? []).length > 0 && (
         <div
           className="rounded-lg p-3 flex items-center justify-between text-sm"
           style={{ backgroundColor: 'color-mix(in srgb, var(--color-primary) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary) 20%, transparent)' }}
@@ -52,17 +55,21 @@ export function HarvestList() {
               <p className="text-xs text-muted-foreground">
                 {h.plot?.code} — {h.plot?.name}
               </p>
-              <p className="text-xs text-muted-foreground">
-                R$ {h.pricePerUnit?.toFixed(2)} / {UNIT_LABELS[h.unit] ?? h.unit}
-              </p>
+              {isAdmin && (
+                <p className="text-xs text-muted-foreground">
+                  R$ {h.pricePerUnit?.toFixed(2)} / {UNIT_LABELS[h.unit] ?? h.unit}
+                </p>
+              )}
             </div>
             <div className="text-right shrink-0">
               <p className="text-xs text-muted-foreground">
                 {new Date(h.date).toLocaleDateString('pt-BR')}
               </p>
-              <p className="text-sm font-bold" style={{ color: 'var(--color-primary)' }}>
-                R$ {h.totalRevenue?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-              </p>
+              {isAdmin && (
+                <p className="text-sm font-bold" style={{ color: 'var(--color-primary)' }}>
+                  R$ {h.totalRevenue?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                </p>
+              )}
             </div>
           </div>
         ))}

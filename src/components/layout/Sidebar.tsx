@@ -3,9 +3,11 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import { useQuery } from '@tanstack/react-query'
+import { getApiUrl } from '@/lib/api-url'
 import { cn } from '@/lib/utils'
 
-const NAV_ITEMS = [
+const ADMIN_NAV = [
   { label: 'Dashboard',   href: '/dashboard',            icon: '📊' },
   { label: 'Talhões',     href: '/talhoes',              icon: '🗺️' },
   { label: 'Atividades',  href: '/atividades/historico', icon: '📋' },
@@ -13,11 +15,12 @@ const NAV_ITEMS = [
   { label: 'Relatórios',  href: '/relatorios',           icon: '📈' },
 ]
 
-const SITE_ITEMS = [
-  { label: 'Sítio 1', href: '/sitios/site-1', icon: '🌿' },
-  { label: 'Sítio 2', href: '/sitios/site-2', icon: '🌿' },
-  { label: 'Sítio 3', href: '/sitios/site-3', icon: '🌿' },
+const OPERATOR_NAV = [
+  { label: 'Atividades',  href: '/atividades/historico', icon: '📋' },
+  { label: 'Produção',    href: '/producao/historico',   icon: '🍌' },
 ]
+
+interface Site { id: string; name: string }
 
 const ADMIN_ITEMS = [
   { label: 'Usuários',      href: '/admin/usuarios', icon: '👥' },
@@ -30,6 +33,13 @@ export function Sidebar() {
   const role       = session?.user?.role
   const isPrimary  = (session?.user as any)?.isPrimaryAdmin === true
 
+  const { data: sites = [] } = useQuery<Site[]>({
+    queryKey: ['sites'],
+    queryFn:  () => fetch(getApiUrl('/api/sites')).then(r => r.ok ? r.json() : []),
+    staleTime: 5 * 60 * 1000,
+  })
+
+  const navItems   = role === 'ADMIN' ? ADMIN_NAV : OPERATOR_NAV
   const adminItems = role === 'ADMIN' ? ADMIN_ITEMS : []
 
   function NavLink({ item }: { item: { label: string; href: string; icon: string } }) {
@@ -90,7 +100,7 @@ export function Sidebar() {
 
       {/* Navegação principal */}
       <nav className="flex flex-col gap-0.5">
-        {NAV_ITEMS.map(item => <NavLink key={item.href} item={item} />)}
+        {navItems.map(item => <NavLink key={item.href} item={item} />)}
       </nav>
 
       {/* Seção Sítios */}
@@ -99,7 +109,9 @@ export function Sidebar() {
           Sítios
         </p>
         <nav className="flex flex-col gap-0.5">
-          {SITE_ITEMS.map(item => <NavLink key={item.href} item={item} />)}
+          {sites.map(site => (
+            <NavLink key={site.id} item={{ label: site.name, href: `/sitios/${site.id}/mapa`, icon: '🌿' }} />
+          ))}
         </nav>
       </div>
 

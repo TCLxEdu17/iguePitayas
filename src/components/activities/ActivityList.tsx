@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
+import { useSession } from 'next-auth/react'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { ProductBadge } from '@/components/ui/product-badge'
@@ -10,6 +11,8 @@ import { getApiUrl } from '@/lib/api-url'
 
 export function ActivityList() {
   const [search, setSearch] = useState('')
+  const { data: session }   = useSession()
+  const isAdmin             = (session?.user as any)?.role === 'ADMIN'
 
   const { data: activities, isLoading } = useQuery({
     queryKey: ['activities'],
@@ -63,7 +66,7 @@ export function ActivityList() {
                 <p className="text-xs text-muted-foreground">
                   {new Date(a.date).toLocaleDateString('pt-BR')}
                 </p>
-                {a.cost != null && (
+                {isAdmin && a.cost != null && (
                   <p className="text-sm font-medium" style={{ color: 'var(--color-primary)' }}>
                     R$ {a.cost.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </p>

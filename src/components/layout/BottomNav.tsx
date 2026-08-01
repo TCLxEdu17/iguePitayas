@@ -2,9 +2,10 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { cn } from '@/lib/utils'
 
-const BOTTOM_ITEMS = [
+const ADMIN_ITEMS = [
   { label: 'Dashboard',  href: '/dashboard',            icon: '📊' },
   { label: 'Talhões',    href: '/talhoes',              icon: '🗺️' },
   { label: 'Registrar',  href: '/atividades/novo',      icon: '➕' },
@@ -12,8 +13,18 @@ const BOTTOM_ITEMS = [
   { label: 'Relatórios', href: '/relatorios',           icon: '📈' },
 ]
 
+const OPERATOR_ITEMS = [
+  { label: 'Sítios',     href: '/sitios',               icon: '🌿' },
+  { label: 'Registrar',  href: '/atividades/novo',      icon: '➕' },
+  { label: 'Atividades', href: '/atividades/historico', icon: '📋' },
+  { label: 'Produção',   href: '/producao/historico',   icon: '🍌' },
+]
+
 export function BottomNav() {
   const pathname = usePathname()
+  const { data: session } = useSession()
+  const role = (session?.user as any)?.role
+  const items = role === 'ADMIN' ? ADMIN_ITEMS : OPERATOR_ITEMS
 
   return (
     <nav
@@ -24,7 +35,7 @@ export function BottomNav() {
         paddingBottom: 'env(safe-area-inset-bottom)',
       }}
     >
-      {BOTTOM_ITEMS.map((item) => {
+      {items.map((item) => {
         const isActive = pathname.startsWith(item.href)
         return (
           <Link

@@ -6,12 +6,11 @@ import Link from 'next/link'
 import { getApiUrl } from '@/lib/api-url'
 
 interface Plot {
-  id:          string
-  code:        string
-  name:        string
-  area:        number | null
-  productType: string
-  status:      string
+  id:     string
+  code:   string
+  name:   string
+  area:   number | null
+  status: string
 }
 
 interface SiteDetail {
@@ -20,25 +19,19 @@ interface SiteDetail {
   plots: Plot[]
 }
 
-const PRODUCT_LABELS: Record<string, string> = {
-  BANANA_PRATA:  'Banana Prata',
-  BANANA_NANICA: 'Banana Nanica',
-  PITAYA:        'Pitaya',
-}
-
-const PRODUCT_COLORS: Record<string, string> = {
-  BANANA_PRATA:  '#8DB87A',
-  BANANA_NANICA: '#D4A843',
-  PITAYA:        '#E91E8C',
-}
 
 export default function SitePage() {
   const params = useParams()
   const id     = params.id as string
 
-  const { data: site, isLoading } = useQuery<SiteDetail>({
+  const { data: site, isLoading } = useQuery<SiteDetail | null>({
     queryKey: ['site', id],
-    queryFn:  () => fetch(getApiUrl(`/api/sites/${id}`)).then(r => r.json()),
+    queryFn:  async () => {
+      const r = await fetch(getApiUrl(`/api/sites/${id}`))
+      if (!r.ok) return null
+      const data = await r.json()
+      return { ...data, plots: data.plots ?? [] }
+    },
   })
 
   if (isLoading) {
@@ -62,7 +55,7 @@ export default function SitePage() {
             🌿 {site.name}
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            {site.plots.length} talhão{site.plots.length !== 1 ? 'ões' : ''} cadastrado{site.plots.length !== 1 ? 's' : ''}
+            {site.plots.length} {site.plots.length !== 1 ? 'talhões' : 'talhão'} cadastrado{site.plots.length !== 1 ? 's' : ''}
           </p>
         </div>
         <Link
@@ -95,18 +88,12 @@ export default function SitePage() {
                   <span className="font-mono text-xs font-bold" style={{ color: 'var(--color-accent)' }}>
                     {plot.code}
                   </span>
-                  <span
-                    className="text-xs px-2 py-0.5 rounded-full text-white"
-                    style={{ backgroundColor: PRODUCT_COLORS[plot.productType] ?? '#888' }}
-                  >
-                    {PRODUCT_LABELS[plot.productType] ?? plot.productType}
-                  </span>
                 </div>
                 <p className="font-semibold text-sm" style={{ color: 'var(--color-dark)' }}>
                   {plot.name}
                 </p>
                 {plot.area && (
-                  <p className="text-xs text-muted-foreground mt-1">{plot.area} ha</p>
+                  <p className="text-xs text-muted-foreground mt-1">{plot.area.toLocaleString('pt-BR')} pés</p>
                 )}
               </div>
             </Link>

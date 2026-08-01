@@ -90,7 +90,7 @@ model Plot {
   code        String
   name        String
   area        Float?
-  productType ProductType
+  productType ProductType?
   status      PlotStatus  @default(ACTIVE)
   polygon     Json?
   notes       String?

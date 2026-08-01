@@ -13,7 +13,7 @@ export async function GET() {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const sites = await db.site.findMany({
-    orderBy: { name: 'asc' },
+    orderBy: { createdAt: 'asc' },
     include: {
       _count: { select: { plots: true } },
     },

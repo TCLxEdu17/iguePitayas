@@ -4,6 +4,7 @@ import { Sidebar } from './Sidebar'
 import { BottomNav } from './BottomNav'
 import { SyncBadge } from './SyncBadge'
 import { PrimaryAdminEffects } from './PrimaryAdminEffects'
+import { VersionBadge } from './VersionBadge'
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
@@ -22,6 +23,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </main>
       </div>
       <BottomNav />
+      <VersionBadge />
     </div>
   )
 }

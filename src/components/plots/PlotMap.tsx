@@ -1,59 +1,106 @@
 'use client'
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { getApiUrl } from '@/lib/api-url'
+import { cacheSite, getCachedSite } from '@/lib/offline/sync'
 
-// Single dynamic import — avoids race conditions on mobile
 const KonvaMapInner = dynamic(() => import('./KonvaMapInner'), {
   ssr:     false,
   loading: () => <div className="w-full rounded-xl bg-muted animate-pulse" style={{ height: 400 }} />,
 })
 
 interface Point    { x: number; y: number }
-interface PlotData { id: string; code: string; name: string; productType: string; polygon: Point[] | null }
-interface FarmData { mapImageUrl?: string | null; plots: PlotData[] }
+interface PlotData { id: string; code: string; name: string; productType: string | null; polygon: Point[] | null; area?: number | null }
+interface SiteData { id: string; name: string; mapImageUrl?: string | null; plots: PlotData[] }
 
-async function fetchFarm(): Promise<FarmData | null> {
-  const res = await fetch(getApiUrl('/api/farm'))
-  if (!res.ok) return null
-  return res.json()
+async function fetchSite(siteId: string): Promise<SiteData | null> {
+  try {
+    const res = await fetch(getApiUrl(`/api/sites/${siteId}`))
+    if (!res.ok) return null
+    return res.json()
+  } catch {
+    return null
+  }
 }
 
-async function savePlotPolygon({ plotId, polygon }: { plotId: string; polygon: Point[] }) {
-  const res = await fetch(getApiUrl(`/api/plots/${plotId}`), {
+async function savePlotPolygon(plotId: string, polygon: Point[]) {
+  await fetch(getApiUrl(`/api/plots/${plotId}`), {
     method:  'PUT',
     headers: { 'Content-Type': 'application/json' },
     body:    JSON.stringify({ polygon }),
   })
-  return res.json()
 }
 
-export function PlotMap({ siteId }: { siteId?: string } = {}) {
-  const queryClient = useQueryClient()
+interface PlotMapProps {
+  siteId:         string
+  onSelectPlot?:  (plot: PlotData | null) => void
+}
 
-  const { data: farm, isLoading } = useQuery({
-    queryKey: ['farm'],
-    queryFn:  fetchFarm,
-  })
+export function PlotMap({ siteId, onSelectPlot }: PlotMapProps) {
+  const [site, setSite]       = useState<SiteData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving]   = useState(false)
 
-  const saveMutation = useMutation({
-    mutationFn: savePlotPolygon,
-    onSuccess:  () => queryClient.invalidateQueries({ queryKey: ['farm', 'plots'] }),
-  })
+  useEffect(() => {
+    let cancelled = false
 
-  if (isLoading) return (
-    <div className="w-full rounded-xl bg-muted animate-pulse" style={{ height: 400 }} />
-  )
+    async function load() {
+      setLoading(true)
 
-  const plots = farm?.plots ?? []
+      // Try online first
+      const online = await fetchSite(siteId)
+      if (online) {
+        if (!cancelled) setSite(online)
+        // Cache for offline use
+        await cacheSite(siteId)
+      } else {
+        // Fallback to offline cache
+        const cached = await getCachedSite(siteId)
+        if (!cancelled && cached) {
+          setSite({
+            id:          cached.id,
+            name:        cached.name,
+            mapImageUrl: cached.mapImageUrl,
+            plots:       cached.plots,
+          })
+        }
+      }
+
+      if (!cancelled) setLoading(false)
+    }
+
+    load()
+    return () => { cancelled = true }
+  }, [siteId])
+
+  if (loading) return <div className="w-full rounded-xl bg-muted animate-pulse" style={{ height: 400 }} />
+
+  async function handleSave(plotId: string, polygon: Point[]) {
+    setSaving(true)
+    await savePlotPolygon(plotId, polygon)
+    // Refresh site data and update cache
+    const updated = await fetchSite(siteId)
+    if (updated) {
+      setSite(updated)
+      await cacheSite(siteId)
+    }
+    setSaving(false)
+  }
+
+  function handleSelectPlot(plotId: string | null) {
+    if (!onSelectPlot) return
+    const plot = plotId ? (site?.plots ?? []).find(p => p.id === plotId) ?? null : null
+    onSelectPlot(plot)
+  }
 
   return (
     <KonvaMapInner
-      plots={plots}
-      mapImageUrl={farm?.mapImageUrl}
-      onSave={(plotId, polygon) => saveMutation.mutate({ plotId, polygon })}
-      saving={saveMutation.isPending}
+      plots={site?.plots ?? []}
+      mapImageUrl={site?.mapImageUrl}
+      onSave={handleSave}
+      saving={saving}
+      onSelectPlot={onSelectPlot ? handleSelectPlot : undefined}
     />
   )
 }
