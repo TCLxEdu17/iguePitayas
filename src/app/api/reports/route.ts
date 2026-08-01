@@ -51,7 +51,7 @@ export async function GET(req: Request) {
   // Group harvests by product type
   const byProduct: Record<string, { quantity: number; revenue: number; count: number }> = {}
   for (const h of harvests) {
-    const pt = h.plot.productType
+    const pt = h.plot.productType ?? 'SEM_TIPO'
     if (!byProduct[pt]) byProduct[pt] = { quantity: 0, revenue: 0, count: 0 }
     byProduct[pt].quantity += h.quantity
     byProduct[pt].revenue  += h.totalRevenue
