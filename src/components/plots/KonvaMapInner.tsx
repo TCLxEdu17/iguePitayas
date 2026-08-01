@@ -24,12 +24,12 @@ function autoLayout(plots: PlotData[], stageW: number, stageH: number) {
   const noPolygon = plots.filter(p => !p.polygon || p.polygon.length < 3)
   if (!noPolygon.length) return {}
 
-  const COLS   = Math.min(4, noPolygon.length)
-  const PAD    = 36
-  const GAP    = 12
+  const COLS   = Math.min(3, noPolygon.length)
+  const PAD    = 24
+  const GAP    = 8
   const totalW = stageW - PAD * 2
   const cellW  = (totalW - GAP * (COLS - 1)) / COLS
-  const cellH  = Math.min(110, (stageH - PAD * 2 - 50) / Math.ceil(noPolygon.length / COLS))
+  const cellH  = Math.min(90, (stageH - PAD * 2 - 40) / Math.ceil(noPolygon.length / COLS))
 
   const rects: Record<string, { x: number; y: number; w: number; h: number }> = {}
   noPolygon.forEach((plot, i) => {
@@ -37,7 +37,7 @@ function autoLayout(plots: PlotData[], stageW: number, stageH: number) {
     const row = Math.floor(i / COLS)
     rects[plot.id] = {
       x: PAD + col * (cellW + GAP),
-      y: PAD + 40 + row * (cellH + GAP),
+      y: PAD + 30 + row * (cellH + GAP),
       w: cellW,
       h: cellH,
     }
@@ -48,7 +48,7 @@ function autoLayout(plots: PlotData[], stageW: number, stageH: number) {
 function useMapImage(url: string | null | undefined) {
   const [image, setImage] = useState<HTMLImageElement | null>(null)
   useEffect(() => {
-    if (!url) return
+    if (!url) { setImage(null); return }
     const img = new window.Image()
     img.crossOrigin = 'anonymous'
     img.src = url
@@ -74,9 +74,9 @@ interface Props {
 export default function KonvaMapInner({ plots, mapImageUrl, onSave, saving, onSelectPlot }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const initW = typeof window !== 'undefined' ? Math.min(window.innerWidth - 32, 800) : 400
-  const initH = initW < 500 ? 360 : 480
-  const [stageSize, setStageSize]           = useState({ width: initW, height: initH })
+  const [containerW, setContainerW] = useState(
+    typeof window !== 'undefined' ? Math.min(window.innerWidth - 32, 800) : 360
+  )
   const [selectedPlotId, setSelectedPlotId] = useState<string | null>(null)
   const [hoveredPlotId, setHoveredPlotId]   = useState<string | null>(null)
   const [drawingPoints, setDrawingPoints]   = useState<Point[]>([])
@@ -85,14 +85,19 @@ export default function KonvaMapInner({ plots, mapImageUrl, onSave, saving, onSe
 
   const mapImage = useMapImage(mapImageUrl)
 
+  // Compute stage height: preserve image aspect ratio, fallback to 3:4 portrait for mobile
+  const stageHeight = mapImage
+    ? Math.round(containerW * (mapImage.naturalHeight / mapImage.naturalWidth))
+    : Math.round(containerW * 0.75)
+
+  const stageSize = { width: containerW, height: stageHeight }
+
   useEffect(() => {
     function measure() {
       const el = containerRef.current
       if (!el) return
       const w = el.offsetWidth || el.getBoundingClientRect().width
-      if (!w) return
-      const h = w < 500 ? 360 : 480
-      setStageSize({ width: w, height: h })
+      if (w > 0) setContainerW(w)
     }
     measure()
     const raf = requestAnimationFrame(measure)
@@ -100,6 +105,15 @@ export default function KonvaMapInner({ plots, mapImageUrl, onSave, saving, onSe
     if (containerRef.current) obs.observe(containerRef.current)
     return () => { cancelAnimationFrame(raf); obs.disconnect() }
   }, [])
+
+  // Re-measure when image loads so height updates immediately
+  useEffect(() => {
+    if (!mapImage) return
+    const el = containerRef.current
+    if (!el) return
+    const w = el.offsetWidth || el.getBoundingClientRect().width
+    if (w > 0) setContainerW(w)
+  }, [mapImage])
 
   function handleStageClick(e: any) {
     if (!isDrawing || !drawingPlotId) return
@@ -129,13 +143,12 @@ export default function KonvaMapInner({ plots, mapImageUrl, onSave, saving, onSe
   const autoRects = autoLayout(plots, stageSize.width, stageSize.height)
   const hasImage  = !!mapImageUrl && !!mapImage
   const colorMap  = Object.fromEntries(plots.map((p, i) => [p.id, plotColor(i)]))
-
   const selectedPlot = plots.find(p => p.id === selectedPlotId)
 
   return (
-    <div className="space-y-3">
-      {/* Dropdown de seleção */}
-      <div className="flex gap-2 items-center flex-wrap">
+    <div className="space-y-2">
+      {/* Controles — empilhados no mobile, linha no desktop */}
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:flex-wrap">
         <Select
           value={selectedPlotId ?? '__none__'}
           onValueChange={(v) => {
@@ -146,7 +159,7 @@ export default function KonvaMapInner({ plots, mapImageUrl, onSave, saving, onSe
             setDrawingPoints([])
           }}
         >
-          <SelectTrigger className="w-52">
+          <SelectTrigger className="w-full sm:w-56">
             <SelectValue placeholder="Selecionar talhão..." />
           </SelectTrigger>
           <SelectContent>
@@ -166,35 +179,37 @@ export default function KonvaMapInner({ plots, mapImageUrl, onSave, saving, onSe
           </SelectContent>
         </Select>
 
-        {selectedPlot && (
-          <span className="text-sm font-medium" style={{ color: colorMap[selectedPlot.id] }}>
-            {selectedPlot.name}
-            {selectedPlot.area ? ` · ${selectedPlot.area.toLocaleString('pt-BR')} pés` : ''}
-          </span>
-        )}
+        <div className="flex gap-2 flex-wrap">
+          {selectedPlot && (
+            <span className="text-sm font-medium self-center" style={{ color: colorMap[selectedPlot.id] }}>
+              {selectedPlot.name}
+              {selectedPlot.area ? ` · ${selectedPlot.area.toLocaleString('pt-BR')} pés` : ''}
+            </span>
+          )}
 
-        {selectedPlotId && !isDrawing && (
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => startDrawing(selectedPlotId)}
-            style={{ borderColor: colorMap[selectedPlotId], color: colorMap[selectedPlotId] }}
-          >
-            Marcar no mapa
-          </Button>
-        )}
+          {selectedPlotId && !isDrawing && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => startDrawing(selectedPlotId)}
+              style={{ borderColor: colorMap[selectedPlotId], color: colorMap[selectedPlotId] }}
+            >
+              Marcar no mapa
+            </Button>
+          )}
 
-        {isDrawing && drawingPoints.length >= 3 && (
-          <Button size="sm" onClick={finishDrawing} disabled={saving}
-            style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}>
-            ✓ Salvar
-          </Button>
-        )}
-        {isDrawing && (
-          <Button size="sm" variant="outline" onClick={() => { setIsDrawing(false); setDrawingPoints([]) }}>
-            Cancelar
-          </Button>
-        )}
+          {isDrawing && drawingPoints.length >= 3 && (
+            <Button size="sm" onClick={finishDrawing} disabled={saving}
+              style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}>
+              ✓ Salvar
+            </Button>
+          )}
+          {isDrawing && (
+            <Button size="sm" variant="outline" onClick={() => { setIsDrawing(false); setDrawingPoints([]) }}>
+              Cancelar
+            </Button>
+          )}
+        </div>
       </div>
 
       {isDrawing && (
@@ -203,12 +218,12 @@ export default function KonvaMapInner({ plots, mapImageUrl, onSave, saving, onSe
         </p>
       )}
 
-      {/* Canvas */}
+      {/* Canvas — largura 100%, altura pelo aspect ratio da imagem */}
       <div
         ref={containerRef}
         className="w-full rounded-xl overflow-hidden border"
         style={{
-          height: stageSize.height,
+          height: stageHeight,
           borderColor: '#d1e8d0',
           cursor: isDrawing ? 'crosshair' : 'default',
           backgroundColor: '#e8f5e0',
@@ -223,15 +238,20 @@ export default function KonvaMapInner({ plots, mapImageUrl, onSave, saving, onSe
           {/* Background */}
           <Layer>
             {hasImage ? (
-              <KonvaImage image={mapImage!} width={stageSize.width} height={stageSize.height} />
+              <KonvaImage
+                image={mapImage!}
+                x={0} y={0}
+                width={stageSize.width}
+                height={stageSize.height}
+              />
             ) : (
               <>
                 <Rect x={0} y={0} width={stageSize.width} height={stageSize.height} fill="#e8f5e0" />
                 {plots.length === 0 && (
                   <Text
                     x={stageSize.width / 2 - 120}
-                    y={stageSize.height / 2 - 20}
-                    text={'Nenhum talhão cadastrado ainda.'}
+                    y={stageSize.height / 2 - 10}
+                    text="Nenhum talhão cadastrado ainda."
                     fontSize={13}
                     fill="rgba(60,100,50,0.65)"
                     align="center"
@@ -242,13 +262,13 @@ export default function KonvaMapInner({ plots, mapImageUrl, onSave, saving, onSe
             )}
           </Layer>
 
-          {/* Auto-layout placeholders */}
+          {/* Auto-layout placeholders (talhões sem polígono) */}
           <Layer>
             {plots.map(plot => {
               if (plot.polygon && plot.polygon.length >= 3) return null
               const rect = autoRects[plot.id]
               if (!rect) return null
-              const color     = colorMap[plot.id]
+              const color      = colorMap[plot.id]
               const isSelected = plot.id === selectedPlotId
               return (
                 <Group
@@ -268,16 +288,16 @@ export default function KonvaMapInner({ plots, mapImageUrl, onSave, saving, onSe
                     shadowColor={isSelected ? color : undefined}
                     shadowBlur={isSelected ? 8 : 0}
                   />
-                  <Text x={rect.x + 8} y={rect.y + 8} text={plot.code}
-                    fontSize={13} fontStyle="bold" fill={color} />
-                  <Text x={rect.x + 8} y={rect.y + 26} text={plot.name}
-                    fontSize={9} fill={color + 'cc'} width={rect.w - 16} ellipsis />
+                  <Text x={rect.x + 6} y={rect.y + 6} text={plot.code}
+                    fontSize={12} fontStyle="bold" fill={color} />
+                  <Text x={rect.x + 6} y={rect.y + 22} text={plot.name}
+                    fontSize={9} fill={color + 'cc'} width={rect.w - 12} ellipsis />
                 </Group>
               )
             })}
           </Layer>
 
-          {/* Real polygons */}
+          {/* Polígonos reais */}
           <Layer>
             {plots.map(plot => {
               if (!plot.polygon || plot.polygon.length < 3) return null
@@ -290,29 +310,41 @@ export default function KonvaMapInner({ plots, mapImageUrl, onSave, saving, onSe
               return (
                 <Group
                   key={plot.id}
-                  onClick={() => { if (!isDrawing) { const id = selectedPlotId === plot.id ? null : plot.id; setSelectedPlotId(id); onSelectPlot?.(id) } }}
-                  onTap={() => { if (!isDrawing) { const id = selectedPlotId === plot.id ? null : plot.id; setSelectedPlotId(id); onSelectPlot?.(id) } }}
+                  onClick={() => {
+                    if (!isDrawing) {
+                      const id = selectedPlotId === plot.id ? null : plot.id
+                      setSelectedPlotId(id)
+                      onSelectPlot?.(id)
+                    }
+                  }}
+                  onTap={() => {
+                    if (!isDrawing) {
+                      const id = selectedPlotId === plot.id ? null : plot.id
+                      setSelectedPlotId(id)
+                      onSelectPlot?.(id)
+                    }
+                  }}
                   onMouseEnter={() => setHoveredPlotId(plot.id)}
                   onMouseLeave={() => setHoveredPlotId(null)}
                 >
                   <Line
                     points={flat}
                     closed
-                    fill={isSelected ? color + '88' : isHovered ? color + '66' : color + '44'}
+                    fill={isSelected ? color + '88' : isHovered ? color + '55' : color + '44'}
                     stroke={color}
-                    strokeWidth={isSelected ? 3 : 2}
+                    strokeWidth={isSelected ? 3 : 1.5}
                     shadowColor={isSelected ? color : undefined}
                     shadowBlur={isSelected ? 10 : 0}
                   />
                   <Text
-                    x={center.x - 40} y={center.y - 10}
+                    x={center.x - 30} y={center.y - 8}
                     text={plot.code}
-                    fontSize={isSelected ? 14 : 12}
+                    fontSize={isSelected ? 13 : 11}
                     fontStyle="bold"
                     fill="white"
                     align="center"
-                    width={80}
-                    shadowColor="rgba(0,0,0,0.6)"
+                    width={60}
+                    shadowColor="rgba(0,0,0,0.7)"
                     shadowBlur={3}
                     shadowOffsetX={1}
                     shadowOffsetY={1}
@@ -322,7 +354,7 @@ export default function KonvaMapInner({ plots, mapImageUrl, onSave, saving, onSe
             })}
           </Layer>
 
-          {/* Drawing in progress */}
+          {/* Desenho em progresso */}
           {drawingPoints.length > 0 && (
             <Layer>
               <Line points={drawingPoints.flatMap(p => [p.x, p.y])}
@@ -335,9 +367,9 @@ export default function KonvaMapInner({ plots, mapImageUrl, onSave, saving, onSe
         </Stage>
       </div>
 
-      {/* Legenda */}
+      {/* Legenda compacta — wrap no mobile */}
       {plots.length > 0 && (
-        <div className="flex gap-3 flex-wrap text-xs text-muted-foreground">
+        <div className="flex gap-2 flex-wrap text-xs text-muted-foreground pt-1">
           {plots.map(plot => {
             const color      = colorMap[plot.id]
             const hasPolygon = plot.polygon && plot.polygon.length >= 3
@@ -345,7 +377,11 @@ export default function KonvaMapInner({ plots, mapImageUrl, onSave, saving, onSe
             return (
               <button
                 key={plot.id}
-                onClick={() => { const id = selectedPlotId === plot.id ? null : plot.id; setSelectedPlotId(id); onSelectPlot?.(id) }}
+                onClick={() => {
+                  const id = selectedPlotId === plot.id ? null : plot.id
+                  setSelectedPlotId(id)
+                  onSelectPlot?.(id)
+                }}
                 className="flex items-center gap-1 hover:opacity-80 transition-opacity"
               >
                 <span
@@ -357,8 +393,7 @@ export default function KonvaMapInner({ plots, mapImageUrl, onSave, saving, onSe
                   }}
                 />
                 <span style={{ color, fontWeight: isSelected ? 700 : 400 }}>{plot.code}</span>
-                <span className="hidden sm:inline">{plot.name}</span>
-                {!hasPolygon && <span className="opacity-50">(sem mapa)</span>}
+                {!hasPolygon && <span className="opacity-40">(sem mapa)</span>}
               </button>
             )
           })}
