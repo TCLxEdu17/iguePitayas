@@ -3,17 +3,13 @@
 import { useState } from 'react'
 import { signIn, getSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useTypewriter } from '@/hooks/useTypewriter'
+import { WifiOff } from 'lucide-react'
+import Image from 'next/image'
 
 export default function LoginPage() {
   const router = useRouter()
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const { displayed: tagline, done: taglineDone } = useTypewriter('Gestão do sítio', 60, 400)
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -40,42 +36,179 @@ export default function LoginPage() {
 
   return (
     <div
-      className="flex min-h-screen items-center justify-center p-4"
-      style={{ backgroundColor: 'var(--color-surface)' }}
+      style={{
+        minHeight: '100svh',
+        background: 'linear-gradient(180deg, #FBF6EA 0%, #F1E6CC 100%)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '40px 26px',
+      }}
     >
-      <Card className="w-full max-w-sm">
-        <CardHeader className="text-center">
-          <div className="text-4xl mb-2">🍌</div>
-          <CardTitle style={{ color: 'var(--color-primary)' }} className="text-2xl">IGUE Bananas</CardTitle>
-          <p className="text-sm text-muted-foreground min-h-[1.25rem]">
-            {tagline}
-            {!taglineDone && (
-              <span className="inline-block w-0.5 h-3.5 ml-0.5 align-middle animate-pulse bg-current" />
-            )}
+      <div style={{ width: '100%', maxWidth: 400, display: 'flex', flexDirection: 'column', gap: 26 }}>
+        {/* Logo + heading */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
+          <div style={{ marginBottom: 18 }}>
+            <Image
+              src="/logo.png"
+              alt="IGUE Bananas"
+              width={62}
+              height={62}
+              style={{
+                borderRadius: '50%',
+                boxShadow: '0 8px 18px -8px rgba(31,46,21,.5)',
+                objectFit: 'cover',
+              }}
+            />
+          </div>
+          <h1
+            style={{
+              fontFamily: 'var(--font-bricolage)',
+              fontSize: 30,
+              fontWeight: 700,
+              color: '#1F2E15',
+              margin: 0,
+              lineHeight: 1.1,
+            }}
+          >
+            Bom dia.
+          </h1>
+          <p
+            style={{
+              fontSize: 15,
+              color: '#6B7A5A',
+              margin: '6px 0 0',
+              textAlign: 'center',
+            }}
+          >
+            Entre para lançar o dia no campo.
           </p>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" type="email" required autoFocus />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
-              <Input id="password" name="password" type="password" required />
-            </div>
-            {error && <p className="text-sm text-destructive">{error}</p>}
-            <Button
-              type="submit"
-              className="w-full text-white"
-              style={{ backgroundColor: 'var(--color-primary)' }}
-              disabled={loading}
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <label
+              htmlFor="email"
+              style={{
+                fontSize: 11,
+                fontWeight: 700,
+                color: '#6B7A5A',
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+              }}
             >
-              {loading ? 'Entrando...' : 'Entrar'}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+              E-MAIL
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              autoFocus
+              autoComplete="email"
+              style={{
+                height: 52,
+                borderRadius: 14,
+                border: '1.5px solid #DCCFB0',
+                background: '#FFFDF8',
+                padding: '0 16px',
+                fontSize: 16,
+                color: '#1F2E15',
+                outline: 'none',
+                width: '100%',
+                boxSizing: 'border-box',
+                transition: 'border-color 150ms ease',
+              }}
+              onFocus={e => (e.currentTarget.style.borderColor = '#3D5A2E')}
+              onBlur={e => (e.currentTarget.style.borderColor = '#DCCFB0')}
+            />
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <label
+              htmlFor="password"
+              style={{
+                fontSize: 11,
+                fontWeight: 700,
+                color: '#6B7A5A',
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+              }}
+            >
+              SENHA
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              autoComplete="current-password"
+              style={{
+                height: 52,
+                borderRadius: 14,
+                border: '1.5px solid #DCCFB0',
+                background: '#FFFDF8',
+                padding: '0 16px',
+                fontSize: 16,
+                color: '#1F2E15',
+                outline: 'none',
+                width: '100%',
+                boxSizing: 'border-box',
+                transition: 'border-color 150ms ease',
+              }}
+              onFocus={e => (e.currentTarget.style.borderColor = '#3D5A2E')}
+              onBlur={e => (e.currentTarget.style.borderColor = '#DCCFB0')}
+            />
+          </div>
+
+          {error && (
+            <p style={{ fontSize: 12, color: '#C0392B', margin: 0 }}>{error}</p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              height: 56,
+              borderRadius: 16,
+              background: loading ? '#6E8F4E' : '#3D5A2E',
+              border: 'none',
+              color: '#FBF6EA',
+              fontFamily: 'var(--font-bricolage)',
+              fontSize: 17,
+              fontWeight: 700,
+              cursor: loading ? 'not-allowed' : 'pointer',
+              boxShadow: '0 10px 20px -8px rgba(31,46,21,.6)',
+              transition: 'background 150ms ease',
+              width: '100%',
+            }}
+            onMouseEnter={e => { if (!loading) e.currentTarget.style.background = '#2E4522' }}
+            onMouseLeave={e => { if (!loading) e.currentTarget.style.background = '#3D5A2E' }}
+          >
+            {loading ? 'Entrando...' : 'Entrar'}
+          </button>
+        </form>
+
+        {/* Offline notice */}
+        <div
+          style={{
+            borderRadius: 14,
+            background: 'rgba(193,122,74,.12)',
+            border: '1px solid rgba(193,122,74,.25)',
+            padding: '12px 14px',
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: 10,
+          }}
+        >
+          <WifiOff size={17} color="#A8632F" style={{ flexShrink: 0, marginTop: 1 }} />
+          <p style={{ fontSize: 12.5, color: '#7A4A22', margin: 0, lineHeight: 1.4 }}>
+            Sem sinal? Você entra com o último acesso e tudo fica salvo no aparelho.
+          </p>
+        </div>
+      </div>
     </div>
   )
 }

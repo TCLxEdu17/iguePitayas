@@ -30,5 +30,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", "prisma/seed.ts", "implementacao"]
+  "exclude": ["node_modules", "prisma/seed.ts", "implementacao", "design_handoff_mobile_redesign"]
 }
