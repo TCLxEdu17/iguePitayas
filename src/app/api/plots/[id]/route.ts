@@ -42,12 +42,13 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 })
   }
 
-  const plot = await db.plot.update({
-    where: { id },
-    data:  parsed.data,
-  })
-
-  return NextResponse.json(plot)
+  try {
+    const plot = await db.plot.update({ where: { id }, data: parsed.data })
+    return NextResponse.json(plot)
+  } catch (e: any) {
+    if (e?.code === 'P2025') return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    throw e
+  }
 }
 
 export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -58,6 +59,11 @@ export async function DELETE(_: Request, { params }: { params: Promise<{ id: str
   }
 
   const { id } = await params
-  await db.plot.delete({ where: { id } })
+  try {
+    await db.plot.delete({ where: { id } })
+  } catch (e: any) {
+    if (e?.code === 'P2025') return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    throw e
+  }
   return new NextResponse(null, { status: 204 })
 }

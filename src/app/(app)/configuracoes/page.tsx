@@ -11,7 +11,7 @@ import { useSyncStore } from '@/stores/sync.store'
 import { getApiUrl } from '@/lib/api-url'
 import { syncAll, getPendingCount } from '@/lib/offline/sync'
 
-const APP_VERSION = '0.0.8'
+const APP_VERSION = '0.1.2'
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (

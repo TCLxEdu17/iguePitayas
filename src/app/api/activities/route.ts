@@ -62,8 +62,9 @@ export async function POST(req: Request) {
   const activity = await db.activity.create({
     data: {
       ...parsed.data,
-      date:   new Date(parsed.data.date),
-      userId: session.user.id ?? 'system',
+      date:       new Date(parsed.data.date),
+      userId:     session.user.id ?? 'system',
+      syncStatus: 'SYNCED',
     },
     include: { plot: { select: { name: true } } },
   })

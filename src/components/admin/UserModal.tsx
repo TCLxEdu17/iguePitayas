@@ -2,23 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { getApiUrl } from '@/lib/api-url'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { X } from 'lucide-react'
 
 type UserRole = 'ADMIN' | 'OPERATOR' | 'VIEWER'
 
@@ -40,18 +24,40 @@ interface Props {
 
 const isEditMode = (user?: User | null): user is User => !!user
 
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  height: 50,
+  borderRadius: 13,
+  border: '1.5px solid #EDE3CC',
+  background: '#FFFDF8',
+  padding: '0 14px',
+  fontSize: 15,
+  color: '#1F2E15',
+  outline: 'none',
+  boxSizing: 'border-box',
+}
+
+const labelStyle: React.CSSProperties = {
+  fontSize: 11.5,
+  fontWeight: 700,
+  color: '#9AA88A',
+  textTransform: 'uppercase',
+  letterSpacing: '0.12em',
+  display: 'block',
+  marginBottom: 6,
+}
+
 export function UserModal({ open, onOpenChange, user, onSuccess }: Props) {
   const editMode = isEditMode(user)
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [role, setRole] = useState<UserRole>('VIEWER')
+  const [role, setRole] = useState<UserRole>('OPERATOR')
   const [active, setActive] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Populate form when user changes (edit mode) or reset when creating
   useEffect(() => {
     if (editMode) {
       setName(user.name)
@@ -63,7 +69,7 @@ export function UserModal({ open, onOpenChange, user, onSuccess }: Props) {
       setName('')
       setEmail('')
       setPassword('')
-      setRole('VIEWER')
+      setRole('OPERATOR')
       setActive(true)
     }
     setError(null)
@@ -75,12 +81,8 @@ export function UserModal({ open, onOpenChange, user, onSuccess }: Props) {
     setError(null)
 
     const body: Record<string, unknown> = { name, email, role }
-    if (!editMode || password) {
-      body.password = password
-    }
-    if (editMode) {
-      body.active = active
-    }
+    if (!editMode || password) body.password = password
+    if (editMode) body.active = active
 
     try {
       const url = editMode
@@ -109,106 +111,161 @@ export function UserModal({ open, onOpenChange, user, onSuccess }: Props) {
     }
   }
 
+  if (!open) return null
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{editMode ? 'Editar Usuário' : 'Novo Usuário'}</DialogTitle>
-        </DialogHeader>
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 200,
+        background: 'rgba(15, 22, 8, 0.72)',
+        display: 'flex',
+        alignItems: 'flex-end',
+      }}
+      onClick={() => onOpenChange(false)}
+    >
+      <div
+        style={{
+          width: '100%',
+          background: '#FDFAF3',
+          borderRadius: '24px 24px 0 0',
+          padding: '0 20px',
+          paddingBottom: 'calc(env(safe-area-inset-bottom) + 28px)',
+          maxHeight: '92dvh',
+          overflowY: 'auto',
+        }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* handle */}
+        <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 12, marginBottom: 4 }}>
+          <div style={{ width: 36, height: 4, borderRadius: 2, background: '#DDD5C0' }} />
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="user-name">Nome *</Label>
-            <Input
-              id="user-name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Nome completo"
-              required
-            />
-          </div>
+        {/* header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 8, paddingBottom: 20 }}>
+          <p style={{ fontFamily: 'var(--font-bricolage)', fontSize: 20, fontWeight: 700, color: '#1F2E15', margin: 0 }}>
+            {editMode ? 'Editar usuário' : 'Novo usuário'}
+          </p>
+          <button
+            onClick={() => onOpenChange(false)}
+            style={{ width: 34, height: 34, borderRadius: 11, border: '1.5px solid #EDE3CC', background: '#FFFDF8', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+          >
+            <X size={16} color="#6B7A5A" />
+          </button>
+        </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="user-email">Email *</Label>
-            <Input
-              id="user-email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="email@exemplo.com"
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="user-password">
-              Senha {editMode ? '' : '*'}
-            </Label>
-            <Input
-              id="user-password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder={editMode ? 'Deixar em branco para manter' : 'Senha'}
-              required={!editMode}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="user-role">Perfil *</Label>
-            <Select value={role} onValueChange={(v) => setRole(v as UserRole)}>
-              <SelectTrigger id="user-role">
-                <SelectValue placeholder="Selecione o perfil" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ADMIN">Admin</SelectItem>
-                <SelectItem value="OPERATOR">Operador</SelectItem>
-                <SelectItem value="VIEWER">Visualizador</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {editMode && (
-            <div className="space-y-2">
-              <Label htmlFor="user-active">Status</Label>
-              <Select
-                value={active ? 'true' : 'false'}
-                onValueChange={(v) => setActive(v === 'true')}
-              >
-                <SelectTrigger id="user-active">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="true">Ativo</SelectItem>
-                  <SelectItem value="false">Inativo</SelectItem>
-                </SelectContent>
-              </Select>
+        <form onSubmit={handleSubmit}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div>
+              <label style={labelStyle}>Nome *</label>
+              <input
+                style={inputStyle}
+                value={name}
+                onChange={e => setName(e.target.value)}
+                placeholder="Nome completo"
+                required
+              />
             </div>
-          )}
 
-          {error && (
-            <p className="text-sm text-destructive">{error}</p>
-          )}
+            <div>
+              <label style={labelStyle}>Email *</label>
+              <input
+                style={inputStyle}
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="email@exemplo.com"
+                required
+              />
+            </div>
 
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              disabled={loading}
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}
-              disabled={loading}
-            >
-              {loading ? 'Salvando...' : 'Salvar'}
-            </Button>
-          </DialogFooter>
+            <div>
+              <label style={labelStyle}>Senha {!editMode && '*'}</label>
+              <input
+                style={inputStyle}
+                type="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder={editMode ? 'Deixar em branco para manter' : 'Senha'}
+                required={!editMode}
+              />
+            </div>
+
+            <div>
+              <label style={labelStyle}>Perfil *</label>
+              <select
+                style={{ ...inputStyle, appearance: 'none', cursor: 'pointer' }}
+                value={role}
+                onChange={e => setRole(e.target.value as UserRole)}
+                required
+              >
+                <option value="ADMIN">Admin</option>
+                <option value="OPERATOR">Operador</option>
+                <option value="VIEWER">Visualizador</option>
+              </select>
+            </div>
+
+            {editMode && (
+              <div>
+                <label style={labelStyle}>Status</label>
+                <select
+                  style={{ ...inputStyle, appearance: 'none', cursor: 'pointer' }}
+                  value={active ? 'true' : 'false'}
+                  onChange={e => setActive(e.target.value === 'true')}
+                >
+                  <option value="true">Ativo</option>
+                  <option value="false">Inativo</option>
+                </select>
+              </div>
+            )}
+
+            {error && (
+              <p style={{ fontSize: 13, color: '#C0392B', margin: 0 }}>{error}</p>
+            )}
+
+            <div style={{ display: 'flex', gap: 10, paddingTop: 4 }}>
+              <button
+                type="button"
+                onClick={() => onOpenChange(false)}
+                disabled={loading}
+                style={{
+                  flex: 1,
+                  height: 50,
+                  borderRadius: 14,
+                  border: '1.5px solid #EDE3CC',
+                  background: '#FFFDF8',
+                  fontSize: 15,
+                  fontWeight: 700,
+                  color: '#6B7A5A',
+                  cursor: 'pointer',
+                  opacity: loading ? 0.5 : 1,
+                }}
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                disabled={loading}
+                style={{
+                  flex: 1,
+                  height: 50,
+                  borderRadius: 14,
+                  border: 'none',
+                  background: '#2C3E1F',
+                  fontSize: 15,
+                  fontWeight: 700,
+                  color: '#F5ECD7',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  opacity: loading ? 0.6 : 1,
+                }}
+              >
+                {loading ? 'Salvando…' : 'Salvar'}
+              </button>
+            </div>
+          </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   )
 }

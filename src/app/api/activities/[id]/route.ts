@@ -27,14 +27,20 @@ export async function PUT(
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 })
   }
 
-  const activity = await db.activity.update({
-    where: { id },
-    data:  {
-      ...parsed.data,
-      ...(parsed.data.date ? { date: new Date(parsed.data.date) } : {}),
-    },
-    include: { plot: { select: { name: true } } },
-  })
+  let activity
+  try {
+    activity = await db.activity.update({
+      where: { id },
+      data: {
+        ...parsed.data,
+        ...(parsed.data.date ? { date: new Date(parsed.data.date) } : {}),
+      },
+      include: { plot: { select: { name: true } } },
+    })
+  } catch (e: any) {
+    if (e?.code === 'P2025') return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    throw e
+  }
 
   const description = `${session.user.name ?? session.user.email} editou atividade ${activity.type} no ${activity.plot?.name ?? 'talhão'}`
   await logAction({ userId: session.user.id, action: 'EDIT_ACTIVITY', entityType: 'Activity', entityId: id, description })
@@ -60,6 +66,8 @@ export async function DELETE(
     where: { id },
     include: { plot: { select: { name: true } } },
   })
+
+  if (!activity) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   await db.activity.delete({ where: { id } })
 
