@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { useQuery } from '@tanstack/react-query'
@@ -10,7 +10,7 @@ import { offlineDb } from '@/lib/offline/db'
 import { useSyncStore } from '@/stores/sync.store'
 import { getPendingCount } from '@/lib/offline/sync'
 import { getApiUrl } from '@/lib/api-url'
-import { ACTIVITY_TYPES, ACTIVITY_LABELS, ACTIVITY_COLORS, UNITS, UNIT_LABELS } from '@/types'
+import { ACTIVITY_TYPES, ACTIVITY_LABELS, ACTIVITY_COLORS, UNITS, UNIT_LABELS, ACTIVITY_DEFAULT_UNIT, unitLabel } from '@/types'
 import type { ActivityType, Unit } from '@/types'
 import { ACTIVITY_ICONS } from '@/lib/activity-icons'
 
@@ -31,9 +31,21 @@ export function ActivityForm() {
   const [dia, setDia] = useState<string>('hoje')
   const [dataManual, setDataManual] = useState(new Date().toISOString().slice(0, 10))
   const [qtd, setQtd] = useState(0)
-  const [unidade, setUnidade] = useState<Unit>('CAIXA')
-  const [responsavel, setResponsavel] = useState(session?.user?.name ?? '')
+  const [unidade, setUnidade] = useState<Unit>(ACTIVITY_DEFAULT_UNIT['PULVERIZACAO'])
+  const [responsavel, setResponsavel] = useState('')
   const [notas, setNotas] = useState('')
+
+  // session carrega async — atualiza responsável assim que o nome estiver disponível
+  useEffect(() => {
+    if (session?.user?.name && !responsavel) {
+      setResponsavel(session.user.name)
+    }
+  }, [session?.user?.name])
+
+  // ao trocar o tipo, sugere a unidade padrão
+  useEffect(() => {
+    setUnidade(ACTIVITY_DEFAULT_UNIT[tipo])
+  }, [tipo])
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
 
@@ -252,7 +264,7 @@ export function ActivityForm() {
           <div className="animate-rise-in">
             <p className="font-display text-2xl font-bold" style={{ color: 'var(--color-surface)' }}>Lançado</p>
             <p className="mt-2 text-[14.5px]" style={{ color: 'rgba(245,236,215,.7)' }}>
-              {ACTIVITY_LABELS[tipo]}{qtd ? ` · ${qtd} ${UNIT_LABELS[unidade]}` : ''}
+              {ACTIVITY_LABELS[tipo]}{qtd ? ` · ${qtd} ${unitLabel(unidade, qtd)}` : ''}
             </p>
           </div>
           <button onClick={() => router.push('/mapa')} className="mt-1.5 rounded-[14px] px-6 py-3.5 text-[15px] font-bold"

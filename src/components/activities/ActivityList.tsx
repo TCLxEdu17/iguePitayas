@@ -3,7 +3,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import { useState, useEffect } from 'react'
-import { ACTIVITY_LABELS, ACTIVITY_COLORS, UNIT_LABELS } from '@/types'
+import { ACTIVITY_LABELS, ACTIVITY_COLORS, unitLabel } from '@/types'
+import type { Unit } from '@/types'
 import { ACTIVITY_ICONS } from '@/lib/activity-icons'
 import { getApiUrl } from '@/lib/api-url'
 
@@ -61,7 +62,7 @@ function OperatorItem({ activity }: { activity: any }) {
   const siteName = activity.plot?.site?.name ?? ''
   const plotName = activity.plot?.name ?? activity.plot?.code ?? ''
   const location = [siteName, plotName].filter(Boolean).join(' · ')
-  const qty = activity.quantity != null ? `${activity.quantity} ${activity.unit ? (UNIT_LABELS[activity.unit as keyof typeof UNIT_LABELS] ?? activity.unit) : ''}` : '—'
+  const qty = activity.quantity != null ? `${activity.quantity} ${activity.unit ? (unitLabel(activity.unit as Unit, activity.quantity ?? 1)) : ''}` : '—'
 
   return (
     <div
@@ -121,7 +122,7 @@ function AdminItem({ activity }: { activity: any }) {
   const siteName = activity.plot?.site?.name ?? ''
   const plotName = activity.plot?.name ?? activity.plot?.code ?? ''
   const location = [siteName, plotName].filter(Boolean).join(' · ')
-  const qty = activity.quantity != null ? `${activity.quantity} ${activity.unit ? (UNIT_LABELS[activity.unit as keyof typeof UNIT_LABELS] ?? activity.unit) : ''}` : '—'
+  const qty = activity.quantity != null ? `${activity.quantity} ${activity.unit ? (unitLabel(activity.unit as Unit, activity.quantity ?? 1)) : ''}` : '—'
   const cost = activity.cost != null ? `R$ ${activity.cost.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : null
 
   return (

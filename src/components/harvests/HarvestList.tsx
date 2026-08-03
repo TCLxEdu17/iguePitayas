@@ -3,7 +3,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import { ProductBadge } from '@/components/ui/product-badge'
-import { UNIT_LABELS } from '@/types'
+import { unitLabel } from '@/types'
+import type { Unit } from '@/types'
 import { getApiUrl } from '@/lib/api-url'
 
 export function HarvestList() {
@@ -48,7 +49,7 @@ export function HarvestList() {
             <div className="space-y-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-medium text-sm">
-                  {h.quantity} {UNIT_LABELS[h.unit as keyof typeof UNIT_LABELS] ?? h.unit}(s)
+                  {h.quantity} {unitLabel(h.unit as Unit, h.quantity)}
                 </span>
                 {h.plot && <ProductBadge productType={h.plot.productType} />}
               </div>
@@ -57,7 +58,7 @@ export function HarvestList() {
               </p>
               {isAdmin && (
                 <p className="text-xs text-muted-foreground">
-                  R$ {h.pricePerUnit?.toFixed(2)} / {UNIT_LABELS[h.unit as keyof typeof UNIT_LABELS] ?? h.unit}
+                  R$ {h.pricePerUnit?.toFixed(2)} / {unitLabel(h.unit as Unit, 1)}
                 </p>
               )}
             </div>

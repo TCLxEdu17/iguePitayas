@@ -14,6 +14,22 @@ export const UNIT_LABELS: Record<Unit, string> = {
   TONELADA: 'tonelada',
 }
 
+const UNIT_PLURAL_LABELS: Record<Unit, string> = {
+  KG: 'kg',
+  CAIXA: 'caixas',
+  CACHO: 'cachos',
+  PENCA: 'pencas',
+  DUZIA: 'dúzias',
+  UNIDADE: 'unidades',
+  SACO: 'sacos',
+  TONELADA: 'toneladas',
+}
+
+/** Returns singular for qty=1, plural otherwise */
+export function unitLabel(unit: Unit, qty: number): string {
+  return qty === 1 ? UNIT_LABELS[unit] : UNIT_PLURAL_LABELS[unit]
+}
+
 export const ACTIVITY_TYPES = [
   'PULVERIZACAO', 'ADUBACAO', 'ROCAGEM', 'DESFOLHA', 'DESBASTE', 'ENSACAMENTO',
   'ESCORA', 'IRRIGACAO', 'RETIRADA_BANANA', 'RETIRADA_CAIXAS', 'PLANTIO', 'OUTRO',
@@ -64,3 +80,19 @@ export const PRODUCT_COLORS = {
 
 // Activity types that generate revenue (sale/withdrawal), not expense
 export const REVENUE_ACTIVITY_TYPES = ['RETIRADA_CAIXAS', 'RETIRADA_BANANA'] as const
+
+/** Suggested default unit for each activity type */
+export const ACTIVITY_DEFAULT_UNIT: Record<ActivityType, Unit> = {
+  PULVERIZACAO:    'UNIDADE',
+  ADUBACAO:        'SACO',
+  ROCAGEM:         'UNIDADE',
+  DESFOLHA:        'UNIDADE',
+  DESBASTE:        'CACHO',
+  ENSACAMENTO:     'CACHO',
+  ESCORA:          'UNIDADE',
+  IRRIGACAO:       'UNIDADE',
+  RETIRADA_BANANA: 'CACHO',
+  RETIRADA_CAIXAS: 'CAIXA',
+  PLANTIO:         'UNIDADE',
+  OUTRO:           'UNIDADE',
+}

@@ -6,8 +6,8 @@ import {
   TrendingUp, Wallet, ClipboardList, Sprout, WifiOff, Clock, TriangleAlert, Sun, Droplet,
 } from 'lucide-react'
 import { getApiUrl } from '@/lib/api-url'
-import { ACTIVITY_LABELS, ACTIVITY_COLORS, UNIT_LABELS } from '@/types'
-import type { ActivityType } from '@/types'
+import { ACTIVITY_LABELS, ACTIVITY_COLORS, unitLabel } from '@/types'
+import type { ActivityType, Unit } from '@/types'
 import { ACTIVITY_ICONS } from '@/lib/activity-icons'
 
 const brl = (n: number) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })
@@ -112,7 +112,7 @@ export function AdminDashboard() {
                   </p>
                   {a.quantity != null && (
                     <p className="mt-1 text-[12.5px] font-bold" style={{ color }}>
-                      {a.quantity.toLocaleString('pt-BR')} {a.unit ? UNIT_LABELS[a.unit as keyof typeof UNIT_LABELS] : ''}
+                      {a.quantity.toLocaleString('pt-BR')} {a.unit ? unitLabel(a.unit as Unit, a.quantity) : ''}
                     </p>
                   )}
                 </div>

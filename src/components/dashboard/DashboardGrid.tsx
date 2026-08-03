@@ -4,8 +4,8 @@ import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { KPICard } from './KPICard'
 import { Button } from '@/components/ui/button'
-import { ACTIVITY_LABELS, UNIT_LABELS } from '@/types'
-import type { ActivityType } from '@/types'
+import { ACTIVITY_LABELS, unitLabel } from '@/types'
+import type { ActivityType, Unit } from '@/types'
 import { getApiUrl } from '@/lib/api-url'
 import { WeatherWidget } from './WeatherWidget'
 import { DailyTipCard } from './DailyTipCard'
@@ -101,7 +101,7 @@ function RecentActivityCard({ a, isAdmin }: { a: any; isAdmin: boolean }) {
                 <span className="text-muted-foreground">Quantidade</span>
                 <p className="font-medium">
                   {a.quantity.toLocaleString('pt-BR')}
-                  {a.unit ? ` ${UNIT_LABELS[a.unit as keyof typeof UNIT_LABELS] ?? a.unit}` : ''}
+                  {a.unit ? ` ${unitLabel(a.unit as Unit, a.quantity ?? 1)}` : ''}
                 </p>
               </div>
             )}
