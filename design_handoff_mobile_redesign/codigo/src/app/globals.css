@@ -1,0 +1,74 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Campo & Natureza — revisado no redesign mobile-first */
+@theme {
+  --color-canopy:             #1F2E15;
+  --color-primary:            #3D5A2E;
+  --color-primary-foreground: #FBF6EA;
+  --color-leaf:               #6E8F4E;
+  --color-leaf-light:         #8DB87A;
+
+  --color-accent:             #C17A4A;
+  --color-accent-dark:        #A8632F;
+  --color-gold:               #D4A843;
+
+  --color-paper:              #FBF6EA;
+  --color-surface:            #F5ECD7;
+  --color-line:               #E8DDC2;
+  --color-line-strong:        #DCCFB0;
+  --color-ink:                #1F2E15;
+  --color-ink-soft:           #6B7A5A;
+  --color-ink-faint:          #9AA88A;
+
+  --color-banana-prata:  #8DB87A;
+  --color-banana-nanica: #D4A843;
+  --color-pitaya:        #E91E8C;
+
+  --color-sync-pending:  #F39C12;
+  --color-sync-conflict: #C0392B;
+  --color-sync-synced:   #6E8F4E;
+
+  --font-sans:    var(--font-karla), system-ui, sans-serif;
+  --font-display: var(--font-bricolage), var(--font-karla), sans-serif;
+  --radius: 0.875rem;
+}
+
+@layer base {
+  * { @apply border-line; }
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-tap-highlight-color: transparent;
+  }
+  h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: -0.01em; }
+  /* alvos de toque */
+  button, a[role="button"] { min-height: 44px; }
+}
+
+/* Abertura */
+@keyframes logo-in {
+  0%   { opacity: 0; transform: scale(.6) rotate(-8deg); }
+  60%  { transform: scale(1.05) rotate(2deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0); }
+}
+@keyframes rise-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes glow-pulse { 0%, 100% { opacity: .25; transform: scale(1); } 50% { opacity: .5; transform: scale(1.12); } }
+@keyframes sheet-up { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes pop-in { 0% { opacity: 0; transform: scale(.7); } 60% { transform: scale(1.06); } 100% { opacity: 1; transform: scale(1); } }
+
+.animate-logo-in   { animation: logo-in .95s cubic-bezier(.2,.85,.2,1) both; }
+.animate-rise-in   { animation: rise-in .8s cubic-bezier(.2,.8,.2,1) both; }
+.animate-glow      { animation: glow-pulse 3.4s ease-in-out infinite; }
+.animate-sheet-up  { animation: sheet-up .32s cubic-bezier(.2,.9,.2,1) both; }
+.animate-pop-in    { animation: pop-in .45s cubic-bezier(.2,.9,.2,1) both; }
+
+/* carrossel */
+.snap-rail { scroll-snap-type: x mandatory; scrollbar-width: none; }
+.snap-rail::-webkit-scrollbar { display: none; }
+.snap-item { scroll-snap-align: center; }

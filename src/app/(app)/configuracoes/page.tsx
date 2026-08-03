@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useQuery } from '@tanstack/react-query'
 import {
@@ -7,8 +8,9 @@ import {
 } from 'lucide-react'
 import { useSyncStore } from '@/stores/sync.store'
 import { getApiUrl } from '@/lib/api-url'
+import { syncAll, getPendingCount } from '@/lib/offline/sync'
 
-const APP_VERSION = '0.0.7'
+const APP_VERSION = '0.0.8'
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -65,6 +67,19 @@ function SettingsRow({ icon, label, subtitle, value, isLast }: SettingsRowProps)
 
 function OperatorProfile({ session }: { session: any }) {
   const pendingCount = useSyncStore(s => s.pendingCount)
+  const setPending = useSyncStore(s => s.setPending)
+  const [syncing, setSyncing] = useState(false)
+
+  async function handleSync() {
+    if (syncing) return
+    setSyncing(true)
+    try {
+      await syncAll()
+      setPending(await getPendingCount())
+    } finally {
+      setSyncing(false)
+    }
+  }
   const name: string = session?.user?.name ?? ''
   const initials = name
     .split(' ')
@@ -155,6 +170,8 @@ function OperatorProfile({ session }: { session: any }) {
             <p style={{ fontSize: 12, color: '#A0AE90', margin: 0 }}>agora</p>
           </div>
           <button
+            onClick={handleSync}
+            disabled={syncing || pendingCount === 0}
             style={{
               height: 44,
               width: '100%',
@@ -163,12 +180,12 @@ function OperatorProfile({ session }: { session: any }) {
               background: '#FFFDF8',
               fontSize: 14,
               fontWeight: 700,
-              color: '#3D5A2E',
-              cursor: 'pointer',
-              transition: 'border-color 150ms ease',
+              color: syncing || pendingCount === 0 ? '#A0AE90' : '#3D5A2E',
+              cursor: syncing || pendingCount === 0 ? 'not-allowed' : 'pointer',
+              transition: 'color 150ms ease',
             }}
           >
-            Sincronizar agora
+            {syncing ? 'Sincronizando…' : 'Sincronizar agora'}
           </button>
         </div>
       </div>

@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import {
-  Map, Plus, ClipboardList, User, Home, Leaf, BarChart3, Settings,
+  Map, Plus, ClipboardList, User, Home, Leaf, BarChart3,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
@@ -12,7 +12,7 @@ type Item = { label: string; href: string; icon: LucideIcon }
 
 const OPERATOR_ITEMS: Item[] = [
   { label: 'Mapa',   href: '/mapa',                  icon: Map },
-  { label: 'Lançar', href: '/mapa',                  icon: Plus },
+  { label: 'Lançar', href: '/atividades/novo',       icon: Plus },
   { label: 'Meus',   href: '/atividades/historico',  icon: ClipboardList },
   { label: 'Perfil', href: '/configuracoes',         icon: User },
 ]
@@ -22,7 +22,7 @@ const ADMIN_ITEMS: Item[] = [
   { label: 'Atividades', href: '/atividades/historico', icon: ClipboardList },
   { label: 'Produção',   href: '/producao/historico',   icon: Leaf },
   { label: 'Relatórios', href: '/relatorios',           icon: BarChart3 },
-  { label: 'Config',     href: '/configuracoes',        icon: Settings },
+  { label: 'Mapa',       href: '/mapa',                 icon: Map },
 ]
 
 export function BottomNav() {

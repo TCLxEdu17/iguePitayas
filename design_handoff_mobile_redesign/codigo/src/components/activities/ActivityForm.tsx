@@ -45,7 +45,7 @@ export function ActivityForm() {
 
   const { data: equipe = [] } = useQuery<{ id: string; name: string }[]>({
     queryKey: ['equipe'],
-    queryFn: () => fetch(getApiUrl('/api/team')).then(r => r.ok ? r.json() : []),
+    queryFn: () => fetch(getApiUrl('/api/admin/users?active=1')).then(r => r.ok ? r.json() : []),
   })
 
   function resolveDate() {
@@ -66,8 +66,8 @@ export function ActivityForm() {
       date: resolveDate().toISOString(),
       type: tipo,
       responsible: responsavel,
-      quantity: qtd || undefined,
-      unit: qtd ? unidade : undefined,
+      quantity: qtd || null,
+      unit: qtd ? unidade : null,
       notes: notas || undefined,
       confirmed: true,
       syncStatus: 'PENDING' as const,
@@ -166,16 +166,16 @@ export function ActivityForm() {
         Quanto <span className="font-medium normal-case" style={{ color: 'var(--color-ink-faint)' }}>· opcional</span>
       </p>
       <div className="mb-2.5 flex items-stretch gap-2">
-        <button onClick={() => setQtd(q => Math.max(0, q - 1))} className="w-11 shrink-0 rounded-[14px] text-2xl font-bold"
+        <button onClick={() => setQtd(q => Math.max(0, q - 1))} className="w-14 rounded-[14px] text-2xl font-bold"
           style={{ border: '1.5px solid var(--color-line-strong)', background: '#FFFDF8', color: 'var(--color-primary)' }}>−</button>
         <input
           value={qtd}
           onChange={e => setQtd(Number(e.target.value.replace(/\D/g, '')) || 0)}
           inputMode="numeric"
-          className="min-w-0 flex-1 rounded-[14px] text-center font-display text-[28px] font-bold"
+          className="flex-1 rounded-[14px] text-center font-display text-[28px] font-bold"
           style={{ height: 62, border: '1.5px solid var(--color-primary)', background: '#FFFDF8' }}
         />
-        <button onClick={() => setQtd(q => q + 1)} className="w-11 shrink-0 rounded-[14px] text-2xl font-bold"
+        <button onClick={() => setQtd(q => q + 1)} className="w-14 rounded-[14px] text-2xl font-bold"
           style={{ border: '1.5px solid var(--color-line-strong)', background: '#FFFDF8', color: 'var(--color-primary)' }}>+</button>
       </div>
       <div className="mb-6 flex flex-wrap gap-[7px]">

@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  body { margin: 0; background: #141B0F; }
+  a { color: #C17A4A; text-decoration: none; }
+  a:hover { color: #D4A843; }
+  ::-webkit-scrollbar { width: 0; height: 0; }
+  @keyframes bananaIn { 0% { opacity: 0; transform: scale(.6) rotate(-8deg); } 60% { transform: scale(1.05) rotate(2deg); } 100% { opacity: 1; transform: scale(1) rotate(0deg); } }
+  @keyframes stem { 0% { transform: scaleY(0); } 100% { transform: scaleY(1); } }
+  @keyframes leafL { 0% { transform: rotate(-10deg) scale(0); } 100% { transform: rotate(-32deg) scale(1); } }
+  @keyframes leafR { 0% { transform: rotate(10deg) scale(0); } 100% { transform: rotate(28deg) scale(1); } }
+  @keyframes leafL2 { 0% { transform: rotate(-4deg) scale(0); } 100% { transform: rotate(-58deg) scale(1); } }
+  @keyframes leafR2 { 0% { transform: rotate(4deg) scale(0); } 100% { transform: rotate(54deg) scale(1); } }
+  @keyframes riseIn { 0% { opacity: 0; transform: translateY(14px); } 100% { opacity: 1; transform: translateY(0); } }
+  @keyframes glowPulse { 0%, 100% { opacity: .25; transform: scale(1); } 50% { opacity: .5; transform: scale(1.12); } }
+  @keyframes sheetUp { 0% { transform: translateY(100%); } 100% { transform: translateY(0); } }
+  @keyframes pop { 0% { transform: scale(.7); opacity: 0; } 60% { transform: scale(1.06); } 100% { transform: scale(1); opacity: 1; } }
+</style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; align-items: flex-start; gap: 40px; padding: 32px 40px 64px; box-sizing: border-box; background: radial-gradient(120% 90% at 15% 0%, #253317 0%, #141B0F 60%); font-family: Karla, sans-serif; color: #E8DFC6;">
+
+  <aside style="width: 250px; flex: 0 0 250px; position: sticky; top: 32px; display: flex; flex-direction: column; gap: 22px;">
+    <div>
+      <p style="margin: 0 0 4px; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: rgba(232,223,198,.45);">Protótipo mobile</p>
+      <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 28px; line-height: 1.05; color: #F5ECD7;">IGUE Bananas</h1>
+      <p style="margin: 8px 0 0; font-size: 13px; line-height: 1.5; color: rgba(232,223,198,.6);">Telas de admin e operador refeitas mobile-first. Ícones Lucide, mapa dos 3 sítios em carrossel.</p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <p style="margin: 0; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: rgba(232,223,198,.4);">Perfil</p>
+      <div style="display: flex; gap: 6px; padding: 4px; border-radius: 12px; background: rgba(0,0,0,.3); border: 1px solid rgba(232,223,198,.12);">
+        <button onClick="{{ setOperator }}" style="{{ tabOp }}">Operador</button>
+        <button onClick="{{ setAdmin }}" style="{{ tabAd }}">Admin</button>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 6px;">
+      <p style="margin: 0 0 2px; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: rgba(232,223,198,.4);">Telas</p>
+      <sc-for list="{{ rail }}" as="s" hint-placeholder-count="8">
+        <button onClick="{{ s.go }}" style="{{ s.style }}">
+          <span style="display: flex; align-items: center; gap: 10px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ s.iconPath }}"></path></svg>
+            {{ s.label }}
+          </span>
+        </button>
+      </sc-for>
+    </div>
+
+    <p style="margin: 0; font-size: 12px; line-height: 1.5; color: rgba(232,223,198,.4);">O mapa usa as imagens e os polígonos reais que traçamos. Toque num talhão para abrir a ficha.</p>
+  </aside>
+
+  <div style="display: flex; flex-direction: column; align-items: center; gap: 14px;">
+    <div style="width: 390px; height: 844px; border-radius: 46px; border: 11px solid #0A0E06; background: #FBF6EA; overflow: hidden; position: relative; display: flex; flex-direction: column; box-shadow: 0 40px 80px -20px rgba(0,0,0,.75), 0 0 0 1px rgba(232,223,198,.12);">
+
+      <sc-if value="{{ chromeOn }}" hint-placeholder-val="{{ true }}">
+        <div style="flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 12px 26px 4px; font-size: 12px; font-weight: 700; color: #2C3E1F; background: transparent; position: relative; z-index: 5;">
+          <span>9:41</span>
+          <span style="display: flex; align-items: center; gap: 5px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h.01"></path><path d="M2 8.82a15 15 0 0 1 20 0"></path><path d="M5 12.859a10 10 0 0 1 14 0"></path><path d="M8.5 16.429a5 5 0 0 1 7 0"></path></svg>
+            <svg width="20" height="15" viewBox="0 0 26 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="18" height="11" rx="2.5"></rect><path d="M23 11v5"></path><path d="M4.5 9.5h11v6h-11z" fill="currentColor" stroke="none"></path></svg>
+          </span>
+        </div>
+      </sc-if>
+
+      <div style="flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; position: relative;">
+
+        <!-- ─────────── SPLASH ─────────── -->
+        <sc-if value="{{ isSplash }}" hint-placeholder-val="{{ false }}">
+          <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 34px; background: radial-gradient(100% 70% at 50% 78%, #3D5A2E 0%, #1F2E15 55%, #141B0F 100%); overflow: hidden;">
+            <div style="position: absolute; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, rgba(212,168,67,.45) 0%, transparent 66%); animation: glowPulse 3.4s ease-in-out infinite;"></div>
+            <img src="assets/logo.png" alt="Igue Bananas" style="position: relative; width: 216px; height: 216px; border-radius: 50%; box-shadow: 0 22px 50px -18px rgba(0,0,0,.6); animation: bananaIn 1s cubic-bezier(.2,.85,.2,1) both;" />
+            <p style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 14px; letter-spacing: .4em; text-transform: uppercase; color: rgba(245,236,215,.7); animation: riseIn .8s cubic-bezier(.2,.8,.2,1) .9s both;">Prata e Nanica</p>
+            <p style="position: absolute; bottom: 46px; margin: 0; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: rgba(245,236,215,.35); animation: riseIn .8s ease 1.3s both;">Sede · Guanhanhã · Guanhanhã II</p>
+          </div>
+        </sc-if>
+
+        <!-- ─────────── LOGIN ─────────── -->
+        <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
+          <div style="min-height: 100%; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; gap: 26px; padding: 40px 26px; background: linear-gradient(180deg, #FBF6EA 0%, #F1E6CC 100%);">
+            <div>
+              <img src="assets/logo.png" alt="Igue Bananas" style="width: 62px; height: 62px; border-radius: 50%; display: block; margin-bottom: 18px; box-shadow: 0 8px 18px -8px rgba(31,46,21,.5);" />
+              <h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 30px; line-height: 1.1; letter-spacing: -.02em; color: #1F2E15;">Bom dia.</h2>
+              <p style="margin: 8px 0 0; font-size: 15px; color: #6B7A5A;">Entre para lançar o dia no campo.</p>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+              <label style="display: flex; flex-direction: column; gap: 7px;">
+                <span style="font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #6B7A5A;">E-mail</span>
+                <input type="email" value="josenildo@iguebananas.com.br" style="height: 52px; padding: 0 16px; border-radius: 14px; border: 1.5px solid #DCCFB0; background: #FFFDF8; font-family: Karla, sans-serif; font-size: 16px; color: #1F2E15; outline: none;" style-focus="border-color: #3D5A2E;" />
+              </label>
+              <label style="display: flex; flex-direction: column; gap: 7px;">
+                <span style="font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #6B7A5A;">Senha</span>
+                <input type="password" value="••••••••" style="height: 52px; padding: 0 16px; border-radius: 14px; border: 1.5px solid #DCCFB0; background: #FFFDF8; font-family: Karla, sans-serif; font-size: 16px; color: #1F2E15; outline: none;" style-focus="border-color: #3D5A2E;" />
+              </label>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <button onClick="{{ enterOperator }}" style="height: 56px; border: none; border-radius: 16px; background: #3D5A2E; color: #FBF6EA; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 17px; cursor: pointer; box-shadow: 0 10px 20px -8px rgba(31,46,21,.6);" style-hover="background: #2E4522;">Entrar como operador</button>
+              <button onClick="{{ enterAdmin }}" style="height: 52px; border: 1.5px solid #3D5A2E; border-radius: 16px; background: transparent; color: #3D5A2E; font-family: Karla, sans-serif; font-weight: 700; font-size: 15px; cursor: pointer;" style-hover="background: rgba(61,90,46,.08);">Entrar como admin</button>
+            </div>
+            <div style="display: flex; align-items: center; gap: 9px; padding: 12px 14px; border-radius: 14px; background: rgba(193,122,74,.12); border: 1px solid rgba(193,122,74,.25);">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#A8632F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto;"><path d="M12 20h.01"></path><path d="M8.5 16.429a5 5 0 0 1 7 0"></path><path d="M5 12.859a10 10 0 0 1 5.17-2.69"></path><path d="M19 12.859a10 10 0 0 0-2.007-1.523"></path><path d="M2 8.82a15 15 0 0 1 4.177-2.643"></path><path d="M22 8.82a15 15 0 0 0-11.288-3.764"></path><path d="m2 2 20 20"></path></svg>
+              <p style="margin: 0; font-size: 12.5px; line-height: 1.45; color: #7A4A22;">Sem sinal? Você entra com o último acesso e tudo fica salvo no aparelho.</p>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ─────────── OPERADOR · MAPA ─────────── -->
+        <sc-if value="{{ isMapa }}" hint-placeholder-val="{{ false }}">
+          <div style="min-height: 100%; background: #FBF6EA; padding-bottom: 24px;">
+            <div style="padding: 6px 20px 12px;">
+              <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;">
+                <div>
+                  <p style="margin: 0; font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: #9AA88A;">Seu sítio</p>
+                  <h2 style="margin: 2px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 27px; letter-spacing: -.02em; color: #1F2E15;">{{ siteName }}</h2>
+                  <p style="margin: 3px 0 0; font-size: 13px; color: #6B7A5A;">{{ siteMeta }}</p>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button style="width: 42px; height: 42px; border-radius: 13px; border: 1.5px solid #E0D4B6; background: #FFFDF8; color: #3D5A2E; display: flex; align-items: center; justify-content: center; cursor: pointer;" style-hover="border-color: #3D5A2E;">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+                  </button>
+                  <button style="width: 42px; height: 42px; border-radius: 13px; border: 1.5px solid #E0D4B6; background: #FFFDF8; color: #3D5A2E; display: flex; align-items: center; justify-content: center; cursor: pointer;" style-hover="border-color: #3D5A2E;">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5H8a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"></path><rect x="9" y="3" width="6" height="4" rx="1"></rect><path d="M9 12h6"></path><path d="M9 16h4"></path></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 8px; padding: 0 20px 12px; overflow-x: auto;">
+              <sc-for list="{{ siteChips }}" as="c" hint-placeholder-count="3">
+                <button onClick="{{ c.go }}" style="{{ c.style }}">{{ c.label }}</button>
+              </sc-for>
+            </div>
+
+            <div ref="{{ railRef }}" onScroll="{{ onRailScroll }}" style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; gap: 0;">
+              <sc-for list="{{ maps }}" as="m" hint-placeholder-count="3">
+                <div style="flex: 0 0 100%; scroll-snap-align: center; padding: 0 20px; box-sizing: border-box;">
+                  <div style="{{ m.wrap }}">
+                    <svg viewBox="{{ m.viewBox }}" style="width: 100%; display: block;">
+                      <sc-for list="{{ m.regions }}" as="r" hint-placeholder-count="6">
+                        <polygon points="{{ r.points }}" fill="{{ r.fill }}" stroke="{{ r.stroke }}" stroke-width="{{ r.sw }}" style="cursor: pointer;" onClick="{{ r.open }}"></polygon>
+                      </sc-for>
+                    </svg>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="display: flex; justify-content: center; gap: 7px; padding: 14px 0 6px;">
+              <sc-for list="{{ dots }}" as="d" hint-placeholder-count="3">
+                <span style="{{ d.style }}"></span>
+              </sc-for>
+            </div>
+
+            <p style="margin: 0; padding: 0 20px; text-align: center; font-size: 12.5px; color: #9AA88A;">Arraste para trocar de sítio · toque num talhão para lançar</p>
+
+            <div style="padding: 20px 20px 0;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                <h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: .02em; color: #1F2E15;">Talhões deste sítio</h3>
+                <span style="font-size: 12px; color: #9AA88A;">{{ plotCount }}</span>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <sc-for list="{{ plotChips }}" as="p" hint-placeholder-count="6">
+                  <button onClick="{{ p.open }}" style="display: flex; align-items: center; gap: 9px; padding: 12px 12px; min-height: 52px; border-radius: 14px; border: 1.5px solid #E8DDC2; background: #FFFDF8; text-align: left; cursor: pointer; font-family: Karla, sans-serif;" style-hover="border-color: #3D5A2E;">
+                    <span style="{{ p.dot }}"></span>
+                    <span style="min-width: 0;">
+                      <span style="display: block; font-size: 13.5px; font-weight: 700; color: #1F2E15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ p.name }}</span>
+                      <span style="display: block; font-size: 11.5px; color: #8B9A7A;">{{ p.pes }}</span>
+                    </span>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+
+          <sc-if value="{{ hasPlot }}" hint-placeholder-val="{{ false }}">
+            <div style="position: absolute; inset: 0; z-index: 20; display: flex; flex-direction: column; justify-content: flex-end;">
+              <div onClick="{{ closePlot }}" style="position: absolute; inset: 0; background: rgba(20,27,15,.5);"></div>
+              <div style="position: relative; border-radius: 26px 26px 0 0; background: #FBF6EA; padding: 10px 20px 26px; animation: sheetUp .32s cubic-bezier(.2,.9,.2,1) both; box-shadow: 0 -20px 40px -20px rgba(0,0,0,.4);">
+                <div style="width: 42px; height: 4px; border-radius: 3px; background: #DCCFB0; margin: 0 auto 16px;"></div>
+                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;">
+                  <div>
+                    <p style="margin: 0; font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: #9AA88A;">{{ siteName }}</p>
+                    <h3 style="margin: 2px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 25px; letter-spacing: -.01em; color: #1F2E15;">{{ plotName }}</h3>
+                  </div>
+                  <button onClick="{{ closePlot }}" style="width: 38px; height: 38px; border-radius: 12px; border: none; background: #EFE5CC; color: #6B7A5A; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                  </button>
+                </div>
+                <div style="display: flex; gap: 8px; margin: 16px 0 18px;">
+                  <div style="flex: 1; padding: 12px; border-radius: 14px; background: #FFFDF8; border: 1px solid #E8DDC2;">
+                    <p style="margin: 0; font-size: 11px; color: #9AA88A;">Pés</p>
+                    <p style="margin: 2px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 19px; color: #1F2E15;">{{ plotPes }}</p>
+                  </div>
+                  <div style="flex: 1; padding: 12px; border-radius: 14px; background: #FFFDF8; border: 1px solid #E8DDC2;">
+                    <p style="margin: 0; font-size: 11px; color: #9AA88A;">Último lançamento</p>
+                    <p style="margin: 2px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 19px; color: #1F2E15;">há 3 dias</p>
+                  </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 9px;">
+                  <button onClick="{{ goRegistrar }}" style="display: flex; align-items: center; justify-content: center; gap: 10px; height: 56px; border: none; border-radius: 16px; background: #3D5A2E; color: #FBF6EA; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 16.5px; cursor: pointer;" style-hover="background: #2E4522;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+                    Registrar atividade
+                  </button>
+                  <button onClick="{{ goColheita }}" style="display: flex; align-items: center; justify-content: center; gap: 10px; height: 52px; border: 1.5px solid #C17A4A; border-radius: 16px; background: transparent; color: #A8632F; font-family: Karla, sans-serif; font-weight: 700; font-size: 15px; cursor: pointer;" style-hover="background: rgba(193,122,74,.1);">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg>
+                    Registrar colheita
+                  </button>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+        </sc-if>
+
+        <!-- ─────────── OPERADOR · REGISTRAR ATIVIDADE ─────────── -->
+        <sc-if value="{{ isRegistrar }}" hint-placeholder-val="{{ false }}">
+          <div style="min-height: 100%; background: #FBF6EA; padding-bottom: 24px;">
+            <div style="display: flex; align-items: center; gap: 12px; padding: 6px 16px 14px;">
+              <button onClick="{{ goMapa }}" style="width: 40px; height: 40px; border-radius: 13px; border: none; background: #EFE5CC; color: #3D5A2E; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+              </button>
+              <h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 21px; letter-spacing: -.01em; color: #1F2E15;">Nova atividade</h2>
+            </div>
+
+            <div style="padding: 0 16px; display: flex; flex-direction: column; gap: 22px;">
+              <div style="display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 18px; background: #2C3E1F; color: #F5ECD7;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D4A843" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto;"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"></path><path d="M15 5.764v15"></path><path d="M9 3.236v15"></path></svg>
+                <div style="flex: 1; min-width: 0;">
+                  <p style="margin: 0; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: rgba(245,236,215,.55);">Talhão</p>
+                  <p style="margin: 2px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 18px;">{{ formPlot }}</p>
+                </div>
+                <button onClick="{{ goMapa }}" style="padding: 8px 12px; border-radius: 11px; border: 1px solid rgba(245,236,215,.3); background: transparent; color: #D4A843; font-family: Karla, sans-serif; font-weight: 700; font-size: 12.5px; cursor: pointer;">Trocar</button>
+              </div>
+
+              <div>
+                <p style="margin: 0 0 10px; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #6B7A5A;">O que foi feito</p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                  <sc-for list="{{ tipos }}" as="t" hint-placeholder-count="8">
+                    <button onClick="{{ t.pick }}" style="{{ t.style }}">
+                      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ t.iconPath }}"></path></svg>
+                      <span style="font-size: 13px; font-weight: 700; line-height: 1.2;">{{ t.label }}</span>
+                    </button>
+                  </sc-for>
+                </div>
+              </div>
+
+              <div>
+                <p style="margin: 0 0 10px; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #6B7A5A;">Quando</p>
+                <div style="display: flex; gap: 8px;">
+                  <sc-for list="{{ dias }}" as="d" hint-placeholder-count="3">
+                    <button onClick="{{ d.pick }}" style="{{ d.style }}">{{ d.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+
+              <div>
+                <p style="margin: 0 0 10px; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #6B7A5A;">Quanto <span style="font-weight: 500; text-transform: none; letter-spacing: 0; color: #9AA88A;">· opcional</span></p>
+                <div style="display: flex; align-items: stretch; gap: 8px; margin-bottom: 10px;">
+                  <button onClick="{{ dec }}" style="width: 56px; border-radius: 14px; border: 1.5px solid #E0D4B6; background: #FFFDF8; color: #3D5A2E; font-size: 24px; font-weight: 700; cursor: pointer;">−</button>
+                  <div style="flex: 1; display: flex; align-items: center; justify-content: center; height: 62px; border-radius: 14px; border: 1.5px solid #3D5A2E; background: #FFFDF8; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 28px; color: #1F2E15;">{{ qtd }}</div>
+                  <button onClick="{{ inc }}" style="width: 56px; border-radius: 14px; border: 1.5px solid #E0D4B6; background: #FFFDF8; color: #3D5A2E; font-size: 24px; font-weight: 700; cursor: pointer;">+</button>
+                </div>
+                <div style="display: flex; gap: 7px; flex-wrap: wrap;">
+                  <sc-for list="{{ unidades }}" as="u" hint-placeholder-count="6">
+                    <button onClick="{{ u.pick }}" style="{{ u.style }}">{{ u.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+
+              <div>
+                <p style="margin: 0 0 10px; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #6B7A5A;">Quem fez</p>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                  <sc-for list="{{ pessoas }}" as="p" hint-placeholder-count="4">
+                    <button onClick="{{ p.pick }}" style="{{ p.style }}">{{ p.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+
+              <label style="display: flex; flex-direction: column; gap: 8px;">
+                <span style="font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #6B7A5A;">Observação</span>
+                <textarea rows="2" placeholder="Ex.: bomba entupiu, terminei só metade" style="padding: 14px; border-radius: 14px; border: 1.5px solid #E0D4B6; background: #FFFDF8; font-family: Karla, sans-serif; font-size: 15px; color: #1F2E15; resize: none; outline: none;" style-focus="border-color: #3D5A2E;"></textarea>
+              </label>
+
+              <div style="display: flex; align-items: center; gap: 9px; padding: 12px 14px; border-radius: 14px; background: rgba(243,156,18,.12); border: 1px solid rgba(243,156,18,.3);">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#B87708" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto;"><path d="M12 20h.01"></path><path d="M8.5 16.429a5 5 0 0 1 7 0"></path><path d="m2 2 20 20"></path><path d="M2 8.82a15 15 0 0 1 4.177-2.643"></path></svg>
+                <p style="margin: 0; font-size: 12.5px; line-height: 1.45; color: #8A5A06;">Sem sinal agora — salva no aparelho e sobe sozinho quando pegar rede.</p>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 9px;">
+                <button onClick="{{ save }}" style="height: 58px; border: none; border-radius: 16px; background: #3D5A2E; color: #FBF6EA; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 17px; cursor: pointer; box-shadow: 0 10px 22px -10px rgba(31,46,21,.7);" style-hover="background: #2E4522;">Salvar lançamento</button>
+                <button onClick="{{ save }}" style="height: 50px; border: 1.5px solid #DCCFB0; border-radius: 16px; background: transparent; color: #3D5A2E; font-family: Karla, sans-serif; font-weight: 700; font-size: 15px; cursor: pointer;" style-hover="border-color: #3D5A2E;">Salvar e lançar outro</button>
+              </div>
+            </div>
+          </div>
+
+          <sc-if value="{{ saved }}" hint-placeholder-val="{{ false }}">
+            <div style="position: absolute; inset: 0; z-index: 30; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 40px; background: rgba(31,46,21,.94); text-align: center;">
+              <div style="width: 84px; height: 84px; border-radius: 50%; background: #8DB87A; display: flex; align-items: center; justify-content: center; animation: pop .45s cubic-bezier(.2,.9,.2,1) both;">
+                <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#1F2E15" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+              </div>
+              <div style="animation: riseIn .5s ease .15s both;">
+                <p style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 24px; color: #F5ECD7;">Lançado</p>
+                <p style="margin: 8px 0 0; font-size: 14.5px; line-height: 1.5; color: rgba(245,236,215,.7);">{{ savedMsg }}</p>
+              </div>
+              <button onClick="{{ closeSaved }}" style="margin-top: 6px; padding: 14px 26px; border-radius: 14px; border: 1.5px solid rgba(245,236,215,.35); background: transparent; color: #D4A843; font-family: Karla, sans-serif; font-weight: 700; font-size: 15px; cursor: pointer;">Continuar</button>
+            </div>
+          </sc-if>
+        </sc-if>
+
+        <!-- ─────────── OPERADOR · COLHEITA ─────────── -->
+        <sc-if value="{{ isColheita }}" hint-placeholder-val="{{ false }}">
+          <div style="min-height: 100%; background: #FBF6EA; padding-bottom: 24px;">
+            <div style="display: flex; align-items: center; gap: 12px; padding: 6px 16px 14px;">
+              <button onClick="{{ goMapa }}" style="width: 40px; height: 40px; border-radius: 13px; border: none; background: #EFE5CC; color: #3D5A2E; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+              </button>
+              <h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 21px; letter-spacing: -.01em; color: #1F2E15;">Colheita</h2>
+            </div>
+
+            <div style="padding: 0 16px; display: flex; flex-direction: column; gap: 22px;">
+              <div style="display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 18px; background: #C17A4A; color: #FFF8EC;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto;"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg>
+                <div style="flex: 1; min-width: 0;">
+                  <p style="margin: 0; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,248,236,.7);">Talhão</p>
+                  <p style="margin: 2px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 18px;">{{ formPlot }}</p>
+                </div>
+                <button onClick="{{ goMapa }}" style="padding: 8px 12px; border-radius: 11px; border: 1px solid rgba(255,248,236,.45); background: transparent; color: #FFF8EC; font-family: Karla, sans-serif; font-weight: 700; font-size: 12.5px; cursor: pointer;">Trocar</button>
+              </div>
+
+              <div>
+                <p style="margin: 0 0 10px; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #6B7A5A;">Quanto saiu</p>
+                <div style="display: flex; align-items: stretch; gap: 8px; margin-bottom: 10px;">
+                  <button onClick="{{ dec }}" style="width: 56px; border-radius: 14px; border: 1.5px solid #E0D4B6; background: #FFFDF8; color: #3D5A2E; font-size: 24px; font-weight: 700; cursor: pointer;">−</button>
+                  <div style="flex: 1; display: flex; align-items: center; justify-content: center; height: 68px; border-radius: 14px; border: 1.5px solid #C17A4A; background: #FFFDF8; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 32px; color: #1F2E15;">{{ qtd }}</div>
+                  <button onClick="{{ inc }}" style="width: 56px; border-radius: 14px; border: 1.5px solid #E0D4B6; background: #FFFDF8; color: #3D5A2E; font-size: 24px; font-weight: 700; cursor: pointer;">+</button>
+                </div>
+                <div style="display: flex; gap: 7px; flex-wrap: wrap;">
+                  <sc-for list="{{ unidades }}" as="u" hint-placeholder-count="6">
+                    <button onClick="{{ u.pick }}" style="{{ u.style }}">{{ u.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+
+              <div>
+                <p style="margin: 0 0 10px; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #6B7A5A;">Produto</p>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                  <sc-for list="{{ produtos }}" as="p" hint-placeholder-count="3">
+                    <button onClick="{{ p.pick }}" style="{{ p.style }}">
+                      <span style="{{ p.dot }}"></span>
+                      {{ p.label }}
+                    </button>
+                  </sc-for>
+                </div>
+              </div>
+
+              <div>
+                <p style="margin: 0 0 10px; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #6B7A5A;">Quando</p>
+                <div style="display: flex; gap: 8px;">
+                  <sc-for list="{{ dias }}" as="d" hint-placeholder-count="3">
+                    <button onClick="{{ d.pick }}" style="{{ d.style }}">{{ d.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+
+              <sc-if value="{{ showMoney }}" hint-placeholder-val="{{ false }}">
+                <div style="padding: 14px; border-radius: 16px; background: rgba(61,90,46,.08); border: 1px solid rgba(61,90,46,.2);">
+                  <p style="margin: 0; font-size: 12px; color: #6B7A5A;">Receita estimada · preço da tabela</p>
+                  <p style="margin: 4px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 24px; color: #3D5A2E;">{{ receitaEst }}</p>
+                </div>
+              </sc-if>
+
+              <button onClick="{{ save }}" style="height: 58px; border: none; border-radius: 16px; background: #C17A4A; color: #FFF8EC; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 17px; cursor: pointer; box-shadow: 0 10px 22px -10px rgba(193,122,74,.8);" style-hover="background: #A8632F;">Salvar colheita</button>
+            </div>
+          </div>
+
+          <sc-if value="{{ saved }}" hint-placeholder-val="{{ false }}">
+            <div style="position: absolute; inset: 0; z-index: 30; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 40px; background: rgba(31,46,21,.94); text-align: center;">
+              <div style="width: 84px; height: 84px; border-radius: 50%; background: #D4A843; display: flex; align-items: center; justify-content: center; animation: pop .45s cubic-bezier(.2,.9,.2,1) both;">
+                <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#1F2E15" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+              </div>
+              <div style="animation: riseIn .5s ease .15s both;">
+                <p style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 24px; color: #F5ECD7;">Colheita lançada</p>
+                <p style="margin: 8px 0 0; font-size: 14.5px; line-height: 1.5; color: rgba(245,236,215,.7);">{{ savedMsg }}</p>
+              </div>
+              <button onClick="{{ closeSaved }}" style="margin-top: 6px; padding: 14px 26px; border-radius: 14px; border: 1.5px solid rgba(245,236,215,.35); background: transparent; color: #D4A843; font-family: Karla, sans-serif; font-weight: 700; font-size: 15px; cursor: pointer;">Continuar</button>
+            </div>
+          </sc-if>
+        </sc-if>
+
+        <!-- ─────────── OPERADOR · MEUS LANÇAMENTOS ─────────── -->
+        <sc-if value="{{ isMeus }}" hint-placeholder-val="{{ false }}">
+          <div style="min-height: 100%; background: #FBF6EA; padding: 6px 16px 24px;">
+            <h2 style="margin: 0 0 4px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 26px; letter-spacing: -.02em; color: #1F2E15;">Meus lançamentos</h2>
+            <p style="margin: 0 0 18px; font-size: 13.5px; color: #6B7A5A;">Segunda, 3 de agosto</p>
+
+            <div style="display: flex; gap: 8px; margin-bottom: 18px;">
+              <div style="flex: 1; padding: 14px; border-radius: 16px; background: #2C3E1F; color: #F5ECD7;">
+                <p style="margin: 0; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(245,236,215,.6);">Hoje</p>
+                <p style="margin: 4px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 26px;">7</p>
+              </div>
+              <div style="flex: 1; padding: 14px; border-radius: 16px; background: #FFFDF8; border: 1.5px solid rgba(243,156,18,.4);">
+                <p style="margin: 0; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #B87708;">A sincronizar</p>
+                <p style="margin: 4px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 26px; color: #B87708;">2</p>
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 9px;">
+              <sc-for list="{{ meus }}" as="a" hint-placeholder-count="6">
+                <div style="display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-radius: 16px; background: #FFFDF8; border: 1px solid #E8DDC2;">
+                  <span style="{{ a.iconWrap }}">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ a.iconPath }}"></path></svg>
+                  </span>
+                  <div style="flex: 1; min-width: 0;">
+                    <p style="margin: 0; font-size: 14.5px; font-weight: 700; color: #1F2E15;">{{ a.label }}</p>
+                    <p style="margin: 2px 0 0; font-size: 12.5px; color: #8B9A7A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ a.local }}</p>
+                  </div>
+                  <div style="text-align: right; flex: 0 0 auto;">
+                    <p style="margin: 0; font-size: 13px; font-weight: 700; color: #3D5A2E;">{{ a.qtd }}</p>
+                    <p style="margin: 2px 0 0; font-size: 11.5px; color: {{ a.statusColor }};">{{ a.status }}</p>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ─────────── OPERADOR · PERFIL ─────────── -->
+        <sc-if value="{{ isPerfil }}" hint-placeholder-val="{{ false }}">
+          <div style="min-height: 100%; background: #FBF6EA; padding: 6px 16px 24px;">
+            <div style="display: flex; align-items: center; gap: 14px; padding: 18px; border-radius: 20px; background: #2C3E1F; color: #F5ECD7; margin-bottom: 20px;">
+              <div style="width: 54px; height: 54px; border-radius: 18px; background: rgba(212,168,67,.22); color: #D4A843; display: flex; align-items: center; justify-content: center; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 22px;">JB</div>
+              <div>
+                <p style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 20px;">Josenildo Barbosa</p>
+                <p style="margin: 3px 0 0; font-size: 12.5px; color: rgba(245,236,215,.65);">Operador · Guanhanhã II</p>
+              </div>
+            </div>
+
+            <p style="margin: 0 0 10px; font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #9AA88A;">Sincronização</p>
+            <div style="padding: 16px; border-radius: 18px; background: #FFFDF8; border: 1px solid #E8DDC2; margin-bottom: 22px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <span style="width: 9px; height: 9px; border-radius: 50%; background: #F39C12;"></span>
+                  <p style="margin: 0; font-size: 14.5px; font-weight: 700; color: #1F2E15;">2 lançamentos na fila</p>
+                </div>
+                <span style="font-size: 12px; color: #8B9A7A;">há 12 min</span>
+              </div>
+              <button style="width: 100%; height: 48px; border: 1.5px solid #3D5A2E; border-radius: 14px; background: transparent; color: #3D5A2E; font-family: Karla, sans-serif; font-weight: 700; font-size: 14.5px; cursor: pointer;" style-hover="background: rgba(61,90,46,.08);">Sincronizar agora</button>
+            </div>
+
+            <p style="margin: 0 0 10px; font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #9AA88A;">Preferências</p>
+            <div style="border-radius: 18px; overflow: hidden; border: 1px solid #E8DDC2; background: #FFFDF8; margin-bottom: 22px;">
+              <sc-for list="{{ prefs }}" as="p" hint-placeholder-count="4">
+                <div style="display: flex; align-items: center; gap: 12px; padding: 15px 16px; border-bottom: 1px solid #F0E7D2;">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#6B7A5A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto;"><path d="{{ p.iconPath }}"></path></svg>
+                  <span style="flex: 1; font-size: 14.5px; color: #1F2E15;">{{ p.label }}</span>
+                  <span style="font-size: 13px; font-weight: 600; color: #8B9A7A;">{{ p.value }}</span>
+                </div>
+              </sc-for>
+            </div>
+
+            <button style="width: 100%; height: 52px; border: 1.5px solid rgba(192,57,43,.4); border-radius: 16px; background: transparent; color: #C0392B; font-family: Karla, sans-serif; font-weight: 700; font-size: 15px; cursor: pointer;" style-hover="background: rgba(192,57,43,.07);">Sair</button>
+            <p style="margin: 16px 0 0; text-align: center; font-size: 11.5px; color: #B0BCA0;">IGUE Bananas · v2.0</p>
+          </div>
+        </sc-if>
+
+        <!-- ─────────── ADMIN · INÍCIO ─────────── -->
+        <sc-if value="{{ isInicio }}" hint-placeholder-val="{{ false }}">
+          <div style="min-height: 100%; background: #FBF6EA; padding-bottom: 24px;">
+            <div style="padding: 6px 20px 18px;">
+              <p style="margin: 0; font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: #9AA88A;">Segunda, 3 de agosto</p>
+              <h2 style="margin: 3px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 27px; letter-spacing: -.02em; color: #1F2E15;">Bom dia, Fábio</h2>
+            </div>
+
+            <div style="padding: 0 20px;">
+              <div style="padding: 20px; border-radius: 22px; background: linear-gradient(160deg, #3D5A2E 0%, #1F2E15 100%); color: #F5ECD7; box-shadow: 0 18px 34px -18px rgba(31,46,21,.8);">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <p style="margin: 0; font-size: 11.5px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: rgba(245,236,215,.6);">Colhido esta semana</p>
+                  <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 9px; border-radius: 20px; background: rgba(141,184,122,.22); color: #A8CC8C; font-size: 12px; font-weight: 700;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7h6v6"></path><path d="m22 7-8.5 8.5-5-5L2 17"></path></svg>
+                    18%
+                  </span>
+                </div>
+                <div style="display: flex; align-items: baseline; gap: 8px; margin: 10px 0 2px;">
+                  <p style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 46px; line-height: 1; letter-spacing: -.03em;">1.240</p>
+                  <p style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 17px; color: #D4A843;">caixas</p>
+                </div>
+                <p style="margin: 0 0 18px; font-size: 13.5px; color: rgba(245,236,215,.65);">≈ 22,3 t · 4.180 cachos · R$ 24.800 em receita</p>
+                <div style="display: flex; align-items: flex-end; gap: 6px; height: 76px;">
+                  <sc-for list="{{ weekBars }}" as="b" hint-placeholder-count="7">
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 7px;">
+                      <div style="{{ b.bar }}"></div>
+                      <span style="font-size: 10.5px; font-weight: 600; color: {{ b.labelColor }};">{{ b.d }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+
+            <div style="padding: 18px 20px 0;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                <h3 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 17px; color: #1F2E15;">O que foi feito hoje</h3>
+                <span style="font-size: 12.5px; font-weight: 600; color: #9AA88A;">7 lançamentos</span>
+              </div>
+              <div style="position: relative; padding-left: 4px;">
+                <sc-for list="{{ hoje }}" as="a" hint-placeholder-count="5">
+                  <div style="display: flex; gap: 12px; padding-bottom: 14px; position: relative;">
+                    <div style="display: flex; flex-direction: column; align-items: center; flex: 0 0 auto;">
+                      <span style="{{ a.iconWrap }}">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ a.iconPath }}"></path></svg>
+                      </span>
+                      <span style="flex: 1; width: 1.5px; background: #E8DDC2; margin-top: 4px;"></span>
+                    </div>
+                    <div style="flex: 1; min-width: 0; padding-top: 3px;">
+                      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px;">
+                        <p style="margin: 0; font-size: 14.5px; font-weight: 700; color: #1F2E15;">{{ a.label }}</p>
+                        <span style="font-size: 12px; color: #9AA88A; flex: 0 0 auto;">{{ a.hora }}</span>
+                      </div>
+                      <p style="margin: 3px 0 0; font-size: 12.5px; color: #8B9A7A;">{{ a.local }} · {{ a.resp }}</p>
+                      <p style="margin: 4px 0 0; font-size: 12.5px; font-weight: 700; color: {{ a.color }};">{{ a.qtd }}</p>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              <button onClick="{{ goAtividades }}" style="width: 100%; height: 46px; border: 1.5px solid #DCCFB0; border-radius: 14px; background: transparent; color: #3D5A2E; font-family: Karla, sans-serif; font-weight: 700; font-size: 14px; cursor: pointer;" style-hover="border-color: #3D5A2E;">Ver todas as atividades</button>
+            </div>
+
+            <div style="padding: 22px 20px 0;">
+              <h3 style="margin: 0 0 12px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 17px; color: #1F2E15;">Semana em números</h3>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 9px;">
+                <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+                  <div style="padding: 15px; border-radius: 18px; background: #FFFDF8; border: 1px solid #E8DDC2;">
+                    <div style="display: flex; align-items: center; gap: 7px; margin-bottom: 8px;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{ k.color }}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ k.iconPath }}"></path></svg>
+                      <span style="font-size: 11.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #9AA88A;">{{ k.label }}</span>
+                    </div>
+                    <p style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 22px; letter-spacing: -.01em; color: #1F2E15;">{{ k.value }}</p>
+                    <p style="margin: 3px 0 0; font-size: 12px; color: {{ k.color }};">{{ k.sub }}</p>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="padding: 22px 20px 0;">
+              <h3 style="margin: 0 0 12px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 17px; color: #1F2E15;">Por sítio</h3>
+              <div style="padding: 16px; border-radius: 20px; background: #FFFDF8; border: 1px solid #E8DDC2; display: flex; flex-direction: column; gap: 15px;">
+                <sc-for list="{{ porSitio }}" as="s" hint-placeholder-count="3">
+                  <div>
+                    <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 7px;">
+                      <p style="margin: 0; font-size: 14px; font-weight: 700; color: #1F2E15;">{{ s.name }}</p>
+                      <p style="margin: 0; font-size: 13px; color: #6B7A5A;">{{ s.value }}</p>
+                    </div>
+                    <div style="height: 9px; border-radius: 6px; background: #F0E7D2; overflow: hidden;">
+                      <div style="{{ s.bar }}"></div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="padding: 22px 20px 0;">
+              <h3 style="margin: 0 0 12px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 17px; color: #1F2E15;">Precisa de olho</h3>
+              <div style="display: flex; flex-direction: column; gap: 9px;">
+                <sc-for list="{{ alertas }}" as="a" hint-placeholder-count="3">
+                  <div style="{{ a.wrap }}">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="{{ a.color }}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto; margin-top: 1px;"><path d="{{ a.iconPath }}"></path></svg>
+                    <div style="flex: 1;">
+                      <p style="margin: 0; font-size: 14px; font-weight: 700; color: #1F2E15;">{{ a.title }}</p>
+                      <p style="margin: 3px 0 0; font-size: 12.5px; line-height: 1.45; color: #6B7A5A;">{{ a.text }}</p>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="padding: 22px 20px 0;">
+              <div style="display: flex; gap: 9px;">
+                <div style="flex: 1; padding: 16px; border-radius: 18px; background: linear-gradient(150deg, #C17A4A, #A8632F); color: #FFF8EC;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
+                  <p style="margin: 10px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 26px;">31°</p>
+                  <p style="margin: 2px 0 0; font-size: 12.5px; color: rgba(255,248,236,.8);">Sol · sem chuva 4 dias</p>
+                </div>
+                <div style="flex: 1; padding: 16px; border-radius: 18px; background: #2C3E1F; color: #F5ECD7;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D4A843" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"></path></svg>
+                  <p style="margin: 10px 0 0; font-size: 13px; line-height: 1.45; color: rgba(245,236,215,.85);">Puxe a pulverização do Morrão para antes da chuva de sexta.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ─────────── ADMIN · ATIVIDADES ─────────── -->
+        <sc-if value="{{ isAtividades }}" hint-placeholder-val="{{ false }}">
+          <div style="min-height: 100%; background: #FBF6EA; padding: 6px 0 24px;">
+            <div style="padding: 0 20px;">
+              <h2 style="margin: 0 0 14px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 26px; letter-spacing: -.02em; color: #1F2E15;">Atividades</h2>
+            </div>
+            <div style="display: flex; gap: 7px; padding: 0 20px 16px; overflow-x: auto;">
+              <sc-for list="{{ filtros }}" as="f" hint-placeholder-count="4">
+                <button style="{{ f.style }}">{{ f.label }}</button>
+              </sc-for>
+            </div>
+            <div style="padding: 0 20px;">
+              <sc-for list="{{ dias3 }}" as="g" hint-placeholder-count="2">
+                <div style="margin-bottom: 22px;">
+                  <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px;">
+                    <p style="margin: 0; font-size: 11.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #9AA88A;">{{ g.day }}</p>
+                    <p style="margin: 0; font-size: 12px; color: #B0BCA0;">{{ g.count }}</p>
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 9px;">
+                    <sc-for list="{{ g.items }}" as="a" hint-placeholder-count="3">
+                      <div style="display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-radius: 16px; background: #FFFDF8; border: 1px solid #E8DDC2;">
+                        <span style="{{ a.iconWrap }}">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ a.iconPath }}"></path></svg>
+                        </span>
+                        <div style="flex: 1; min-width: 0;">
+                          <p style="margin: 0; font-size: 14.5px; font-weight: 700; color: #1F2E15;">{{ a.label }}</p>
+                          <p style="margin: 2px 0 0; font-size: 12.5px; color: #8B9A7A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ a.local }} · {{ a.resp }}</p>
+                        </div>
+                        <div style="text-align: right; flex: 0 0 auto;">
+                          <p style="margin: 0; font-size: 13px; font-weight: 700; color: #3D5A2E;">{{ a.qtd }}</p>
+                          <p style="margin: 2px 0 0; font-size: 11.5px; color: #A8632F;">{{ a.custo }}</p>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ─────────── ADMIN · PRODUÇÃO ─────────── -->
+        <sc-if value="{{ isProducao }}" hint-placeholder-val="{{ false }}">
+          <div style="min-height: 100%; background: #FBF6EA; padding: 6px 20px 24px;">
+            <h2 style="margin: 0 0 16px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 26px; letter-spacing: -.02em; color: #1F2E15;">Produção</h2>
+
+            <div style="display: flex; gap: 9px; margin-bottom: 18px;">
+              <div style="flex: 1; padding: 16px; border-radius: 18px; background: #2C3E1F; color: #F5ECD7;">
+                <p style="margin: 0; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(245,236,215,.6);">Mês</p>
+                <p style="margin: 5px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 25px;">4.860</p>
+                <p style="margin: 2px 0 0; font-size: 12px; color: #D4A843;">caixas · 87,4 t</p>
+              </div>
+              <div style="flex: 1; padding: 16px; border-radius: 18px; background: #FFFDF8; border: 1px solid #E8DDC2;">
+                <p style="margin: 0; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #9AA88A;">Receita</p>
+                <p style="margin: 5px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 25px; color: #1F2E15;">R$ 97,2k</p>
+                <p style="margin: 2px 0 0; font-size: 12px; color: #6E8F4E;">R$ 20,00 / cx média</p>
+              </div>
+            </div>
+
+            <p style="margin: 0 0 10px; font-size: 11.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #9AA88A;">Por produto</p>
+            <div style="display: flex; flex-direction: column; gap: 9px; margin-bottom: 22px;">
+              <sc-for list="{{ produtoRows }}" as="p" hint-placeholder-count="3">
+                <div style="display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 16px; background: #FFFDF8; border: 1px solid #E8DDC2;">
+                  <span style="{{ p.dotBig }}"></span>
+                  <div style="flex: 1;">
+                    <p style="margin: 0; font-size: 14.5px; font-weight: 700; color: #1F2E15;">{{ p.name }}</p>
+                    <p style="margin: 2px 0 0; font-size: 12.5px; color: #8B9A7A;">{{ p.qtd }}</p>
+                  </div>
+                  <p style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 16px; color: #3D5A2E;">{{ p.receita }}</p>
+                </div>
+              </sc-for>
+            </div>
+
+            <p style="margin: 0 0 10px; font-size: 11.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #9AA88A;">Últimas colheitas</p>
+            <div style="display: flex; flex-direction: column; gap: 9px;">
+              <sc-for list="{{ colheitas }}" as="c" hint-placeholder-count="5">
+                <div style="display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-radius: 16px; background: #FFFDF8; border: 1px solid #E8DDC2;">
+                  <div style="width: 46px; flex: 0 0 auto; text-align: center;">
+                    <p style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 17px; color: #1F2E15;">{{ c.dia }}</p>
+                    <p style="margin: 0; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: #B0BCA0;">{{ c.mes }}</p>
+                  </div>
+                  <div style="flex: 1; min-width: 0; border-left: 1px solid #EFE5CC; padding-left: 12px;">
+                    <p style="margin: 0; font-size: 14px; font-weight: 700; color: #1F2E15;">{{ c.qtd }}</p>
+                    <p style="margin: 2px 0 0; font-size: 12.5px; color: #8B9A7A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ c.local }}</p>
+                  </div>
+                  <p style="margin: 0; font-size: 13.5px; font-weight: 700; color: #A8632F; flex: 0 0 auto;">{{ c.receita }}</p>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ─────────── ADMIN · RELATÓRIOS ─────────── -->
+        <sc-if value="{{ isRelatorios }}" hint-placeholder-val="{{ false }}">
+          <div style="min-height: 100%; background: #FBF6EA; padding: 6px 20px 24px;">
+            <h2 style="margin: 0 0 16px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 26px; letter-spacing: -.02em; color: #1F2E15;">Relatórios</h2>
+
+            <div style="display: flex; gap: 7px; margin-bottom: 18px;">
+              <sc-for list="{{ periodos }}" as="p" hint-placeholder-count="3">
+                <button onClick="{{ p.pick }}" style="{{ p.style }}">{{ p.label }}</button>
+              </sc-for>
+            </div>
+
+            <div style="padding: 18px; border-radius: 20px; background: linear-gradient(160deg, #3D5A2E, #1F2E15); color: #F5ECD7; margin-bottom: 18px;">
+              <p style="margin: 0; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: rgba(245,236,215,.6);">Margem do período</p>
+              <p style="margin: 8px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 36px; letter-spacing: -.02em;">R$ 61.400</p>
+              <div style="display: flex; gap: 18px; margin-top: 14px;">
+                <div>
+                  <p style="margin: 0; font-size: 11.5px; color: rgba(245,236,215,.55);">Receita</p>
+                  <p style="margin: 2px 0 0; font-size: 16px; font-weight: 700; color: #A8CC8C;">R$ 97.200</p>
+                </div>
+                <div>
+                  <p style="margin: 0; font-size: 11.5px; color: rgba(245,236,215,.55);">Custo</p>
+                  <p style="margin: 2px 0 0; font-size: 16px; font-weight: 700; color: #E8A87C;">R$ 35.800</p>
+                </div>
+              </div>
+            </div>
+
+            <p style="margin: 0 0 10px; font-size: 11.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #9AA88A;">Comparativo por sítio</p>
+            <div style="padding: 16px; border-radius: 20px; background: #FFFDF8; border: 1px solid #E8DDC2; margin-bottom: 18px; display: flex; flex-direction: column; gap: 16px;">
+              <sc-for list="{{ compSitios }}" as="s" hint-placeholder-count="3">
+                <div>
+                  <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 8px;">
+                    <p style="margin: 0; font-size: 14px; font-weight: 700; color: #1F2E15;">{{ s.name }}</p>
+                    <p style="margin: 0; font-size: 12.5px; font-weight: 700; color: #3D5A2E;">{{ s.margem }}</p>
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 5px;">
+                    <div style="height: 8px; border-radius: 5px; background: #F0E7D2; overflow: hidden;"><div style="{{ s.barR }}"></div></div>
+                    <div style="height: 8px; border-radius: 5px; background: #F0E7D2; overflow: hidden;"><div style="{{ s.barC }}"></div></div>
+                  </div>
+                </div>
+              </sc-for>
+              <div style="display: flex; gap: 16px; padding-top: 4px;">
+                <span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #6B7A5A;"><span style="width: 10px; height: 10px; border-radius: 3px; background: #6E8F4E;"></span>Receita</span>
+                <span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #6B7A5A;"><span style="width: 10px; height: 10px; border-radius: 3px; background: #C17A4A;"></span>Custo</span>
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 9px;">
+              <button style="display: flex; align-items: center; justify-content: center; gap: 10px; height: 54px; border: none; border-radius: 16px; background: #3D5A2E; color: #FBF6EA; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 16px; cursor: pointer;" style-hover="background: #2E4522;">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M7 10l5 5 5-5"></path><path d="M12 15V3"></path></svg>
+                Baixar PDF do período
+              </button>
+              <button style="display: flex; align-items: center; justify-content: center; gap: 10px; height: 50px; border: 1.5px solid #DCCFB0; border-radius: 16px; background: transparent; color: #3D5A2E; font-family: Karla, sans-serif; font-weight: 700; font-size: 15px; cursor: pointer;" style-hover="border-color: #3D5A2E;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><path d="m16 6-4-4-4 4"></path><path d="M12 2v13"></path></svg>
+                Enviar por WhatsApp
+              </button>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ─────────── ADMIN · USUÁRIOS ─────────── -->
+        <sc-if value="{{ isUsuarios }}" hint-placeholder-val="{{ false }}">
+          <div style="min-height: 100%; background: #FBF6EA; padding: 6px 20px 24px;">
+            <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 18px;">
+              <h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 26px; letter-spacing: -.02em; color: #1F2E15;">Equipe</h2>
+              <button style="display: flex; align-items: center; gap: 7px; padding: 11px 14px; border-radius: 13px; border: none; background: #3D5A2E; color: #FBF6EA; font-family: Karla, sans-serif; font-weight: 700; font-size: 13.5px; cursor: pointer;" style-hover="background: #2E4522;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+                Novo
+              </button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 9px;">
+              <sc-for list="{{ usuarios }}" as="u" hint-placeholder-count="5">
+                <div style="display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 18px; background: #FFFDF8; border: 1px solid #E8DDC2;">
+                  <div style="{{ u.avatar }}">{{ u.initial }}</div>
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                      <p style="margin: 0; font-size: 14.5px; font-weight: 700; color: #1F2E15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ u.name }}</p>
+                      <sc-if value="{{ u.primary }}" hint-placeholder-val="{{ false }}">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D4A843" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto;"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path></svg>
+                      </sc-if>
+                    </div>
+                    <p style="margin: 2px 0 0; font-size: 12.5px; color: #8B9A7A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ u.sub }}</p>
+                  </div>
+                  <span style="{{ u.badge }}">{{ u.role }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="margin-top: 22px; padding: 16px; border-radius: 18px; background: #F2EAD5; border: 1px solid #E0D4B6;">
+              <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #6B7A5A;">Operadores lançam atividade e colheita. Só o administrador vê preços, custos e margem — e só ele cadastra talhões.</p>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ─────────── ADMIN · CONFIGURAÇÕES ─────────── -->
+        <sc-if value="{{ isConfig }}" hint-placeholder-val="{{ false }}">
+          <div style="min-height: 100%; background: #FBF6EA; padding: 6px 20px 24px;">
+            <h2 style="margin: 0 0 18px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 26px; letter-spacing: -.02em; color: #1F2E15;">Configurações</h2>
+            <sc-for list="{{ configGroups }}" as="g" hint-placeholder-count="3">
+              <div style="margin-bottom: 22px;">
+                <p style="margin: 0 0 10px; font-size: 11.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #9AA88A;">{{ g.title }}</p>
+                <div style="border-radius: 18px; overflow: hidden; border: 1px solid #E8DDC2; background: #FFFDF8;">
+                  <sc-for list="{{ g.items }}" as="i" hint-placeholder-count="3">
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 15px 16px; border-bottom: 1px solid #F0E7D2;">
+                      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#6B7A5A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto;"><path d="{{ i.iconPath }}"></path></svg>
+                      <div style="flex: 1; min-width: 0;">
+                        <p style="margin: 0; font-size: 14.5px; color: #1F2E15;">{{ i.label }}</p>
+                        <sc-if value="{{ i.hasHint }}" hint-placeholder-val="{{ false }}">
+                          <p style="margin: 2px 0 0; font-size: 12px; color: #A0AE90;">{{ i.hint }}</p>
+                        </sc-if>
+                      </div>
+                      <span style="font-size: 13px; font-weight: 600; color: #8B9A7A; flex: 0 0 auto;">{{ i.value }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+            <button style="width: 100%; height: 52px; border: 1.5px solid rgba(192,57,43,.4); border-radius: 16px; background: transparent; color: #C0392B; font-family: Karla, sans-serif; font-weight: 700; font-size: 15px; cursor: pointer;" style-hover="background: rgba(192,57,43,.07);">Sair</button>
+            <p style="margin: 16px 0 0; text-align: center; font-size: 11.5px; color: #B0BCA0;">IGUE Bananas · v2.0 · 27 talhões mapeados</p>
+          </div>
+        </sc-if>
+
+      </div>
+
+      <sc-if value="{{ chromeOn }}" hint-placeholder-val="{{ true }}">
+        <nav style="flex: 0 0 auto; display: flex; align-items: stretch; padding: 8px 6px 22px; background: #1F2E15; border-top: 1px solid rgba(232,223,198,.1); position: relative; z-index: 10;">
+          <sc-for list="{{ nav }}" as="n" hint-placeholder-count="4">
+            <button onClick="{{ n.go }}" style="{{ n.style }}">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ n.iconPath }}"></path></svg>
+              <span style="font-size: 10.5px; font-weight: 600; letter-spacing: .01em;">{{ n.label }}</span>
+            </button>
+          </sc-for>
+        </nav>
+      </sc-if>
+    </div>
+
+    <div style="display: flex; gap: 8px;">
+      <button onClick="{{ replaySplash }}" style="display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 12px; border: 1px solid rgba(232,223,198,.2); background: rgba(0,0,0,.25); color: #D4A843; font-family: Karla, sans-serif; font-weight: 600; font-size: 13px; cursor: pointer;" style-hover="border-color: #D4A843;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+        Rever abertura
+      </button>
+      <p style="margin: 0; align-self: center; font-size: 12.5px; color: rgba(232,223,198,.4);">{{ screenLabel }}</p>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1100,&quot;height&quot;:1000},&quot;role&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;OPERATOR&quot;,&quot;ADMIN&quot;],&quot;default&quot;:&quot;OPERATOR&quot;,&quot;tsType&quot;:&quot;'OPERATOR' | 'ADMIN'&quot;,&quot;section&quot;:&quot;Protótipo&quot;},&quot;mostrarValoresOperador&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Regras&quot;}}">
+const ICON = {
+  map: 'M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z M15 5.764v15 M9 3.236v15',
+  plus: 'M5 12h14 M12 5v14',
+  clipboard: 'M10 5H8a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2 M9 12h6 M9 16h4',
+  user: 'M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2 M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z',
+  home: 'M3 10.5 12 3l9 7.5 M5 9.5V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5',
+  chart: 'M3 3v16a2 2 0 0 0 2 2h16 M7 16v-5 M12 16V8 M17 16v-9',
+  leaf: 'M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12',
+  users: 'M18 21a8 8 0 0 0-12 0 M10 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3',
+  settings: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.8 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 7.28 19.4l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15H4.5a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 6.26 9.4l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 12 6.6V4.5a2 2 0 0 1 4 0v2.1a1.65 1.65 0 0 0 2.81 1.17l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 13.5h.1a2 2 0 0 1 0 4z',
+  droplets: 'M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z M12.56 6.6A11 11 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a7 7 0 0 1-11.91 4.97',
+  scissors: 'M6 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M20 4 8.12 15.88 M14.47 14.48 20 20 M8.12 8.12 12 12',
+  package: 'M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z M3.3 7 12 12l8.7-5 M12 22V12',
+  sprout: 'M7 20h10 M10 20c5.5-2.5.8-6.4 3-10 M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z',
+  shield: 'M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z',
+  ruler: 'm14.5 12.5 2-2 M11.5 9.5l2-2 M8.5 6.5l2-2 M17.5 15.5l2-2 M3 21 21 3l-3-3-18 18z',
+  wallet: 'M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1 M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4',
+  trendDown: 'M16 17h6v-6 M22 17l-8.5-8.5-5 5L2 7',
+  trendUp: 'M16 7h6v6 M22 7l-8.5 8.5-5-5L2 17',
+  sprout2: 'M12 22v-7 M9 8a5 5 0 0 1 6 0 M12 15a5 5 0 0 0-5-5H5a7 7 0 0 0 7 7z M12 15a5 5 0 0 1 5-5h2a7 7 0 0 1-7 7z',
+  alert: 'M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z M12 9v4 M12 17h.01',
+  wifiOff: 'M12 20h.01 M8.5 16.429a5 5 0 0 1 7 0 M5 12.859a10 10 0 0 1 5.17-2.69 M19 12.859a10 10 0 0 0-2.007-1.523 M2 8.82a15 15 0 0 1 4.177-2.643 M22 8.82a15 15 0 0 0-11.288-3.764 M2 2l20 20',
+  clock: 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M12 6v6l4 2',
+  bell: 'M10.268 21a2 2 0 0 0 3.464 0 M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326',
+  download: 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M7 10l5 5 5-5 M12 15V3',
+  refresh: 'M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8 M3 3v5h5',
+  door: 'M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9',
+  banknote: 'M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M6 12h.01 M18 12h.01',
+  spray: 'M3 3h.01 M7 5h.01 M11 7h.01 M3 7h.01 M7 9h.01 M3 11h.01 M14 3a2 2 0 0 1 2 2v2h-2 M16 7h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z',
+  cloudSun: 'M12 2v2 M5.22 5.22l1.42 1.42 M20 12h2 M15.66 6.64l1.42-1.42 M15.5 12a4 4 0 0 0-7.86-1 M6 20a4 4 0 1 1 .5-8h.5a5 5 0 0 1 9.7 1.6A3.5 3.5 0 0 1 18 20z',
+};
+
+const TIPOS = [
+  { id: 'PULVERIZACAO',    label: 'Pulverização',   icon: 'droplets',  color: '#3498DB' },
+  { id: 'ADUBACAO',        label: 'Adubação',       icon: 'sprout',    color: '#8B6F3E' },
+  { id: 'ROCAGEM',         label: 'Roçagem',        icon: 'scissors',  color: '#9B59B6' },
+  { id: 'DESFOLHA',        label: 'Desfolha',       icon: 'leaf',      color: '#6E8F4E' },
+  { id: 'DESBASTE',        label: 'Desbaste',       icon: 'sprout2',   color: '#4E7038' },
+  { id: 'ENSACAMENTO',     label: 'Ensacamento',    icon: 'package',   color: '#C17A4A' },
+  { id: 'ESCORA',          label: 'Escora',         icon: 'ruler',     color: '#8A7B5A' },
+  { id: 'IRRIGACAO',       label: 'Irrigação',      icon: 'droplets',  color: '#2E86C1' },
+  { id: 'RETIRADA_BANANA', label: 'Retirada banana',icon: 'leaf',      color: '#27AE60' },
+  { id: 'RETIRADA_CAIXAS', label: 'Retirada caixas',icon: 'package',   color: '#F39C12' },
+  { id: 'PLANTIO',         label: 'Plantio',        icon: 'sprout',    color: '#16A085' },
+  { id: 'OUTRO',           label: 'Outro',          icon: 'clipboard', color: '#95A5A6' },
+];
+
+const UNIDADES = ['kg', 'caixa', 'cacho', 'penca', 'dúzia', 'unidade', 'saco', 'tonelada'];
+
+const SITE_KEYS = ['sede', 'guanhanha', 'guanhanha2'];
+const SITE_NAMES = { sede: 'Sede', guanhanha: 'Guanhanhã', guanhanha2: 'Guanhanhã II' };
+
+const OP_NAV = [
+  { id: 'mapa',      label: 'Mapa',     icon: 'map' },
+  { id: 'registrar', label: 'Lançar',   icon: 'plus' },
+  { id: 'meus',      label: 'Meus',     icon: 'clipboard' },
+  { id: 'perfil',    label: 'Perfil',   icon: 'user' },
+];
+
+const AD_NAV = [
+  { id: 'inicio',     label: 'Início',     icon: 'home' },
+  { id: 'atividades', label: 'Atividades', icon: 'clipboard' },
+  { id: 'producao',   label: 'Produção',   icon: 'leaf' },
+  { id: 'relatorios', label: 'Relatórios', icon: 'chart' },
+  { id: 'mapa',       label: 'Mapa',       icon: 'map' },
+];
+
+const RAIL = [
+  { id: 'splash',     label: 'Abertura',            icon: 'sprout' },
+  { id: 'login',      label: 'Entrar',              icon: 'door' },
+  { id: 'mapa',       label: 'Mapa dos sítios',     icon: 'map' },
+  { id: 'registrar',  label: 'Registrar atividade', icon: 'plus' },
+  { id: 'colheita',   label: 'Registrar colheita',  icon: 'leaf' },
+  { id: 'meus',       label: 'Meus lançamentos',    icon: 'clipboard' },
+  { id: 'perfil',     label: 'Perfil do operador',  icon: 'user' },
+  { id: 'inicio',     label: 'Início (admin)',      icon: 'home' },
+  { id: 'atividades', label: 'Atividades (admin)',  icon: 'clipboard' },
+  { id: 'producao',   label: 'Produção (admin)',    icon: 'leaf' },
+  { id: 'relatorios', label: 'Relatórios',          icon: 'chart' },
+  { id: 'usuarios',   label: 'Equipe',              icon: 'users' },
+  { id: 'config',     label: 'Configurações',       icon: 'settings' },
+];
+
+const SCREEN_LABEL = {
+  splash: 'Abertura — folha crescendo, 2,4 s',
+  login: 'Entrada',
+  mapa: 'Operador · mapa em carrossel',
+  registrar: 'Operador · registrar atividade',
+  colheita: 'Operador · registrar colheita',
+  meus: 'Operador · meus lançamentos',
+  perfil: 'Operador · perfil e sincronização',
+  inicio: 'Admin · início',
+  atividades: 'Admin · atividades',
+  producao: 'Admin · produção',
+  relatorios: 'Admin · relatórios',
+  usuarios: 'Admin · equipe',
+  config: 'Admin · configurações',
+};
+
+const ADMIN_SCREENS = ['inicio', 'atividades', 'producao', 'relatorios', 'usuarios', 'config'];
+
+class Component extends DCLogic {
+  state = {
+    screen: 'splash',
+    role: 'OPERATOR',
+    siteIdx: 2,
+    maps: null,
+    plot: null,
+    formPlot: 'Nanica · Guanhanhã II',
+    tipo: 'PULVERIZACAO',
+    unidade: 'caixa',
+    dia: 'hoje',
+    pessoa: 'Eu (Josenildo)',
+    qtd: 12,
+    periodo: 'Mês',
+    saved: false,
+  };
+
+  componentDidMount() {
+    if (this.props.role && this.props.role !== this.state.role) {
+      this.setState({ role: this.props.role, screen: this.props.role === 'ADMIN' ? 'inicio' : 'mapa' });
+    }
+    try {
+      const s = localStorage.getItem('igue.siteIdx');
+      if (s !== null) this.setState({ siteIdx: Number(s) });
+    } catch (e) {}
+    fetch('assets/talhoes.json')
+      .then(r => r.json())
+      .then(maps => this.setState({ maps }))
+      .catch(() => {});
+    this.timer = setTimeout(() => {
+      if (this.state.screen === 'splash') this.setState({ screen: 'login' });
+    }, 2600);
+  }
+
+  componentWillUnmount() { clearTimeout(this.timer); }
+
+  componentDidUpdate() {
+    if (this.rail && this.state.maps && !this._railSet) {
+      this._railSet = true;
+      const w = this.rail.clientWidth;
+      if (w) this.rail.scrollLeft = this.state.siteIdx * w;
+    }
+    if (this.state.screen !== 'mapa') this._railSet = false;
+  }
+
+  go = (screen) => {
+    const role = ADMIN_SCREENS.indexOf(screen) >= 0 ? 'ADMIN'
+      : (['mapa', 'registrar', 'colheita', 'meus', 'perfil'].indexOf(screen) >= 0 ? 'OPERATOR' : this.state.role);
+    this.setState({ screen, role, saved: false, plot: null });
+  };
+
+  pickSite = (i) => {
+    try { localStorage.setItem('igue.siteIdx', String(i)); } catch (e) {}
+    this.setState({ siteIdx: i }, () => {
+      requestAnimationFrame(() => {
+        if (this.rail) this.rail.scrollLeft = i * this.rail.clientWidth;
+      });
+    });
+  };
+
+  onRailScroll = (e) => {
+    const el = e.currentTarget;
+    if (!el.clientWidth) return;
+    const i = Math.round(el.scrollLeft / el.clientWidth);
+    if (i !== this.state.siteIdx && i >= 0 && i < 3) {
+      try { localStorage.setItem('igue.siteIdx', String(i)); } catch (err) {}
+      this.setState({ siteIdx: i });
+    }
+  };
+
+  chip(active, activeBg, activeFg) {
+    return 'flex:0 0 auto;padding:10px 15px;min-height:44px;border-radius:13px;border:1.5px solid ' +
+      (active ? activeBg : '#E0D4B6') + ';background:' + (active ? activeBg : '#FFFDF8') +
+      ';color:' + (active ? (activeFg || '#FBF6EA') : '#6B7A5A') +
+      ';font-family:Karla,sans-serif;font-weight:700;font-size:13.5px;cursor:pointer;white-space:nowrap;';
+  }
+
+  renderVals() {
+    const st = this.state;
+    const role = st.role;
+    const showMoney = role === 'ADMIN' && this.props.mostrarValoresOperador !== false;
+    const siteKey = SITE_KEYS[st.siteIdx] || 'sede';
+    const mapData = st.maps || {};
+
+    const maps = SITE_KEYS.map((k) => {
+      const m = mapData[k];
+      if (!m) return { ready: false, wrap: 'position:relative;border-radius:20px;overflow:hidden;background:#2C3E1F;box-shadow:0 14px 30px -14px rgba(31,46,21,.55);', viewBox: '0 0 390 320', img: '', w: 390, h: 320, regions: [] };
+      return {
+        ready: true,
+        wrap: 'position:relative;border-radius:20px;overflow:hidden;background:#2C3E1F url(assets/' + k + '.png) center/100% 100% no-repeat;box-shadow:0 14px 30px -14px rgba(31,46,21,.55);',
+        viewBox: '0 0 ' + m.w + ' ' + m.h,
+        img: 'assets/' + k + '.png',
+        w: m.w, h: m.h,
+        regions: m.regions.map((r) => ({
+          points: r.pts.map(p => p[0] + ',' + p[1]).join(' '),
+          fill: 'rgba(' + r.color.join(',') + ',0.34)',
+          stroke: st.plot && st.plot.name === r.name && st.siteIdx === SITE_KEYS.indexOf(k) ? '#FBF6EA' : 'rgba(251,246,234,0.55)',
+          sw: st.plot && st.plot.name === r.name ? 5 : 2.5,
+          open: () => this.setState({ plot: { name: r.name, pes: r.pes, site: SITE_NAMES[k] }, siteIdx: SITE_KEYS.indexOf(k) }),
+        })),
+      };
+    });
+
+    const current = mapData[siteKey];
+    const regions = current ? current.regions : [];
+
+    const tipoObj = TIPOS.find(t => t.id === st.tipo) || TIPOS[0];
+
+    const feed = [
+      { tipo: 'RETIRADA_BANANA', hora: '07:12', local: 'Guanhanhã II · Nanica', resp: 'Josenildo', qtd: '180 caixas' },
+      { tipo: 'PULVERIZACAO',    hora: '08:40', local: 'Sede · Morrão',         resp: 'Antônio',   qtd: '4.618 pés' },
+      { tipo: 'ENSACAMENTO',     hora: '10:05', local: 'Guanhanhã · Ouro',      resp: 'Damião',    qtd: '620 cachos' },
+      { tipo: 'ROCAGEM',         hora: '13:20', local: 'Sede · Baixada',        resp: 'Raimundo',  qtd: '—' },
+      { tipo: 'RETIRADA_CAIXAS', hora: '15:48', local: 'Guanhanhã II · Pomar',  resp: 'Josenildo', qtd: '95 caixas' },
+    ].map((a) => {
+      const t = TIPOS.find(x => x.id === a.tipo);
+      return Object.assign({}, a, {
+        label: t.label, iconPath: ICON[t.icon], color: t.color,
+        iconWrap: 'width:34px;height:34px;flex:0 0 auto;border-radius:11px;display:flex;align-items:center;justify-content:center;background:' + t.color + '1E;color:' + t.color + ';',
+      });
+    });
+
+    const weekVals = [120, 210, 160, 240, 195, 315, 0];
+    const maxW = 315;
+    const weekBars = ['S', 'T', 'Q', 'Q', 'S', 'S', 'D'].map((d, i) => ({
+      d,
+      labelColor: i === 5 ? '#D4A843' : 'rgba(245,236,215,.45)',
+      bar: 'width:100%;border-radius:6px 6px 3px 3px;height:' + Math.max(4, Math.round(weekVals[i] / maxW * 56)) +
+        'px;background:' + (i === 5 ? 'linear-gradient(180deg,#D4A843,#C17A4A)' : 'rgba(168,204,140,.5)') + ';',
+    }));
+
+    return {
+      chromeOn: st.screen !== 'splash' && st.screen !== 'login',
+      isSplash: st.screen === 'splash',
+      isLogin: st.screen === 'login',
+      isMapa: st.screen === 'mapa',
+      isRegistrar: st.screen === 'registrar',
+      isColheita: st.screen === 'colheita',
+      isMeus: st.screen === 'meus',
+      isPerfil: st.screen === 'perfil',
+      isInicio: st.screen === 'inicio',
+      isAtividades: st.screen === 'atividades',
+      isProducao: st.screen === 'producao',
+      isRelatorios: st.screen === 'relatorios',
+      isUsuarios: st.screen === 'usuarios',
+      isConfig: st.screen === 'config',
+      screenLabel: SCREEN_LABEL[st.screen] || '',
+
+      setOperator: () => this.go('mapa'),
+      setAdmin: () => this.go('inicio'),
+      enterOperator: () => this.go('mapa'),
+      enterAdmin: () => this.go('inicio'),
+      goMapa: () => this.go('mapa'),
+      goRegistrar: () => this.setState({ screen: 'registrar', formPlot: st.plot ? st.plot.name + ' · ' + st.plot.site : st.formPlot, plot: null }),
+      goColheita: () => this.setState({ screen: 'colheita', formPlot: st.plot ? st.plot.name + ' · ' + st.plot.site : st.formPlot, plot: null }),
+      goAtividades: () => this.go('atividades'),
+      replaySplash: () => this.setState({ screen: 'splash' }),
+      closePlot: () => this.setState({ plot: null }),
+
+      tabOp: 'flex:1;padding:9px 0;border-radius:9px;border:none;cursor:pointer;font-family:Karla,sans-serif;font-weight:700;font-size:13px;background:' +
+        (role === 'OPERATOR' ? '#3D5A2E' : 'transparent') + ';color:' + (role === 'OPERATOR' ? '#F5ECD7' : 'rgba(232,223,198,.5)') + ';',
+      tabAd: 'flex:1;padding:9px 0;border-radius:9px;border:none;cursor:pointer;font-family:Karla,sans-serif;font-weight:700;font-size:13px;background:' +
+        (role === 'ADMIN' ? '#C17A4A' : 'transparent') + ';color:' + (role === 'ADMIN' ? '#FFF8EC' : 'rgba(232,223,198,.5)') + ';',
+
+      rail: RAIL.map(r => ({
+        label: r.label, iconPath: ICON[r.icon], go: () => this.go(r.id),
+        style: 'display:block;width:100%;text-align:left;padding:9px 11px;border-radius:11px;border:none;cursor:pointer;font-family:Karla,sans-serif;font-size:13.5px;font-weight:' +
+          (st.screen === r.id ? '700' : '500') + ';background:' + (st.screen === r.id ? 'rgba(212,168,67,.16)' : 'transparent') +
+          ';color:' + (st.screen === r.id ? '#D4A843' : 'rgba(232,223,198,.62)') + ';',
+      })),
+
+      nav: (role === 'ADMIN' ? AD_NAV : OP_NAV).map(n => ({
+        label: n.label, iconPath: ICON[n.icon], go: () => this.go(n.id),
+        style: 'flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:56px;padding:6px 2px;border:none;background:transparent;cursor:pointer;font-family:Karla,sans-serif;color:' +
+          (st.screen === n.id ? '#D4A843' : 'rgba(245,236,215,.55)') + ';',
+      })),
+
+      maps,
+      siteName: SITE_NAMES[siteKey],
+      siteMeta: regions.length ? regions.length + ' talhões · ' + regions.reduce((s, r) => s + (parseInt(String(r.pes).replace(/\D/g, ''), 10) || 0), 0).toLocaleString('pt-BR') + ' pés' : 'carregando mapa…',
+      plotCount: regions.length + ' talhões',
+      siteChips: SITE_KEYS.map((k, i) => ({
+        label: SITE_NAMES[k], go: () => this.pickSite(i),
+        style: this.chip(i === st.siteIdx, '#3D5A2E'),
+      })),
+      dots: SITE_KEYS.map((k, i) => ({
+        style: 'width:' + (i === st.siteIdx ? '22px' : '7px') + ';height:7px;border-radius:5px;background:' + (i === st.siteIdx ? '#3D5A2E' : '#DCCFB0') + ';transition:width .2s;',
+      })),
+      plotChips: regions.map(r => ({
+        name: r.name, pes: r.pes,
+        dot: 'width:12px;height:12px;flex:0 0 auto;border-radius:4px;background:rgb(' + r.color.join(',') + ');',
+        open: () => this.setState({ plot: { name: r.name, pes: r.pes, site: SITE_NAMES[siteKey] } }),
+      })),
+
+      hasPlot: !!st.plot,
+      plotName: st.plot ? st.plot.name : '',
+      plotPes: st.plot ? st.plot.pes : '',
+
+      formPlot: st.formPlot,
+      tipos: TIPOS.map(t => ({
+        label: t.label, iconPath: ICON[t.icon], pick: () => this.setState({ tipo: t.id }),
+        style: 'display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:14px 12px;min-height:82px;border-radius:16px;border:1.5px solid ' +
+          (st.tipo === t.id ? t.color : '#E8DDC2') + ';background:' + (st.tipo === t.id ? t.color + '14' : '#FFFDF8') +
+          ';color:' + (st.tipo === t.id ? t.color : '#6B7A5A') + ';cursor:pointer;text-align:left;font-family:Karla,sans-serif;',
+      })),
+      dias: ['Hoje', 'Ontem', 'Escolher'].map(d => ({
+        label: d, pick: () => this.setState({ dia: d.toLowerCase() }),
+        style: this.chip(st.dia === d.toLowerCase(), '#3D5A2E') + 'flex:1;justify-content:center;text-align:center;',
+      })),
+      unidades: UNIDADES.map(u => ({
+        label: u, pick: () => this.setState({ unidade: u }),
+        style: this.chip(st.unidade === u, '#C17A4A', '#FFF8EC'),
+      })),
+      pessoas: ['Eu (Josenildo)', 'Antônio', 'Damião', 'Raimundo', 'Diarista'].map(p => ({
+        label: p, pick: () => this.setState({ pessoa: p }),
+        style: this.chip(st.pessoa === p, '#3D5A2E'),
+      })),
+      produtos: [
+        { label: 'Banana prata', c: '#8DB87A' },
+        { label: 'Banana nanica', c: '#D4A843' },
+        { label: 'Pitaya', c: '#E91E8C' },
+      ].map(p => ({
+        label: p.label, pick: () => this.setState({ produto: p.label }),
+        dot: 'width:10px;height:10px;border-radius:50%;background:' + p.c + ';display:inline-block;margin-right:7px;',
+        style: this.chip((st.produto || 'Banana nanica') === p.label, p.c, '#1F2E15') + 'display:flex;align-items:center;',
+      })),
+      qtd: st.qtd,
+      inc: () => this.setState(s => ({ qtd: s.qtd + 1 })),
+      dec: () => this.setState(s => ({ qtd: Math.max(0, s.qtd - 1) })),
+      save: () => this.setState({ saved: true }),
+      closeSaved: () => this.setState({ saved: false, screen: st.screen === 'colheita' ? 'meus' : 'mapa' }),
+      saved: st.saved,
+      savedMsg: tipoObj.label + ' · ' + st.qtd + ' ' + st.unidade + ' · ' + st.formPlot,
+      showMoney: showMoney,
+      hideMoney: !showMoney,
+      receitaEst: 'R$ ' + (st.qtd * 20).toLocaleString('pt-BR', { minimumFractionDigits: 2 }),
+
+      meus: [
+        { tipo: 'RETIRADA_BANANA', local: 'Nanica · Guanhanhã II', qtd: '180 cx', status: 'Na fila', sync: false },
+        { tipo: 'ENSACAMENTO',     local: '900 · Guanhanhã II',    qtd: '240 cachos', status: 'Na fila', sync: false },
+        { tipo: 'PULVERIZACAO',    local: 'Rodolfo · Guanhanhã II',qtd: '725 pés', status: 'Enviado', sync: true },
+        { tipo: 'ROCAGEM',         local: 'Abelha · Guanhanhã II', qtd: '—', status: 'Enviado', sync: true },
+        { tipo: 'DESFOLHA',        local: 'Pomar · Guanhanhã II',  qtd: '—', status: 'Enviado', sync: true },
+      ].map(a => {
+        const t = TIPOS.find(x => x.id === a.tipo);
+        return Object.assign({}, a, {
+          label: t.label, iconPath: ICON[t.icon],
+          statusColor: a.sync ? '#6E8F4E' : '#B87708',
+          iconWrap: 'width:38px;height:38px;flex:0 0 auto;border-radius:12px;display:flex;align-items:center;justify-content:center;background:' + t.color + '1E;color:' + t.color + ';',
+        });
+      }),
+
+      prefs: [
+        { iconPath: ICON.map,      label: 'Sítio padrão',       value: SITE_NAMES[siteKey] },
+        { iconPath: ICON.ruler,    label: 'Unidade preferida',  value: st.unidade },
+        { iconPath: ICON.bell,     label: 'Avisos de sincronia',value: 'Ligado' },
+        { iconPath: ICON.wifiOff,  label: 'Modo economia',      value: 'Auto' },
+      ],
+
+      hoje: feed,
+      weekBars,
+      kpis: [
+        { label: 'Custo semana', value: 'R$ 8.420', sub: '−6% vs anterior', iconPath: ICON.wallet,    color: '#C17A4A' },
+        { label: 'Margem',       value: 'R$ 16.380', sub: '66% da receita',  iconPath: ICON.trendUp,   color: '#6E8F4E' },
+        { label: 'Atividades',   value: '38',        sub: '7 hoje',          iconPath: ICON.clipboard, color: '#3498DB' },
+        { label: 'Pés produzindo', value: '46.310',  sub: '27 talhões',      iconPath: ICON.sprout2,   color: '#4E7038' },
+      ],
+      porSitio: [
+        { name: 'Guanhanhã II', value: '540 cx', pct: 44, c: '#3D5A2E' },
+        { name: 'Sede',         value: '430 cx', pct: 35, c: '#6E8F4E' },
+        { name: 'Guanhanhã',    value: '270 cx', pct: 21, c: '#C17A4A' },
+      ].map(s => Object.assign({}, s, { bar: 'height:100%;width:' + s.pct + '%;border-radius:6px;background:' + s.c + ';' })),
+      alertas: [
+        { title: '2 lançamentos não subiram', text: 'Josenildo, ontem 17:40 — aparelho sem sinal em Guanhanhã II.', iconPath: ICON.wifiOff, color: '#B87708', bg: 'rgba(243,156,18,.1)', bd: 'rgba(243,156,18,.3)' },
+        { title: 'Grotão sem lançamento há 12 dias', text: 'Último registro: roçagem em 22/07.', iconPath: ICON.clock, color: '#C0392B', bg: 'rgba(192,57,43,.08)', bd: 'rgba(192,57,43,.25)' },
+        { title: 'Feijão fora do padrão', text: 'Colheita 38% abaixo da média do sítio neste mês.', iconPath: ICON.alert, color: '#A8632F', bg: 'rgba(193,122,74,.1)', bd: 'rgba(193,122,74,.28)' },
+      ].map(a => Object.assign({}, a, {
+        wrap: 'display:flex;gap:11px;padding:14px;border-radius:16px;background:' + a.bg + ';border:1px solid ' + a.bd + ';',
+      })),
+
+      filtros: [
+        { label: 'Últimos 7 dias', on: true },
+        { label: 'Todos os sítios', on: false },
+        { label: 'Todos os tipos', on: false },
+        { label: 'Quem fez', on: false },
+      ].map(f => ({ label: f.label, style: this.chip(f.on, '#3D5A2E') })),
+
+      dias3: [
+        { day: 'Hoje · 3 ago', count: '7 lançamentos', items: feed.slice(0, 3).map(a => Object.assign({}, a, { custo: 'R$ 320' })) },
+        { day: 'Sábado · 2 ago', count: '9 lançamentos', items: feed.slice(2, 5).map(a => Object.assign({}, a, { custo: 'R$ 180' })) },
+      ],
+
+      produtoRows: [
+        { name: 'Banana prata', qtd: '3.120 cx · 56,2 t', receita: 'R$ 62,4k', c: '#8DB87A' },
+        { name: 'Banana nanica', qtd: '1.480 cx · 26,6 t', receita: 'R$ 29,6k', c: '#D4A843' },
+        { name: 'Pitaya', qtd: '260 cx · 4,6 t', receita: 'R$ 5,2k', c: '#E91E8C' },
+      ].map(p => Object.assign({}, p, { dotBig: 'width:14px;height:36px;flex:0 0 auto;border-radius:5px;background:' + p.c + ';' })),
+
+      colheitas: [
+        { dia: '03', mes: 'ago', qtd: '180 caixas · nanica', local: 'Guanhanhã II · Nanica', receita: 'R$ 3.600' },
+        { dia: '02', mes: 'ago', qtd: '2,4 t · prata',       local: 'Sede · Morrão',         receita: 'R$ 4.800' },
+        { dia: '02', mes: 'ago', qtd: '620 cachos · prata',  local: 'Guanhanhã · Ouro',      receita: 'R$ 3.100' },
+        { dia: '01', mes: 'ago', qtd: '95 caixas · pitaya',  local: 'Guanhanhã II · Pomar',  receita: 'R$ 1.900' },
+        { dia: '31', mes: 'jul', qtd: '310 caixas · prata',  local: 'Sede · Baixada',        receita: 'R$ 6.200' },
+      ],
+
+      periodos: ['Semana', 'Mês', 'Safra'].map(p => ({
+        label: p, pick: () => this.setState({ periodo: p }),
+        style: this.chip(st.periodo === p, '#3D5A2E') + 'flex:1;justify-content:center;text-align:center;',
+      })),
+      compSitios: [
+        { name: 'Guanhanhã II', margem: 'R$ 28.400', r: 100, c: 52 },
+        { name: 'Sede',         margem: 'R$ 21.900', r: 82,  c: 44 },
+        { name: 'Guanhanhã',    margem: 'R$ 11.100', r: 48,  c: 26 },
+      ].map(s => Object.assign({}, s, {
+        barR: 'height:100%;width:' + s.r + '%;border-radius:5px;background:#6E8F4E;',
+        barC: 'height:100%;width:' + s.c + '%;border-radius:5px;background:#C17A4A;',
+      })),
+
+      usuarios: [
+        { name: 'Fábio Igue',  sub: 'fabio@iguebananas.com.br · admin principal', role: 'Admin', primary: true, c: '#D4A843' },
+        { name: 'Carlos Igue', sub: 'carlos@iguebananas.com.br', role: 'Admin', primary: false, c: '#C17A4A' },
+        { name: 'Josenildo Barbosa', sub: 'Guanhanhã II · 7 lançamentos hoje', role: 'Operador', primary: false, c: '#6E8F4E' },
+        { name: 'Antônio Ferreira',  sub: 'Sede · 4 lançamentos hoje', role: 'Operador', primary: false, c: '#6E8F4E' },
+        { name: 'Damião Costa',      sub: 'Guanhanhã · 2 lançamentos hoje', role: 'Operador', primary: false, c: '#6E8F4E' },
+        { name: 'Raimundo Alves',    sub: 'Guanhanhã · inativo desde 12/07', role: 'Inativo', primary: false, c: '#B0BCA0' },
+      ].map(u => Object.assign({}, u, {
+        initial: u.name[0],
+        avatar: 'width:44px;height:44px;flex:0 0 auto;border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:17px;background:' + u.c + '26;color:' + u.c + ';',
+        badge: 'flex:0 0 auto;padding:5px 10px;border-radius:20px;font-size:11.5px;font-weight:700;background:' + u.c + '1E;color:' + u.c + ';',
+      })),
+
+      configGroups: [
+        { title: 'Operação', items: [
+          { iconPath: ICON.ruler, label: 'Unidades ativas', value: '8', hint: 'kg, caixa, cacho, penca, dúzia, unidade, saco, tonelada', hasHint: true },
+          { iconPath: ICON.banknote, label: 'Tabela de preços', value: 'Editar', hint: 'Preço por produto e unidade — usado no cálculo da receita', hasHint: true },
+          { iconPath: ICON.clipboard, label: 'Tipos de atividade', value: '12', hint: '', hasHint: false },
+        ] },
+        { title: 'Talhões e mapas', items: [
+          { iconPath: ICON.map, label: 'Sítios', value: '3', hint: '', hasHint: false },
+          { iconPath: ICON.sprout, label: 'Talhões', value: '27', hint: 'Todos com polígono traçado', hasHint: true },
+        ] },
+        { title: 'Sistema', items: [
+          { iconPath: ICON.bell, label: 'Resumo semanal', value: 'Domingo', hint: '', hasHint: false },
+          { iconPath: ICON.refresh, label: 'Sincronização', value: 'Automática', hint: '', hasHint: false },
+          { iconPath: ICON.shield, label: 'Registro de alterações', value: 'Ver', hint: '', hasHint: false },
+        ] },
+      ],
+
+      railRef: (el) => { this.rail = el; },
+      onRailScroll: this.onRailScroll,
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,15 +1,26 @@
 'use client'
 
-import { useState } from 'react'
-import { signIn, getSession } from 'next-auth/react'
+import { useEffect, useState } from 'react'
+import { signIn, getSession, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { WifiOff } from 'lucide-react'
 import Image from 'next/image'
 
 export default function LoginPage() {
   const router = useRouter()
+  const { data: session, status } = useSession()
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  // Se já tem sessão ativa, pula o login
+  useEffect(() => {
+    if (status === 'authenticated') {
+      const role = (session?.user as any)?.role
+      router.replace(role === 'ADMIN' ? '/dashboard' : '/mapa')
+    }
+  }, [session, status, router])
+
+  if (status === 'loading' || status === 'authenticated') return null
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
