@@ -62,9 +62,9 @@ export async function GET(req: Request) {
     db.activity.findMany({
       where:   { date: dateFilter, ...(siteId ? { plot: { siteId } } : {}) },
       orderBy: { date: 'desc' },
-      take:    5,
+      take:    10,
       include: {
-        plot: { select: { code: true, name: true, productType: true } },
+        plot: { select: { code: true, name: true, productType: true, site: { select: { name: true } } } },
       },
     }),
   ])
