@@ -54,8 +54,7 @@ function RecentActivityCard({ a, isAdmin }: { a: any; isAdmin: boolean }) {
             {ACTIVITY_LABELS[a.type as ActivityType] ?? a.type}
           </p>
           <p className="text-xs text-muted-foreground truncate">
-            {a.plot?.name}
-            {siteName ? <span className="opacity-60"> · {siteName}</span> : null}
+            {siteName ? `${siteName} — ` : ''}{a.plot?.name}
             {' · '}{a.responsible}
           </p>
         </div>
