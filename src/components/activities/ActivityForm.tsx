@@ -46,6 +46,7 @@ export function ActivityForm({ defaultPlotId, onSuccess }: ActivityFormProps = {
   const setPending = useSyncStore(s => s.setPending)
   const [saved, setSaved] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const { data: plots } = useQuery({
     queryKey: ['plots'],
@@ -65,51 +66,57 @@ export function ActivityForm({ defaultPlotId, onSuccess }: ActivityFormProps = {
 
   async function onSubmit(values: FormValues) {
     setSaving(true)
-    const localId  = uuidv4()
-    const isOnline = typeof navigator !== 'undefined' && navigator.onLine
+    setSubmitError(null)
+    try {
+      const localId  = uuidv4()
+      const isOnline = typeof navigator !== 'undefined' && navigator.onLine
 
-    const record = {
-      localId,
-      plotId:      values.plotId,
-      userId:      (session?.user as any)?.id ?? 'unknown',
-      date:        new Date(values.date).toISOString(),
-      type:        values.type,
-      responsible: values.responsible,
-      quantity:    values.quantity,
-      unit:        values.unit,
-      cost:        values.cost,
-      notes:       values.notes,
-      confirmed:   false,
-      syncStatus:  'PENDING' as const,
-      createdAt:   new Date().toISOString(),
-    }
-
-    // Always save locally first
-    await offlineDb.activities.add(record)
-
-    if (isOnline) {
-      try {
-        const res = await fetch(getApiUrl('/api/activities'), {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ ...record, syncStatus: 'SYNCED' }),
-        })
-        if (res.ok) {
-          await offlineDb.activities.update(localId, { syncStatus: 'SYNCED' })
-        }
-      } catch {
-        // network error — stays PENDING in IndexedDB
+      const record = {
+        localId,
+        plotId:      values.plotId,
+        userId:      (session?.user as any)?.id ?? 'unknown',
+        date:        new Date(values.date).toISOString(),
+        type:        values.type,
+        responsible: values.responsible,
+        quantity:    values.quantity,
+        unit:        values.unit,
+        cost:        values.cost,
+        notes:       values.notes,
+        confirmed:   false,
+        syncStatus:  'PENDING' as const,
+        createdAt:   new Date().toISOString(),
       }
-    }
 
-    const count = await getPendingCount()
-    setPending(count)
-    setSaving(false)
-    setSaved(true)
-    if (onSuccess) {
-      setTimeout(onSuccess, 1500)
-    } else {
-      setTimeout(() => router.back(), 1500)
+      // Always save locally first
+      await offlineDb.activities.add(record)
+
+      if (isOnline) {
+        try {
+          const res = await fetch(getApiUrl('/api/activities'), {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ ...record, syncStatus: 'SYNCED' }),
+          })
+          if (res.ok) {
+            await offlineDb.activities.update(localId, { syncStatus: 'SYNCED' })
+          }
+        } catch {
+          // network error — stays PENDING in IndexedDB
+        }
+      }
+
+      const count = await getPendingCount()
+      setPending(count)
+      setSaved(true)
+      if (onSuccess) {
+        setTimeout(onSuccess, 1500)
+      } else {
+        setTimeout(() => router.back(), 1500)
+      }
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : 'Erro ao salvar. Tente novamente.')
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -218,6 +225,12 @@ export function ActivityForm({ defaultPlotId, onSuccess }: ActivityFormProps = {
           </div>
         </div>
       </details>
+
+      {submitError && (
+        <p className="text-sm text-destructive text-center rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2">
+          {submitError}
+        </p>
+      )}
 
       <Button
         type="submit"
