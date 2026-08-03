@@ -1,38 +1,66 @@
-import type { User, Plot, Activity, Harvest, Farm, ProductType } from '@prisma/client'
+export const UNITS = [
+  'KG', 'CAIXA', 'CACHO', 'PENCA', 'DUZIA', 'UNIDADE', 'SACO', 'TONELADA',
+] as const
+export type Unit = typeof UNITS[number]
 
-export type { User, Plot, Activity, Harvest, Farm, ProductType }
-
-export type UserWithoutPassword = Omit<User, 'passwordHash'>
-
-export type PlotWithDetails = Plot & {
-  activities: Activity[]
-  harvests: Harvest[]
+export const UNIT_LABELS: Record<Unit, string> = {
+  KG: 'kg',
+  CAIXA: 'caixa',
+  CACHO: 'cacho',
+  PENCA: 'penca',
+  DUZIA: 'dúzia',
+  UNIDADE: 'unidade',
+  SACO: 'saco',
+  TONELADA: 'tonelada',
 }
 
-export const PRODUCT_LABELS: Record<string, string> = {
-  BANANA_PRATA:  'Banana Prata',
-  BANANA_NANICA: 'Banana Nanica',
-  PITAYA:        'Pitaya',
-}
+export const ACTIVITY_TYPES = [
+  'PULVERIZACAO', 'ADUBACAO', 'ROCAGEM', 'DESFOLHA', 'DESBASTE', 'ENSACAMENTO',
+  'ESCORA', 'IRRIGACAO', 'RETIRADA_BANANA', 'RETIRADA_CAIXAS', 'PLANTIO', 'OUTRO',
+] as const
+export type ActivityType = typeof ACTIVITY_TYPES[number]
 
-export const PRODUCT_COLORS: Record<string, string> = {
-  BANANA_PRATA:  '#27AE60',
-  BANANA_NANICA: '#F4D03F',
-  PITAYA:        '#E91E8C',
-}
-
-export const ACTIVITY_LABELS: Record<string, string> = {
+export const ACTIVITY_LABELS: Record<ActivityType, string> = {
   PULVERIZACAO:    'Pulverização',
+  ADUBACAO:        'Adubação',
   ROCAGEM:         'Roçagem',
-  RETIRADA_BANANA: 'Retirada de Banana',
-  RETIRADA_CAIXAS: 'Retirada de Caixas',
+  DESFOLHA:        'Desfolha',
+  DESBASTE:        'Desbaste',
+  ENSACAMENTO:     'Ensacamento',
+  ESCORA:          'Escora',
+  IRRIGACAO:       'Irrigação',
+  RETIRADA_BANANA: 'Retirada de banana',
+  RETIRADA_CAIXAS: 'Retirada de caixas',
+  PLANTIO:         'Plantio',
   OUTRO:           'Outro',
 }
 
-// Activity types that generate revenue (sale/withdrawal), not expense
-export const REVENUE_ACTIVITY_TYPES = ['RETIRADA_CAIXAS', 'RETIRADA_BANANA']
-
-export const UNIT_LABELS: Record<string, string> = {
-  CAIXA:   'Caixa',
-  UNIDADE: 'Unidade',
+export const ACTIVITY_COLORS: Record<ActivityType, string> = {
+  PULVERIZACAO:    '#3498DB',
+  ADUBACAO:        '#8B6F3E',
+  ROCAGEM:         '#9B59B6',
+  DESFOLHA:        '#6E8F4E',
+  DESBASTE:        '#4E7038',
+  ENSACAMENTO:     '#C17A4A',
+  ESCORA:          '#8A7B5A',
+  IRRIGACAO:       '#2E86C1',
+  RETIRADA_BANANA: '#27AE60',
+  RETIRADA_CAIXAS: '#F39C12',
+  PLANTIO:         '#16A085',
+  OUTRO:           '#95A5A6',
 }
+
+export const PRODUCT_LABELS = {
+  BANANA_PRATA:  'Banana prata',
+  BANANA_NANICA: 'Banana nanica',
+  PITAYA:        'Pitaya',
+} as const
+
+export const PRODUCT_COLORS = {
+  BANANA_PRATA:  '#8DB87A',
+  BANANA_NANICA: '#D4A843',
+  PITAYA:        '#E91E8C',
+} as const
+
+// Activity types that generate revenue (sale/withdrawal), not expense
+export const REVENUE_ACTIVITY_TYPES = ['RETIRADA_CAIXAS', 'RETIRADA_BANANA'] as const

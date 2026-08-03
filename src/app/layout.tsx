@@ -1,12 +1,13 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
+import { Bricolage_Grotesque, Karla } from 'next/font/google'
 import './globals.css'
 import { Providers } from '@/components/Providers'
 
-const inter = Inter({ subsets: ['latin'] })
+const bricolage = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-bricolage' })
+const karla     = Karla({ subsets: ['latin'], variable: '--font-karla' })
 
 export const viewport: Viewport = {
-  themeColor: '#166534',
+  themeColor: '#1F2E15',
   viewportFit: 'cover',
   width: 'device-width',
   initialScale: 1,
@@ -29,7 +30,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
-      <body className={inter.className}>
+      <body className={`${bricolage.variable} ${karla.variable}`}>
         <Providers>{children}</Providers>
       </body>
     </html>

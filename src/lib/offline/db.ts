@@ -23,6 +23,7 @@ export interface LocalHarvest {
   date:         string
   quantity:     number
   unit:         string
+  productType?: string
   pricePerUnit: number
   totalRevenue: number
   notes?:       string

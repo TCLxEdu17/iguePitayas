@@ -182,7 +182,7 @@ export function ReportPDF({ data, startDate, endDate }: Props) {
               {Object.entries(data.byProduct).map(([pt, stats], i) => (
                 <View key={pt} style={i % 2 === 0 ? s.tableRow : s.tableRowAlt}>
                   <Text style={[s.td, { flex: 2, fontFamily: 'Helvetica-Bold', color: GREEN }]}>
-                    {PRODUCT_LABELS[pt] ?? pt}
+                    {PRODUCT_LABELS[pt as keyof typeof PRODUCT_LABELS] ?? pt}
                   </Text>
                   <Text style={[s.td, { flex: 2, color: MUTED }]}>
                     {stats.count} colheitas · {stats.quantity.toLocaleString('pt-BR')} un.
@@ -238,7 +238,7 @@ export function ReportPDF({ data, startDate, endDate }: Props) {
               {data.activities.map((a: any, i: number) => (
                 <View key={a.id} style={i % 2 === 0 ? s.tableRow : s.tableRowAlt}>
                   <Text style={[s.td, { flex: 1 }]}>{fmtDate(a.date)}</Text>
-                  <Text style={[s.td, { flex: 2 }]}>{ACTIVITY_LABELS[a.type] ?? a.type}</Text>
+                  <Text style={[s.td, { flex: 2 }]}>{ACTIVITY_LABELS[a.type as keyof typeof ACTIVITY_LABELS] ?? a.type}</Text>
                   <Text style={[s.td, { flex: 1 }]}>{a.plot?.code}</Text>
                   <Text style={[s.td, { flex: 2 }]}>{a.responsible}</Text>
                   <Text style={[s.tdRight, { flex: 1 }]}>

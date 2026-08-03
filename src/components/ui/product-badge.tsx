@@ -6,8 +6,8 @@ interface ProductBadgeProps {
 }
 
 export function ProductBadge({ productType, className }: ProductBadgeProps) {
-  const label = PRODUCT_LABELS[productType] ?? productType
-  const color = PRODUCT_COLORS[productType] ?? '#888'
+  const label = PRODUCT_LABELS[productType as keyof typeof PRODUCT_LABELS] ?? productType
+  const color = PRODUCT_COLORS[productType as keyof typeof PRODUCT_COLORS] ?? '#888'
 
   return (
     <span

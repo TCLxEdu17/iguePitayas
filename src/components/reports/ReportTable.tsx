@@ -54,7 +54,7 @@ export function ReportTable({ data }: { data: ReportData }) {
           <div className="space-y-2">
             {Object.entries(data.byProduct).map(([pt, stats]) => (
               <div key={pt} className="flex items-center justify-between rounded-lg border bg-white p-3">
-                <span className="font-medium text-sm">{PRODUCT_LABELS[pt] ?? pt}</span>
+                <span className="font-medium text-sm">{PRODUCT_LABELS[pt as keyof typeof PRODUCT_LABELS] ?? pt}</span>
                 <div className="text-right text-sm">
                   <p className="text-muted-foreground">{stats.count} colheitas · {stats.quantity.toLocaleString('pt-BR')} un.</p>
                   <p className="font-bold" style={{ color: 'var(--color-primary)' }}>{fmt(stats.revenue)}</p>
@@ -121,7 +121,7 @@ export function ReportTable({ data }: { data: ReportData }) {
                 {data.activities.map((a: any, i: number) => (
                   <tr key={a.id} className={i % 2 === 0 ? '' : 'bg-muted/20'}>
                     <td className="py-2 px-3">{new Date(a.date).toLocaleDateString('pt-BR')}</td>
-                    <td className="py-2 px-3">{ACTIVITY_LABELS[a.type] ?? a.type}</td>
+                    <td className="py-2 px-3">{ACTIVITY_LABELS[a.type as keyof typeof ACTIVITY_LABELS] ?? a.type}</td>
                     <td className="py-2 px-3">{a.plot?.code}</td>
                     <td className="py-2 px-3">{a.responsible}</td>
                     <td className="py-2 px-3 text-right">{a.cost != null ? fmt(a.cost) : '—'}</td>

@@ -56,11 +56,30 @@ export async function POST(req: Request) {
   const existing = await db.harvest.findUnique({ where: { localId: parsed.data.localId } })
   if (existing) return NextResponse.json({ error: 'Conflict' }, { status: 409 })
 
+  // Calculate price from ProductPrice table
+  let pricePerUnit = 0
+  let totalRevenue = 0
+  if (parsed.data.productType) {
+    const productPrice = await db.productPrice.findUnique({
+      where: { productType_unit: { productType: parsed.data.productType as any, unit: parsed.data.unit as any } },
+    }).catch(() => null)
+    pricePerUnit = productPrice?.price ?? 0
+    totalRevenue = parsed.data.quantity * pricePerUnit
+  }
+
   const harvest = await db.harvest.create({
     data: {
-      ...parsed.data,
-      date:   new Date(parsed.data.date),
-      userId: session.user.id ?? 'system',
+      localId:      parsed.data.localId,
+      plotId:       parsed.data.plotId,
+      date:         new Date(parsed.data.date),
+      quantity:     parsed.data.quantity,
+      unit:         parsed.data.unit as any,
+      productType:  parsed.data.productType as any ?? null,
+      pricePerUnit,
+      totalRevenue,
+      notes:        parsed.data.notes,
+      syncStatus:   'SYNCED',
+      userId:       session.user.id ?? 'system',
     },
     include: { plot: { select: { name: true } } },
   })

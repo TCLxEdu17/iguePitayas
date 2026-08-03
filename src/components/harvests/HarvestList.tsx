@@ -48,7 +48,7 @@ export function HarvestList() {
             <div className="space-y-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-medium text-sm">
-                  {h.quantity} {UNIT_LABELS[h.unit] ?? h.unit}(s)
+                  {h.quantity} {UNIT_LABELS[h.unit as keyof typeof UNIT_LABELS] ?? h.unit}(s)
                 </span>
                 {h.plot && <ProductBadge productType={h.plot.productType} />}
               </div>
@@ -57,7 +57,7 @@ export function HarvestList() {
               </p>
               {isAdmin && (
                 <p className="text-xs text-muted-foreground">
-                  R$ {h.pricePerUnit?.toFixed(2)} / {UNIT_LABELS[h.unit] ?? h.unit}
+                  R$ {h.pricePerUnit?.toFixed(2)} / {UNIT_LABELS[h.unit as keyof typeof UNIT_LABELS] ?? h.unit}
                 </p>
               )}
             </div>

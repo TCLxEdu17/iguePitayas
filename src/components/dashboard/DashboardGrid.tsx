@@ -5,14 +5,12 @@ import { useState } from 'react'
 import { KPICard } from './KPICard'
 import { Button } from '@/components/ui/button'
 import { ACTIVITY_LABELS, UNIT_LABELS } from '@/types'
-import type { Activity } from '@/types'
+import type { ActivityType } from '@/types'
 import { getApiUrl } from '@/lib/api-url'
 import { WeatherWidget } from './WeatherWidget'
 import { DailyTipCard } from './DailyTipCard'
 import { SiteFilter } from '@/components/common/SiteFilter'
 import { useSession } from 'next-auth/react'
-
-type ActivityType = Activity['type']
 
 const PERIODS = [
   { value: 'day',   label: 'Hoje'   },
@@ -103,7 +101,7 @@ function RecentActivityCard({ a, isAdmin }: { a: any; isAdmin: boolean }) {
                 <span className="text-muted-foreground">Quantidade</span>
                 <p className="font-medium">
                   {a.quantity.toLocaleString('pt-BR')}
-                  {a.unit ? ` ${UNIT_LABELS[a.unit] ?? a.unit}` : ''}
+                  {a.unit ? ` ${UNIT_LABELS[a.unit as keyof typeof UNIT_LABELS] ?? a.unit}` : ''}
                 </p>
               </div>
             )}

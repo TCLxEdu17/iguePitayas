@@ -87,10 +87,7 @@ export default function SiteMapaPage() {
             </button>
           </div>
 
-          <ActivityForm
-            defaultPlotId={selectedPlot.id}
-            onSuccess={() => setSelectedPlot(null)}
-          />
+          <ActivityForm />
         </div>
       )}
     </div>

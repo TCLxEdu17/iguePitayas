@@ -27,15 +27,28 @@ enum PlotStatus {
 
 enum ActivityType {
   PULVERIZACAO
+  ADUBACAO
   ROCAGEM
+  DESFOLHA
+  DESBASTE
+  ENSACAMENTO
+  ESCORA
+  IRRIGACAO
   RETIRADA_BANANA
   RETIRADA_CAIXAS
+  PLANTIO
   OUTRO
 }
 
 enum Unit {
+  KG
   CAIXA
+  CACHO
+  PENCA
+  DUZIA
   UNIDADE
+  SACO
+  TONELADA
 }
 
 enum SyncStatus {
@@ -161,6 +174,7 @@ model Harvest {
   date         DateTime
   quantity     Float
   unit         Unit
+  productType  ProductType?
   pricePerUnit Float
   totalRevenue Float
   notes        String?
@@ -170,4 +184,14 @@ model Harvest {
 
   plot Plot @relation(fields: [plotId], references: [id])
   user User @relation(fields: [userId], references: [id])
+}
+
+model ProductPrice {
+  id          String      @id @default(cuid())
+  productType ProductType
+  unit        Unit
+  price       Float
+  updatedAt   DateTime    @updatedAt
+
+  @@unique([productType, unit])
 }

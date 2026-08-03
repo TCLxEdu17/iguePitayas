@@ -26,7 +26,7 @@ export function ActivityList() {
       a.plot?.name?.toLowerCase().includes(q) ||
       a.plot?.code?.toLowerCase().includes(q) ||
       a.responsible?.toLowerCase().includes(q) ||
-      ACTIVITY_LABELS[a.type]?.toLowerCase().includes(q)
+      ACTIVITY_LABELS[a.type as keyof typeof ACTIVITY_LABELS]?.toLowerCase().includes(q)
     )
   })
 
@@ -55,7 +55,7 @@ export function ActivityList() {
             <div key={a.id} className="flex items-center justify-between rounded-lg border bg-white p-3 gap-3">
               <div className="space-y-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-medium text-sm">{ACTIVITY_LABELS[a.type] ?? a.type}</span>
+                  <span className="font-medium text-sm">{ACTIVITY_LABELS[a.type as keyof typeof ACTIVITY_LABELS] ?? a.type}</span>
                   {a.plot && <ProductBadge productType={a.plot.productType} />}
                 </div>
                 <p className="text-xs text-muted-foreground truncate">
