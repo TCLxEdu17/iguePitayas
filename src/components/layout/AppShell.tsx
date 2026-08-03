@@ -3,7 +3,6 @@
 import { Sidebar } from './Sidebar'
 import { BottomNav } from './BottomNav'
 import { SyncBadge } from './SyncBadge'
-import { SplashScreen } from './SplashScreen'
 import { PrimaryAdminEffects } from './PrimaryAdminEffects'
 import { VersionBadge } from './VersionBadge'
 import { useUIStore } from '@/stores/ui.store'
@@ -14,7 +13,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen" style={{ background: 'var(--color-paper)' }}>
-      <SplashScreen />
       <PrimaryAdminEffects />
 
       {/* gaveta só no desktop; no mobile a navegação é a barra de baixo */}

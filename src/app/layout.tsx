@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Bricolage_Grotesque, Karla } from 'next/font/google'
 import './globals.css'
 import { Providers } from '@/components/Providers'
+import { SplashScreen } from '@/components/layout/SplashScreen'
 
 const bricolage = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-bricolage' })
 const karla     = Karla({ subsets: ['latin'], variable: '--font-karla' })
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR">
       <body className={`${bricolage.variable} ${karla.variable}`}>
+        <SplashScreen />
         <Providers>{children}</Providers>
       </body>
     </html>
