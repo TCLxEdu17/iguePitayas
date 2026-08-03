@@ -2,11 +2,9 @@
 
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { z } from 'zod'
 import { v4 as uuidv4 } from 'uuid'
 import { offlineDb } from '@/lib/offline/db'
 import { useSyncStore } from '@/stores/sync.store'
@@ -21,18 +19,16 @@ import {
 import { ACTIVITY_LABELS, REVENUE_ACTIVITY_TYPES } from '@/types'
 import { getApiUrl } from '@/lib/api-url'
 
-const formSchema = z.object({
-  plotId:      z.string().min(1, 'Selecione o talhão'),
-  date:        z.string().min(1, 'Data obrigatória'),
-  type:        z.string().min(1, 'Selecione o tipo de atividade'),
-  responsible: z.string().min(1, 'Responsável obrigatório'),
-  quantity:    z.number().optional(),
-  unit:        z.string().optional(),
-  cost:        z.number().optional(),
-  notes:       z.string().optional(),
-})
-
-type FormValues = z.infer<typeof formSchema>
+interface FormValues {
+  plotId:      string
+  date:        string
+  type:        string
+  responsible: string
+  quantity?:   number
+  unit?:       string
+  cost?:       number
+  notes?:      string
+}
 
 interface ActivityFormProps {
   defaultPlotId?: string
@@ -44,8 +40,8 @@ export function ActivityForm({ defaultPlotId, onSuccess }: ActivityFormProps = {
   const { data: session } = useSession()
   const isAdmin    = (session?.user as any)?.role === 'ADMIN'
   const setPending = useSyncStore(s => s.setPending)
-  const [saved, setSaved] = useState(false)
-  const [saving, setSaving] = useState(false)
+  const [saved, setSaved]           = useState(false)
+  const [saving, setSaving]         = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
 
   const { data: plots } = useQuery({
@@ -54,10 +50,10 @@ export function ActivityForm({ defaultPlotId, onSuccess }: ActivityFormProps = {
   })
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       date:   new Date().toISOString().split('T')[0],
       plotId: defaultPlotId ?? '',
+      type:   '',
     },
   })
 
@@ -65,6 +61,20 @@ export function ActivityForm({ defaultPlotId, onSuccess }: ActivityFormProps = {
   const isRevenue = REVENUE_ACTIVITY_TYPES.includes(selectedType)
 
   async function onSubmit(values: FormValues) {
+    // Manual validation
+    if (!values.plotId) {
+      form.setError('plotId', { message: 'Selecione o talhão' })
+      return
+    }
+    if (!values.type) {
+      form.setError('type', { message: 'Selecione o tipo de atividade' })
+      return
+    }
+    if (!values.responsible?.trim()) {
+      form.setError('responsible', { message: 'Responsável obrigatório' })
+      return
+    }
+
     setSaving(true)
     setSubmitError(null)
     try {
@@ -77,7 +87,7 @@ export function ActivityForm({ defaultPlotId, onSuccess }: ActivityFormProps = {
         userId:      (session?.user as any)?.id ?? 'unknown',
         date:        new Date(values.date).toISOString(),
         type:        values.type,
-        responsible: values.responsible,
+        responsible: values.responsible.trim(),
         quantity:    values.quantity,
         unit:        values.unit,
         cost:        values.cost,
@@ -136,7 +146,13 @@ export function ActivityForm({ defaultPlotId, onSuccess }: ActivityFormProps = {
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-lg">
       <div className="space-y-2">
         <Label htmlFor="plotId">Talhão *</Label>
-        <Select defaultValue={defaultPlotId} onValueChange={(v) => form.setValue('plotId', v)}>
+        <Select
+          defaultValue={defaultPlotId}
+          onValueChange={(v) => {
+            form.setValue('plotId', v)
+            form.clearErrors('plotId')
+          }}
+        >
           <SelectTrigger id="plotId">
             <SelectValue placeholder="Selecione o talhão" />
           </SelectTrigger>
@@ -157,13 +173,15 @@ export function ActivityForm({ defaultPlotId, onSuccess }: ActivityFormProps = {
         <div className="space-y-2">
           <Label htmlFor="date">Data *</Label>
           <Input id="date" type="date" {...form.register('date')} />
-          {form.formState.errors.date && (
-            <p className="text-xs text-destructive">{form.formState.errors.date.message}</p>
-          )}
         </div>
         <div className="space-y-2">
           <Label htmlFor="type">Tipo de Atividade *</Label>
-          <Select onValueChange={(v) => form.setValue('type', v)}>
+          <Select
+            onValueChange={(v) => {
+              form.setValue('type', v)
+              form.clearErrors('type')
+            }}
+          >
             <SelectTrigger id="type">
               <SelectValue placeholder="Selecione" />
             </SelectTrigger>
@@ -181,7 +199,15 @@ export function ActivityForm({ defaultPlotId, onSuccess }: ActivityFormProps = {
 
       <div className="space-y-2">
         <Label htmlFor="responsible">Responsável *</Label>
-        <Input id="responsible" {...form.register('responsible')} placeholder="Nome do responsável" />
+        <Input
+          id="responsible"
+          {...form.register('responsible')}
+          placeholder="Nome do responsável"
+          onChange={(e) => {
+            form.setValue('responsible', e.target.value)
+            form.clearErrors('responsible')
+          }}
+        />
         {form.formState.errors.responsible && (
           <p className="text-xs text-destructive">{form.formState.errors.responsible.message}</p>
         )}
