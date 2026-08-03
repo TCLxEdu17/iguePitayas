@@ -1,14 +1,16 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
 
 const KEY = 'igue.splashSeen'
 
-export function SplashScreen({ duration = 2400 }: { duration?: number }) {
+export function SplashScreen({ duration = 3000 }: { duration?: number }) {
   const [show, setShow] = useState(false)
 
-  useEffect(() => {
+  // useLayoutEffect runs before the browser paints — prevents the login page
+  // from being visible even for a single frame before the splash appears
+  useLayoutEffect(() => {
     if (sessionStorage.getItem(KEY)) return
     setShow(true)
     const t = setTimeout(() => {
