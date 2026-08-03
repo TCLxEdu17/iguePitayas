@@ -4,8 +4,9 @@ import { useState } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useQuery } from '@tanstack/react-query'
 import {
-  Map, Pencil, Bell, WifiOff, DollarSign, Tag, Wheat, RefreshCw, Clock,
+  Map, Pencil, Bell, WifiOff, DollarSign, Tag, Wheat, RefreshCw, Clock, Users, ChevronRight,
 } from 'lucide-react'
+import Link from 'next/link'
 import { useSyncStore } from '@/stores/sync.store'
 import { getApiUrl } from '@/lib/api-url'
 import { syncAll, getPendingCount } from '@/lib/offline/sync'
@@ -267,6 +268,33 @@ function AdminSettings({ session }: { session: any }) {
       >
         Configurações
       </h1>
+
+      {/* Acesso rápido */}
+      <div style={{ marginBottom: 22 }}>
+        <SectionLabel>Gestão</SectionLabel>
+        <div style={{ borderRadius: 18, background: '#FFFDF8', border: '1px solid #EDE3CC', overflow: 'hidden' }}>
+          <Link href="/admin/usuarios" style={{ textDecoration: 'none' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, minHeight: 56, padding: '0 16px', borderBottom: '1px solid #F0E7D2' }}>
+              <Users size={19} strokeWidth={1.9} color="#6B7A5A" style={{ flexShrink: 0 }} />
+              <div style={{ flex: 1 }}>
+                <p style={{ fontSize: 14.5, color: '#1F2E15', margin: 0, fontWeight: 500 }}>Equipe</p>
+                <p style={{ fontSize: 12, color: '#A0AE90', margin: 0 }}>Criar, editar e desativar usuários</p>
+              </div>
+              <ChevronRight size={16} color="#B0BCA0" />
+            </div>
+          </Link>
+          <Link href="/relatorios" style={{ textDecoration: 'none' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, minHeight: 56, padding: '0 16px' }}>
+              <RefreshCw size={19} strokeWidth={1.9} color="#6B7A5A" style={{ flexShrink: 0 }} />
+              <div style={{ flex: 1 }}>
+                <p style={{ fontSize: 14.5, color: '#1F2E15', margin: 0, fontWeight: 500 }}>Relatórios de uso</p>
+                <p style={{ fontSize: 12, color: '#A0AE90', margin: 0 }}>Margem, receita e comparativo por sítio</p>
+              </div>
+              <ChevronRight size={16} color="#B0BCA0" />
+            </div>
+          </Link>
+        </div>
+      </div>
 
       {/* Operação */}
       <div style={{ marginBottom: 22 }}>

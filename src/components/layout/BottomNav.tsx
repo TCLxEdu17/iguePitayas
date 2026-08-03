@@ -12,7 +12,7 @@ type Item = { label: string; href: string; icon: LucideIcon }
 
 const OPERATOR_ITEMS: Item[] = [
   { label: 'Mapa',   href: '/mapa',                  icon: Map },
-  { label: 'Lançar', href: '/mapa',                  icon: Plus },
+  { label: 'Lançar', href: '/atividades/novo',        icon: Plus },
   { label: 'Meus',   href: '/atividades/historico',  icon: ClipboardList },
   { label: 'Perfil', href: '/configuracoes',         icon: User },
 ]

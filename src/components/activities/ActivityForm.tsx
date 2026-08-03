@@ -114,11 +114,24 @@ export function ActivityForm() {
       <h1 className="pb-3.5 pt-1 font-display text-[21px] font-bold">Nova atividade</h1>
 
       {/* talhão */}
+      {!plotId && (
+        <button
+          onClick={() => router.push('/mapa')}
+          className="mb-6 w-full rounded-[18px] p-4 text-left"
+          style={{ background: '#2C3E1F', border: '1.5px dashed rgba(212,168,67,.4)' }}
+        >
+          <p className="text-[11px] uppercase mb-1" style={{ letterSpacing: '.14em', color: 'rgba(245,236,215,.55)' }}>Talhão</p>
+          <p className="font-display text-[17px] font-bold" style={{ color: 'var(--color-gold)' }}>
+            Toque para escolher no mapa →
+          </p>
+        </button>
+      )}
+      {plotId && (
       <div className="mb-6 flex items-center gap-3 rounded-[18px] p-3.5" style={{ background: '#2C3E1F', color: 'var(--color-surface)' }}>
         <div className="min-w-0 flex-1">
           <p className="text-[11px] uppercase" style={{ letterSpacing: '.14em', color: 'rgba(245,236,215,.55)' }}>Talhão</p>
           <p className="font-display text-[18px] font-bold">
-            {plot ? `${plot.name} · ${plot.site?.name ?? ''}` : 'Selecione no mapa'}
+            {plot ? `${plot.name} · ${plot.site?.name ?? ''}` : '…'}
           </p>
         </div>
         <button onClick={() => router.push('/mapa')} className="rounded-[11px] px-3 py-2 text-[12.5px] font-bold"
@@ -126,6 +139,7 @@ export function ActivityForm() {
           Trocar
         </button>
       </div>
+      )}
 
       {/* tipo */}
       <p className="mb-2.5 text-xs font-bold uppercase" style={{ letterSpacing: '.1em', color: 'var(--color-ink-soft)' }}>
