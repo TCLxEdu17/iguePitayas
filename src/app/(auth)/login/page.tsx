@@ -35,7 +35,7 @@ export default function LoginPage() {
 
     const session = await getSession()
     const role = (session?.user as any)?.role
-    router.push(role === 'ADMIN' ? '/dashboard' : '/sitios')
+    router.push(role === 'ADMIN' ? '/dashboard' : '/mapa')
   }
 
   return (

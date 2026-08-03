@@ -9,7 +9,7 @@ export default withAuth(
     const { pathname } = req.nextUrl
 
     if (role !== 'ADMIN' && ADMIN_ROUTES.some(r => pathname.startsWith(r))) {
-      return NextResponse.redirect(new URL('/sitios', req.url))
+      return NextResponse.redirect(new URL('/mapa', req.url))
     }
 
     return NextResponse.next()
