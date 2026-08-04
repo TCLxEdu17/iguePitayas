@@ -81,9 +81,7 @@ export function Sidebar() {
       {/* Header */}
       <div className="mb-6 flex items-start justify-between">
         <div>
-          <h1 className="text-lg font-bold tracking-wide" style={{ color: '#D4A843' }}>
-            🌾 IGUE Bananas
-          </h1>
+          <img src="/logo.png" alt="IGUE Bananas" style={{ height: 48, width: 'auto' }} />
           <div className={cn('flex items-center gap-2 mt-3', isPrimary && 'primary-admin-glow p-1 -ml-1')}>
             <div
               className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"

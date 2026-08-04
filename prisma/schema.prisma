@@ -49,6 +49,7 @@ enum Unit {
   UNIDADE
   SACO
   TONELADA
+  LITRO
 }
 
 enum SyncStatus {
@@ -125,9 +126,10 @@ model Activity {
   date        DateTime
   type        ActivityType
   responsible String
-  quantity    Float?
-  unit        Unit?
-  cost        Float?
+  quantity     Float?
+  unit         Unit?
+  hoursWorked  Float?
+  cost         Float?
   notes       String?
   confirmed   Boolean      @default(false)
   syncStatus  SyncStatus   @default(SYNCED)

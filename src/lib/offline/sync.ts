@@ -60,10 +60,11 @@ export async function syncActivities(): Promise<void> {
         body: JSON.stringify(record),
       })
 
-      if (res.status === 409) {
-        await offlineDb.activities.update(record.localId, { syncStatus: 'CONFLICT' })
-      } else if (res.ok) {
+      if (res.ok) {
         await offlineDb.activities.update(record.localId, { syncStatus: 'SYNCED' })
+      } else {
+        // 409 = conflict, 4xx = validation error — mark as CONFLICT so it doesn't block forever
+        await offlineDb.activities.update(record.localId, { syncStatus: 'CONFLICT' })
       }
     } catch {
       // network error — leave as PENDING
@@ -84,10 +85,10 @@ export async function syncHarvests(): Promise<void> {
         body: JSON.stringify(record),
       })
 
-      if (res.status === 409) {
-        await offlineDb.harvests.update(record.localId, { syncStatus: 'CONFLICT' })
-      } else if (res.ok) {
+      if (res.ok) {
         await offlineDb.harvests.update(record.localId, { syncStatus: 'SYNCED' })
+      } else {
+        await offlineDb.harvests.update(record.localId, { syncStatus: 'CONFLICT' })
       }
     } catch {
       // network error — leave as PENDING

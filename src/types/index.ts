@@ -1,10 +1,11 @@
 export const UNITS = [
-  'KG', 'CAIXA', 'CACHO', 'PENCA', 'DUZIA', 'UNIDADE', 'SACO', 'TONELADA',
+  'KG', 'LITRO', 'CAIXA', 'CACHO', 'PENCA', 'DUZIA', 'UNIDADE', 'SACO', 'TONELADA',
 ] as const
 export type Unit = typeof UNITS[number]
 
 export const UNIT_LABELS: Record<Unit, string> = {
   KG: 'kg',
+  LITRO: 'litro',
   CAIXA: 'caixa',
   CACHO: 'cacho',
   PENCA: 'penca',
@@ -16,6 +17,7 @@ export const UNIT_LABELS: Record<Unit, string> = {
 
 const UNIT_PLURAL_LABELS: Record<Unit, string> = {
   KG: 'kg',
+  LITRO: 'litros',
   CAIXA: 'caixas',
   CACHO: 'cachos',
   PENCA: 'pencas',
@@ -83,7 +85,7 @@ export const REVENUE_ACTIVITY_TYPES = ['RETIRADA_CAIXAS', 'RETIRADA_BANANA'] as 
 
 /** Suggested default unit for each activity type */
 export const ACTIVITY_DEFAULT_UNIT: Record<ActivityType, Unit> = {
-  PULVERIZACAO:    'UNIDADE',
+  PULVERIZACAO:    'LITRO',
   ADUBACAO:        'SACO',
   ROCAGEM:         'UNIDADE',
   DESFOLHA:        'UNIDADE',

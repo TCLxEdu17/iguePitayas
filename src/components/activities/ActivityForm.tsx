@@ -32,6 +32,7 @@ export function ActivityForm() {
   const [dataManual, setDataManual] = useState(new Date().toISOString().slice(0, 10))
   const [qtd, setQtd] = useState(0)
   const [unidade, setUnidade] = useState<Unit>(ACTIVITY_DEFAULT_UNIT['PULVERIZACAO'])
+  const [horas, setHoras] = useState('')
   const [responsavel, setResponsavel] = useState('')
   const [notas, setNotas] = useState('')
 
@@ -80,6 +81,7 @@ export function ActivityForm() {
       responsible: responsavel,
       quantity: qtd || undefined,
       unit: qtd ? unidade : undefined,
+      hoursWorked: horas ? parseFloat(horas) : undefined,
       notes: notas || undefined,
       confirmed: true,
       syncStatus: 'PENDING' as const,
@@ -101,7 +103,7 @@ export function ActivityForm() {
     setSaving(false)
 
     if (again) {
-      setQtd(0); setNotas('')
+      setQtd(0); setNotas(''); setHoras('')
     } else {
       setSaved(true)
     }
@@ -216,6 +218,27 @@ export function ActivityForm() {
             {UNIT_LABELS[u]}
           </button>
         ))}
+      </div>
+
+      {/* horas trabalhadas */}
+      <p className="mb-2.5 text-xs font-bold uppercase" style={{ letterSpacing: '.1em', color: 'var(--color-ink-soft)' }}>
+        Horas trabalhadas <span className="font-medium normal-case" style={{ color: 'var(--color-ink-faint)' }}>· opcional</span>
+      </p>
+      <div className="mb-6 flex items-stretch gap-2">
+        <button onClick={() => setHoras(h => String(Math.max(0, (parseFloat(h) || 0) - 0.5)))}
+          className="w-11 shrink-0 rounded-[14px] text-2xl font-bold"
+          style={{ border: '1.5px solid var(--color-line-strong)', background: '#FFFDF8', color: 'var(--color-primary)' }}>−</button>
+        <input
+          value={horas}
+          onChange={e => setHoras(e.target.value.replace(/[^0-9.,]/g, '').replace(',', '.'))}
+          inputMode="decimal"
+          placeholder="0"
+          className="min-w-0 flex-1 rounded-[14px] text-center font-display text-[28px] font-bold"
+          style={{ height: 62, border: '1.5px solid var(--color-line-strong)', background: '#FFFDF8' }}
+        />
+        <button onClick={() => setHoras(h => String((parseFloat(h) || 0) + 0.5))}
+          className="w-11 shrink-0 rounded-[14px] text-2xl font-bold"
+          style={{ border: '1.5px solid var(--color-line-strong)', background: '#FFFDF8', color: 'var(--color-primary)' }}>+</button>
       </div>
 
       {/* quem */}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useRef } from 'react'
 import { useSyncStore } from '@/stores/sync.store'
 import { getPendingCount, syncAll } from '@/lib/offline/sync'
 
@@ -21,17 +21,22 @@ export function useSync() {
     setSyncing(true)
     try {
       await syncAll()
-      await refresh()
     } finally {
+      await refresh()
       setSyncing(false)
     }
   }, [isSyncing, setSyncing, refresh])
 
+  // Keep a stable ref to sync so the online listener never goes stale
+  const syncRef = useRef(sync)
+  useEffect(() => { syncRef.current = sync }, [sync])
+
   useEffect(() => {
     refresh()
-    window.addEventListener('online', sync)
-    return () => window.removeEventListener('online', sync)
-  }, [refresh, sync])
+    const handler = () => syncRef.current()
+    window.addEventListener('online', handler)
+    return () => window.removeEventListener('online', handler)
+  }, [refresh])
 
   return { pendingCount, isSyncing, sync, refresh }
 }
