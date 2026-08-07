@@ -72,40 +72,43 @@ export function ActivityForm() {
   async function save(again: boolean) {
     if (!plotId) return
     setSaving(true)
-    const record = {
-      localId: uuidv4(),
-      plotId,
-      userId: (session?.user as any)?.id ?? 'unknown',
-      date: resolveDate().toISOString(),
-      type: tipo,
-      responsible: responsavel,
-      quantity: qtd || undefined,
-      unit: qtd ? unidade : undefined,
-      hoursWorked: horas ? parseFloat(horas) : undefined,
-      notes: notas || undefined,
-      confirmed: true,
-      syncStatus: 'PENDING' as const,
-      createdAt: new Date().toISOString(),
-    }
+    try {
+      const record = {
+        localId: uuidv4(),
+        plotId,
+        userId: (session?.user as any)?.id ?? 'unknown',
+        date: resolveDate().toISOString(),
+        type: tipo,
+        responsible: responsavel,
+        quantity: qtd || undefined,
+        unit: qtd ? unidade : undefined,
+        hoursWorked: horas ? parseFloat(horas) : undefined,
+        notes: notas || undefined,
+        confirmed: true,
+        syncStatus: 'PENDING' as const,
+        createdAt: new Date().toISOString(),
+      }
 
-    await offlineDb.activities.add(record)
-    if (navigator.onLine) {
-      try {
-        const res = await fetch(getApiUrl('/api/activities'), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...record, syncStatus: 'SYNCED' }),
-        })
-        if (res.ok) await offlineDb.activities.update(record.localId, { syncStatus: 'SYNCED' })
-      } catch { /* fica PENDING */ }
-    }
-    setPending(await getPendingCount())
-    setSaving(false)
+      await offlineDb.activities.add(record)
+      if (navigator.onLine) {
+        try {
+          const res = await fetch(getApiUrl('/api/activities'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...record, syncStatus: 'SYNCED' }),
+          })
+          if (res.ok) await offlineDb.activities.update(record.localId, { syncStatus: 'SYNCED' })
+        } catch { /* fica PENDING */ }
+      }
+      setPending(await getPendingCount())
 
-    if (again) {
-      setQtd(0); setNotas(''); setHoras('')
-    } else {
-      setSaved(true)
+      if (again) {
+        setQtd(0); setNotas(''); setHoras('')
+      } else {
+        setSaved(true)
+      }
+    } finally {
+      setSaving(false)
     }
   }
 

@@ -1,5 +1,10 @@
+import { Suspense } from 'react'
 import { ActivityForm } from '@/components/activities/ActivityForm'
 
 export default function NovaAtividadePage() {
-  return <ActivityForm />
+  return (
+    <Suspense>
+      <ActivityForm />
+    </Suspense>
+  )
 }
