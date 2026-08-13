@@ -76,7 +76,7 @@ export default function HistoricoAtividadesPage() {
             fontFamily: 'var(--font-bricolage)',
             fontSize: 26,
             fontWeight: 700,
-            color: '#1F2E15',
+            color: 'var(--color-ink)',
             margin: '0 0 16px',
           }}
         >
@@ -102,8 +102,8 @@ export default function HistoricoAtividadesPage() {
                 borderRadius: 9999,
                 padding: '0 16px',
                 border: activeChip === chip.id ? 'none' : '1.5px solid #D8CEBC',
-                background: activeChip === chip.id ? '#3D5A2E' : '#FFFDF8',
-                color: activeChip === chip.id ? '#F5ECD7' : '#6B7A5A',
+                background: activeChip === chip.id ? '#3D5A2E' : 'var(--color-surface)',
+                color: activeChip === chip.id ? '#F5ECD7' : 'var(--color-ink-soft)',
                 fontSize: 13.5,
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -132,13 +132,13 @@ export default function HistoricoAtividadesPage() {
             fontFamily: 'var(--font-bricolage)',
             fontSize: 26,
             fontWeight: 700,
-            color: '#1F2E15',
+            color: 'var(--color-ink)',
             margin: 0,
           }}
         >
           Meus lançamentos
         </h1>
-        <p style={{ fontSize: 13.5, color: '#6B7A5A', margin: '4px 0 0' }}>
+        <p style={{ fontSize: 13.5, color: 'var(--color-ink-soft)', margin: '4px 0 0' }}>
           {todayDateLabel()}
         </p>
       </div>
@@ -185,7 +185,7 @@ export default function HistoricoAtividadesPage() {
           style={{
             flex: 1,
             borderRadius: 16,
-            background: '#FFFDF8',
+            background: 'var(--color-surface)',
             border: '1.5px solid rgba(243,156,18,.4)',
             padding: 14,
           }}

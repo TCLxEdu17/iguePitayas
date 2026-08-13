@@ -39,18 +39,19 @@
 }
 
 html.dark {
-  --color-paper:              #131C09;
-  --color-surface:            #1C2A0F;
-  --color-line:               #2A3C18;
-  --color-line-strong:        #35491F;
-  --color-ink:                #EDE4CE;
+  /* Paleta Noite — fundo grafite quase preto c/ toque de verde */
+  --color-paper:              #121413;
+  --color-surface:            #1A1E18;
+  --color-line:               #252B22;
+  --color-line-strong:        #313829;
+  --color-ink:                #ECEBE6;
   --color-ink-soft:           #8A9878;
-  --color-ink-faint:          #5C6A50;
-  --color-canopy:             #0A1206;
-  --color-primary:            #5B7F40;
-  --color-primary-foreground: #0E160A;
-  --color-leaf:               #7EA05E;
-  --color-leaf-light:         #6E8F4E;
+  --color-ink-faint:          #556050;
+  --color-canopy:             #0C0E0B;
+  --color-primary:            #9CC178;
+  --color-primary-foreground: #121413;
+  --color-leaf:               #9CC178;
+  --color-leaf-light:         #B5D49A;
 }
 
 @layer base {

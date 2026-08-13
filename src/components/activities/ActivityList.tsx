@@ -68,7 +68,7 @@ function OperatorItem({ activity }: { activity: any }) {
     <div
       style={{
         borderRadius: 14,
-        background: '#FFFDF8',
+        background: 'var(--color-surface)',
         border: '1px solid #E8DDC2',
         padding: '12px 14px',
         display: 'flex',
@@ -94,10 +94,10 @@ function OperatorItem({ activity }: { activity: any }) {
 
       {/* Info */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontSize: 14.5, fontWeight: 700, color: '#1F2E15', margin: 0, lineHeight: 1.2 }}>
+        <p style={{ fontSize: 14.5, fontWeight: 700, color: 'var(--color-ink)', margin: 0, lineHeight: 1.2 }}>
           {label}
         </p>
-        <p style={{ fontSize: 12, color: '#8B9A7A', margin: '2px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <p style={{ fontSize: 12, color: 'var(--color-ink-faint)', margin: '2px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {location}
         </p>
       </div>
@@ -129,7 +129,7 @@ function AdminItem({ activity }: { activity: any }) {
     <div
       style={{
         borderRadius: 14,
-        background: '#FFFDF8',
+        background: 'var(--color-surface)',
         border: '1px solid #E8DDC2',
         padding: '12px 14px',
         display: 'flex',
@@ -155,10 +155,10 @@ function AdminItem({ activity }: { activity: any }) {
 
       {/* Info */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontSize: 14.5, fontWeight: 700, color: '#1F2E15', margin: 0, lineHeight: 1.2 }}>
+        <p style={{ fontSize: 14.5, fontWeight: 700, color: 'var(--color-ink)', margin: 0, lineHeight: 1.2 }}>
           {label}
         </p>
-        <p style={{ fontSize: 12, color: '#8B9A7A', margin: '2px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <p style={{ fontSize: 12, color: 'var(--color-ink-faint)', margin: '2px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {location} {activity.responsible ? `· ${activity.responsible}` : ''}
         </p>
       </div>
@@ -212,10 +212,10 @@ export function ActivityList() {
         {sortedDates.map(dateKey => (
           <div key={dateKey}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-              <span style={{ fontSize: 11.5, fontWeight: 700, color: '#9AA88A', textTransform: 'uppercase', letterSpacing: '0.14em' }}>
+              <span style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--color-ink-faint)', textTransform: 'uppercase', letterSpacing: '0.14em' }}>
                 {formatGroupLabel(dateKey)}
               </span>
-              <span style={{ fontSize: 12, color: '#B0BCA0' }}>
+              <span style={{ fontSize: 12, color: 'var(--color-ink-faint)' }}>
                 {grouped[dateKey].length}
               </span>
             </div>
@@ -227,7 +227,7 @@ export function ActivityList() {
           </div>
         ))}
         {sortedDates.length === 0 && (
-          <p style={{ textAlign: 'center', fontSize: 13.5, color: '#6B7A5A', paddingTop: 40 }}>
+          <p style={{ textAlign: 'center', fontSize: 13.5, color: 'var(--color-ink-soft)', paddingTop: 40 }}>
             Nenhuma atividade registrada.
           </p>
         )}
@@ -242,7 +242,7 @@ export function ActivityList() {
         <OperatorItem key={a.id} activity={a} />
       ))}
       {activities.length === 0 && (
-        <p style={{ textAlign: 'center', fontSize: 13.5, color: '#6B7A5A', paddingTop: 40 }}>
+        <p style={{ textAlign: 'center', fontSize: 13.5, color: 'var(--color-ink-soft)', paddingTop: 40 }}>
           Nada lançado ainda hoje.
         </p>
       )}

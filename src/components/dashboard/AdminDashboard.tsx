@@ -137,7 +137,7 @@ export function AdminDashboard() {
             { label: 'Atividades',     value: String(week.activities ?? 0), sub: `${(data?.today ?? []).length} hoje`, Icon: ClipboardList, color: '#3498DB' },
             { label: 'Pés produzindo', value: (week.trees ?? 0).toLocaleString('pt-BR'), sub: `${week.plots ?? 0} talhões`, Icon: Sprout, color: '#4E7038' },
           ].map(k => (
-            <div key={k.label} className="rounded-[18px] p-4" style={{ background: '#FFFDF8', border: '1px solid var(--color-line)' }}>
+            <div key={k.label} className="rounded-[18px] p-4" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-line)' }}>
               <div className="mb-2 flex items-center gap-1.5">
                 <k.Icon size={16} strokeWidth={1.9} color={k.color} />
                 <span className="text-[11.5px] font-semibold uppercase" style={{ letterSpacing: '.08em', color: 'var(--color-ink-faint)' }}>
@@ -154,7 +154,7 @@ export function AdminDashboard() {
       {/* por sítio */}
       <section className="px-5 pt-6">
         <h2 className="mb-3 font-display text-[17px] font-bold">Por sítio</h2>
-        <div className="flex flex-col gap-4 rounded-[20px] p-4" style={{ background: '#FFFDF8', border: '1px solid var(--color-line)' }}>
+        <div className="flex flex-col gap-4 rounded-[20px] p-4" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-line)' }}>
           {(data?.bySite ?? []).map((s: any, i: number) => {
             const total = Math.max(1, ...(data?.bySite ?? []).map((x: any) => x.boxes))
             const colors = ['#3D5A2E', '#6E8F4E', '#C17A4A']
@@ -164,7 +164,7 @@ export function AdminDashboard() {
                   <p className="text-sm font-bold">{s.name}</p>
                   <p className="text-[13px]" style={{ color: 'var(--color-ink-soft)' }}>{s.boxes} cx</p>
                 </div>
-                <div className="h-[9px] overflow-hidden rounded-md" style={{ background: '#F0E7D2' }}>
+                <div className="h-[9px] overflow-hidden rounded-md" style={{ background: 'var(--color-line)' }}>
                   <div className="h-full rounded-md" style={{ width: `${Math.round(s.boxes / total * 100)}%`, background: colors[i % 3] }} />
                 </div>
               </div>

@@ -121,7 +121,7 @@ export default function RelatoriosPage() {
           fontFamily: 'var(--font-bricolage)',
           fontSize: 26,
           fontWeight: 700,
-          color: '#1F2E15',
+          color: 'var(--color-ink)',
           margin: '0 0 16px',
         }}
       >
@@ -139,8 +139,8 @@ export default function RelatoriosPage() {
               height: 44,
               borderRadius: 9999,
               border: period === chip.id ? 'none' : '1.5px solid #D8CEBC',
-              background: period === chip.id ? '#3D5A2E' : '#FFFDF8',
-              color: period === chip.id ? '#F5ECD7' : '#6B7A5A',
+              background: period === chip.id ? '#3D5A2E' : 'var(--color-surface)',
+              color: period === chip.id ? '#F5ECD7' : 'var(--color-ink-soft)',
               fontSize: 13.5,
               fontWeight: 600,
               cursor: 'pointer',
@@ -244,7 +244,7 @@ export default function RelatoriosPage() {
           style={{
             fontSize: 11.5,
             fontWeight: 700,
-            color: '#9AA88A',
+            color: 'var(--color-ink-faint)',
             textTransform: 'uppercase',
             letterSpacing: '0.14em',
             margin: '0 0 10px',
@@ -262,7 +262,7 @@ export default function RelatoriosPage() {
             return (
               <div key={site.id ?? site.name}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: '#1F2E15', margin: 0 }}>{site.name}</p>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-ink)', margin: 0 }}>{site.name}</p>
                   {siteMargin != null && (
                     <p style={{ fontSize: 12.5, fontWeight: 700, color: '#3D5A2E', margin: 0 }}>
                       {siteMargin}%
@@ -271,7 +271,7 @@ export default function RelatoriosPage() {
                 </div>
                 {/* Progress bars */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-                  <div style={{ height: 8, borderRadius: 3, background: '#F0E7D2', overflow: 'hidden' }}>
+                  <div style={{ height: 8, borderRadius: 3, background: 'var(--color-line)', overflow: 'hidden' }}>
                     <div
                       style={{
                         height: '100%',
@@ -282,7 +282,7 @@ export default function RelatoriosPage() {
                       }}
                     />
                   </div>
-                  <div style={{ height: 8, borderRadius: 3, background: '#F0E7D2', overflow: 'hidden' }}>
+                  <div style={{ height: 8, borderRadius: 3, background: 'var(--color-line)', overflow: 'hidden' }}>
                     <div
                       style={{
                         height: '100%',
@@ -303,11 +303,11 @@ export default function RelatoriosPage() {
         <div style={{ display: 'flex', gap: 16, marginTop: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 10, height: 10, borderRadius: 2, background: '#6E8F4E' }} />
-            <span style={{ fontSize: 12, color: '#6B7A5A' }}>Receita</span>
+            <span style={{ fontSize: 12, color: 'var(--color-ink-soft)' }}>Receita</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 10, height: 10, borderRadius: 2, background: '#C17A4A' }} />
-            <span style={{ fontSize: 12, color: '#6B7A5A' }}>Custo</span>
+            <span style={{ fontSize: 12, color: 'var(--color-ink-soft)' }}>Custo</span>
           </div>
         </div>
       </div>
@@ -348,7 +348,7 @@ export default function RelatoriosPage() {
             height: 50,
             borderRadius: 16,
             background: 'transparent',
-            border: '1.5px solid #C8BCA5',
+            border: '1.5px solid var(--color-line-strong)',
             color: '#3D5A2E',
             fontSize: 15,
             fontWeight: 600,

@@ -110,13 +110,13 @@ export function HarvestForm() {
       <p className="mb-2.5 text-xs font-bold uppercase" style={{ letterSpacing: '.1em', color: 'var(--color-ink-soft)' }}>Quanto saiu</p>
       <div className="mb-2.5 flex items-stretch gap-2">
         <button onClick={() => setQtd(q => Math.max(0, q - 1))} className="w-14 rounded-[14px] text-2xl font-bold"
-          style={{ border: '1.5px solid var(--color-line-strong)', background: '#FFFDF8', color: 'var(--color-primary)' }}>−</button>
+          style={{ border: '1.5px solid var(--color-line-strong)', background: 'var(--color-surface)', color: 'var(--color-primary)' }}>−</button>
         <input value={qtd} inputMode="numeric"
           onChange={e => setQtd(Number(e.target.value.replace(/\D/g, '')) || 0)}
           className="flex-1 rounded-[14px] text-center font-display text-[32px] font-bold"
-          style={{ height: 68, border: '1.5px solid var(--color-accent)', background: '#FFFDF8' }} />
+          style={{ height: 68, border: '1.5px solid var(--color-accent)', background: 'var(--color-surface)' }} />
         <button onClick={() => setQtd(q => q + 1)} className="w-14 rounded-[14px] text-2xl font-bold"
-          style={{ border: '1.5px solid var(--color-line-strong)', background: '#FFFDF8', color: 'var(--color-primary)' }}>+</button>
+          style={{ border: '1.5px solid var(--color-line-strong)', background: 'var(--color-surface)', color: 'var(--color-primary)' }}>+</button>
       </div>
       <div className="mb-6 flex flex-wrap gap-[7px]">
         {UNITS.map(u => (
@@ -124,7 +124,7 @@ export function HarvestForm() {
             style={{
               minHeight: 44,
               border: '1.5px solid ' + (unidade === u ? 'var(--color-accent)' : 'var(--color-line-strong)'),
-              background: unidade === u ? 'var(--color-accent)' : '#FFFDF8',
+              background: unidade === u ? 'var(--color-accent)' : 'var(--color-surface)',
               color: unidade === u ? '#FFF8EC' : 'var(--color-ink-soft)',
             }}>
             {UNIT_LABELS[u]}
@@ -141,7 +141,7 @@ export function HarvestForm() {
               style={{
                 minHeight: 44,
                 border: '1.5px solid ' + (on ? PRODUCT_COLORS[p] : 'var(--color-line-strong)'),
-                background: on ? PRODUCT_COLORS[p] : '#FFFDF8',
+                background: on ? PRODUCT_COLORS[p] : 'var(--color-surface)',
                 color: on ? '#1F2E15' : 'var(--color-ink-soft)',
               }}>
               <span className="mr-1.5 inline-block h-2.5 w-2.5 rounded-full" style={{ background: PRODUCT_COLORS[p] }} />
@@ -158,7 +158,7 @@ export function HarvestForm() {
             style={{
               minHeight: 44,
               border: '1.5px solid ' + (dia === d.id ? 'var(--color-primary)' : 'var(--color-line-strong)'),
-              background: dia === d.id ? 'var(--color-primary)' : '#FFFDF8',
+              background: dia === d.id ? 'var(--color-primary)' : 'var(--color-surface)',
               color: dia === d.id ? 'var(--color-paper)' : 'var(--color-ink-soft)',
             }}>
             {d.label}
@@ -168,7 +168,7 @@ export function HarvestForm() {
       {dia === 'outro' && (
         <input type="date" value={dataManual} onChange={e => setDataManual(e.target.value)}
           className="mb-6 w-full rounded-[14px] px-4 text-base"
-          style={{ height: 52, border: '1.5px solid var(--color-line-strong)', background: '#FFFDF8' }} />
+          style={{ height: 52, border: '1.5px solid var(--color-line-strong)', background: 'var(--color-surface)' }} />
       )}
 
       {isAdmin && preco?.price ? (
@@ -190,7 +190,7 @@ export function HarvestForm() {
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 p-10 text-center"
           style={{ background: 'rgba(31,46,21,.94)' }}>
           <div className="animate-pop-in flex h-[84px] w-[84px] items-center justify-center rounded-full" style={{ background: 'var(--color-gold)' }}>
-            <Check size={42} strokeWidth={2.4} color="#1F2E15" />
+            <Check size={42} strokeWidth={2.4} color="var(--color-canopy)" />
           </div>
           <div className="animate-rise-in">
             <p className="font-display text-2xl font-bold" style={{ color: 'var(--color-surface)' }}>Colheita lançada</p>

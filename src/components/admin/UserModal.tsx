@@ -28,11 +28,11 @@ const inputStyle: React.CSSProperties = {
   width: '100%',
   height: 50,
   borderRadius: 13,
-  border: '1.5px solid #EDE3CC',
-  background: '#FFFDF8',
+  border: '1.5px solid var(--color-line)',
+  background: 'var(--color-surface)',
   padding: '0 14px',
   fontSize: 15,
-  color: '#1F2E15',
+  color: 'var(--color-ink)',
   outline: 'none',
   boxSizing: 'border-box',
 }
@@ -40,7 +40,7 @@ const inputStyle: React.CSSProperties = {
 const labelStyle: React.CSSProperties = {
   fontSize: 11.5,
   fontWeight: 700,
-  color: '#9AA88A',
+  color: 'var(--color-ink-faint)',
   textTransform: 'uppercase',
   letterSpacing: '0.12em',
   display: 'block',
@@ -144,14 +144,14 @@ export function UserModal({ open, onOpenChange, user, onSuccess }: Props) {
 
         {/* header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 8, paddingBottom: 20 }}>
-          <p style={{ fontFamily: 'var(--font-bricolage)', fontSize: 20, fontWeight: 700, color: '#1F2E15', margin: 0 }}>
+          <p style={{ fontFamily: 'var(--font-bricolage)', fontSize: 20, fontWeight: 700, color: 'var(--color-ink)', margin: 0 }}>
             {editMode ? 'Editar usuário' : 'Novo usuário'}
           </p>
           <button
             onClick={() => onOpenChange(false)}
-            style={{ width: 34, height: 34, borderRadius: 11, border: '1.5px solid #EDE3CC', background: '#FFFDF8', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+            style={{ width: 34, height: 34, borderRadius: 11, border: '1.5px solid var(--color-line)', background: 'var(--color-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
           >
-            <X size={16} color="#6B7A5A" />
+            <X size={16} color="var(--color-ink-soft)" />
           </button>
         </div>
 
@@ -233,11 +233,11 @@ export function UserModal({ open, onOpenChange, user, onSuccess }: Props) {
                   flex: 1,
                   height: 50,
                   borderRadius: 14,
-                  border: '1.5px solid #EDE3CC',
-                  background: '#FFFDF8',
+                  border: '1.5px solid var(--color-line)',
+                  background: 'var(--color-surface)',
                   fontSize: 15,
                   fontWeight: 700,
-                  color: '#6B7A5A',
+                  color: 'var(--color-ink-soft)',
                   cursor: 'pointer',
                   opacity: loading ? 0.5 : 1,
                 }}

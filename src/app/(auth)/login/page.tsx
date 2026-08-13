@@ -78,7 +78,7 @@ export default function LoginPage() {
               fontFamily: 'var(--font-bricolage)',
               fontSize: 30,
               fontWeight: 700,
-              color: '#1F2E15',
+              color: 'var(--color-ink)',
               margin: 0,
               lineHeight: 1.1,
             }}
@@ -88,7 +88,7 @@ export default function LoginPage() {
           <p
             style={{
               fontSize: 15,
-              color: '#6B7A5A',
+              color: 'var(--color-ink-soft)',
               margin: '6px 0 0',
               textAlign: 'center',
             }}
@@ -105,7 +105,7 @@ export default function LoginPage() {
               style={{
                 fontSize: 11,
                 fontWeight: 700,
-                color: '#6B7A5A',
+                color: 'var(--color-ink-soft)',
                 textTransform: 'uppercase',
                 letterSpacing: '0.06em',
               }}
@@ -123,10 +123,10 @@ export default function LoginPage() {
                 height: 52,
                 borderRadius: 14,
                 border: '1.5px solid #DCCFB0',
-                background: '#FFFDF8',
+                background: 'var(--color-surface)',
                 padding: '0 16px',
                 fontSize: 16,
-                color: '#1F2E15',
+                color: 'var(--color-ink)',
                 outline: 'none',
                 width: '100%',
                 boxSizing: 'border-box',
@@ -143,7 +143,7 @@ export default function LoginPage() {
               style={{
                 fontSize: 11,
                 fontWeight: 700,
-                color: '#6B7A5A',
+                color: 'var(--color-ink-soft)',
                 textTransform: 'uppercase',
                 letterSpacing: '0.06em',
               }}
@@ -160,10 +160,10 @@ export default function LoginPage() {
                 height: 52,
                 borderRadius: 14,
                 border: '1.5px solid #DCCFB0',
-                background: '#FFFDF8',
+                background: 'var(--color-surface)',
                 padding: '0 16px',
                 fontSize: 16,
-                color: '#1F2E15',
+                color: 'var(--color-ink)',
                 outline: 'none',
                 width: '100%',
                 boxSizing: 'border-box',

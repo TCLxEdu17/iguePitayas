@@ -82,12 +82,12 @@ export function SiteCarousel() {
         </div>
         <div className="flex gap-2">
           <button className="flex h-[42px] w-[42px] items-center justify-center rounded-[13px]"
-            style={{ border: '1.5px solid var(--color-line-strong)', background: '#FFFDF8', color: 'var(--color-primary)' }}>
+            style={{ border: '1.5px solid var(--color-line-strong)', background: 'var(--color-surface)', color: 'var(--color-primary)' }}>
             <Search size={19} strokeWidth={1.9} />
           </button>
           <button onClick={() => router.push('/atividades/historico')}
             className="flex h-[42px] w-[42px] items-center justify-center rounded-[13px]"
-            style={{ border: '1.5px solid var(--color-line-strong)', background: '#FFFDF8', color: 'var(--color-primary)' }}>
+            style={{ border: '1.5px solid var(--color-line-strong)', background: 'var(--color-surface)', color: 'var(--color-primary)' }}>
             <ClipboardList size={19} strokeWidth={1.9} />
           </button>
         </div>
@@ -99,7 +99,7 @@ export function SiteCarousel() {
             style={{
               minHeight: 44,
               border: '1.5px solid ' + (i === index ? 'var(--color-primary)' : 'var(--color-line-strong)'),
-              background: i === index ? 'var(--color-primary)' : '#FFFDF8',
+              background: i === index ? 'var(--color-primary)' : 'var(--color-surface)',
               color: i === index ? 'var(--color-paper)' : 'var(--color-ink-soft)',
             }}>
             {s.name}
@@ -156,7 +156,7 @@ export function SiteCarousel() {
           {site?.plots.map(p => (
             <button key={p.id} onClick={() => setSelected({ plot: p, site })}
               className="flex items-center gap-2.5 rounded-[14px] p-3 text-left"
-              style={{ minHeight: 52, border: '1.5px solid var(--color-line)', background: '#FFFDF8' }}>
+              style={{ minHeight: 52, border: '1.5px solid var(--color-line)', background: 'var(--color-surface)' }}>
               <span className="h-3 w-3 shrink-0 rounded" style={{ background: 'var(--color-gold)' }} />
               <span className="min-w-0">
                 <span className="block truncate text-[13.5px] font-bold" style={{ color: 'var(--color-ink)' }}>{p.name}</span>
@@ -189,11 +189,11 @@ export function SiteCarousel() {
               </button>
             </div>
             <div className="my-4 flex gap-2">
-              <div className="flex-1 rounded-[14px] p-3" style={{ background: '#FFFDF8', border: '1px solid var(--color-line)' }}>
+              <div className="flex-1 rounded-[14px] p-3" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-line)' }}>
                 <p className="text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>Pés</p>
                 <p className="font-display text-[19px] font-bold">{selected.plot.treeCount?.toLocaleString('pt-BR') ?? '—'}</p>
               </div>
-              <div className="flex-1 rounded-[14px] p-3" style={{ background: '#FFFDF8', border: '1px solid var(--color-line)' }}>
+              <div className="flex-1 rounded-[14px] p-3" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-line)' }}>
                 <p className="text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>Código</p>
                 <p className="font-display text-[19px] font-bold">{selected.plot.code}</p>
               </div>

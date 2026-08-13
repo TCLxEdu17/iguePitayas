@@ -12,7 +12,7 @@ import { getApiUrl } from '@/lib/api-url'
 import { syncAll, getPendingCount } from '@/lib/offline/sync'
 import { useUIStore } from '@/stores/ui.store'
 
-const APP_VERSION = '0.1.5'
+const APP_VERSION = '0.1.7'
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -20,7 +20,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
       style={{
         fontSize: 11.5,
         fontWeight: 700,
-        color: '#9AA88A',
+        color: 'var(--color-ink-faint)',
         textTransform: 'uppercase',
         letterSpacing: '0.14em',
         margin: '0 0 10px',
@@ -48,18 +48,18 @@ function SettingsRow({ icon, label, subtitle, value, isLast }: SettingsRowProps)
         gap: 12,
         minHeight: 52,
         padding: '0 16px',
-        borderBottom: isLast ? 'none' : '1px solid #F0E7D2',
+        borderBottom: isLast ? 'none' : '1px solid var(--color-line)',
       }}
     >
-      <div style={{ color: '#6B7A5A', flexShrink: 0 }}>{icon}</div>
+      <div style={{ color: 'var(--color-ink-soft)', flexShrink: 0 }}>{icon}</div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontSize: 14.5, color: '#1F2E15', margin: 0, fontWeight: 500 }}>{label}</p>
+        <p style={{ fontSize: 14.5, color: 'var(--color-ink)', margin: 0, fontWeight: 500 }}>{label}</p>
         {subtitle && (
-          <p style={{ fontSize: 12, color: '#A0AE90', margin: 0 }}>{subtitle}</p>
+          <p style={{ fontSize: 12, color: 'var(--color-ink-faint)', margin: 0 }}>{subtitle}</p>
         )}
       </div>
       {value && (
-        <div style={{ fontSize: 13, fontWeight: 600, color: '#8B9A7A', flexShrink: 0 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-ink-faint)', flexShrink: 0 }}>
           {value}
         </div>
       )}
@@ -153,8 +153,8 @@ function OperatorProfile({ session }: { session: any }) {
         <div
           style={{
             borderRadius: 18,
-            background: '#FFFDF8',
-            border: '1px solid #EDE3CC',
+            background: 'var(--color-surface)',
+            border: '1px solid var(--color-line)',
             padding: 16,
           }}
         >
@@ -168,10 +168,10 @@ function OperatorProfile({ session }: { session: any }) {
                 flexShrink: 0,
               }}
             />
-            <p style={{ fontSize: 14, fontWeight: 500, color: '#1F2E15', margin: 0, flex: 1 }}>
+            <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-ink)', margin: 0, flex: 1 }}>
               {pendingCount} {pendingCount === 1 ? 'lançamento na fila' : 'lançamentos na fila'}
             </p>
-            <p style={{ fontSize: 12, color: '#A0AE90', margin: 0 }}>agora</p>
+            <p style={{ fontSize: 12, color: 'var(--color-ink-faint)', margin: 0 }}>agora</p>
           </div>
           <button
             onClick={handleSync}
@@ -180,11 +180,11 @@ function OperatorProfile({ session }: { session: any }) {
               height: 44,
               width: '100%',
               borderRadius: 13,
-              border: '1.5px solid #C8BCA5',
-              background: '#FFFDF8',
+              border: '1.5px solid var(--color-line-strong)',
+              background: 'var(--color-surface)',
               fontSize: 14,
               fontWeight: 700,
-              color: syncing || pendingCount === 0 ? '#A0AE90' : '#3D5A2E',
+              color: syncing || pendingCount === 0 ? 'var(--color-ink-faint)' : 'var(--color-primary)',
               cursor: syncing || pendingCount === 0 ? 'not-allowed' : 'pointer',
               transition: 'color 150ms ease',
             }}
@@ -200,8 +200,8 @@ function OperatorProfile({ session }: { session: any }) {
         <div
           style={{
             borderRadius: 18,
-            background: '#FFFDF8',
-            border: '1px solid #EDE3CC',
+            background: 'var(--color-surface)',
+            border: '1px solid var(--color-line)',
             overflow: 'hidden',
           }}
         >
@@ -234,11 +234,11 @@ function OperatorProfile({ session }: { session: any }) {
               padding: '0 16px',
             }}
           >
-            <div style={{ color: '#6B7A5A', flexShrink: 0 }}>
+            <div style={{ color: 'var(--color-ink-soft)', flexShrink: 0 }}>
               {darkMode ? <Moon size={19} strokeWidth={1.9} /> : <Sun size={19} strokeWidth={1.9} />}
             </div>
             <div style={{ flex: 1 }}>
-              <p style={{ fontSize: 14.5, color: '#1F2E15', margin: 0, fontWeight: 500 }}>Aparência</p>
+              <p style={{ fontSize: 14.5, color: 'var(--color-ink)', margin: 0, fontWeight: 500 }}>Aparência</p>
             </div>
             <button
               onClick={toggleDarkMode}
@@ -249,7 +249,7 @@ function OperatorProfile({ session }: { session: any }) {
                 height: 32,
                 padding: '0 14px',
                 borderRadius: 20,
-                border: '1.5px solid #C8BCA5',
+                border: '1.5px solid var(--color-line-strong)',
                 background: darkMode ? '#2C3E1F' : '#F5ECD7',
                 fontSize: 12.5,
                 fontWeight: 700,
@@ -285,7 +285,7 @@ function OperatorProfile({ session }: { session: any }) {
         Sair
       </button>
 
-      <p style={{ textAlign: 'center', fontSize: 12, color: '#B0BCA0', margin: 0 }}>
+      <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--color-ink-faint)', margin: 0 }}>
         IGUE Bananas · v{APP_VERSION}
       </p>
     </div>
@@ -303,7 +303,7 @@ function AdminSettings({ session }: { session: any }) {
           fontFamily: 'var(--font-bricolage)',
           fontSize: 26,
           fontWeight: 700,
-          color: '#1F2E15',
+          color: 'var(--color-ink)',
           margin: '0 0 22px',
         }}
       >
@@ -313,25 +313,25 @@ function AdminSettings({ session }: { session: any }) {
       {/* Acesso rápido */}
       <div style={{ marginBottom: 22 }}>
         <SectionLabel>Gestão</SectionLabel>
-        <div style={{ borderRadius: 18, background: '#FFFDF8', border: '1px solid #EDE3CC', overflow: 'hidden' }}>
+        <div style={{ borderRadius: 18, background: 'var(--color-surface)', border: '1px solid var(--color-line)', overflow: 'hidden' }}>
           <Link href="/admin/usuarios" style={{ textDecoration: 'none' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, minHeight: 56, padding: '0 16px', borderBottom: '1px solid #F0E7D2' }}>
-              <Users size={19} strokeWidth={1.9} color="#6B7A5A" style={{ flexShrink: 0 }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, minHeight: 56, padding: '0 16px', borderBottom: '1px solid var(--color-line)' }}>
+              <Users size={19} strokeWidth={1.9} color="var(--color-ink-soft)" style={{ flexShrink: 0 }} />
               <div style={{ flex: 1 }}>
-                <p style={{ fontSize: 14.5, color: '#1F2E15', margin: 0, fontWeight: 500 }}>Equipe</p>
-                <p style={{ fontSize: 12, color: '#A0AE90', margin: 0 }}>Criar, editar e desativar usuários</p>
+                <p style={{ fontSize: 14.5, color: 'var(--color-ink)', margin: 0, fontWeight: 500 }}>Equipe</p>
+                <p style={{ fontSize: 12, color: 'var(--color-ink-faint)', margin: 0 }}>Criar, editar e desativar usuários</p>
               </div>
-              <ChevronRight size={16} color="#B0BCA0" />
+              <ChevronRight size={16} color="var(--color-ink-faint)" />
             </div>
           </Link>
           <Link href="/relatorios" style={{ textDecoration: 'none' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, minHeight: 56, padding: '0 16px' }}>
-              <RefreshCw size={19} strokeWidth={1.9} color="#6B7A5A" style={{ flexShrink: 0 }} />
+              <RefreshCw size={19} strokeWidth={1.9} color="var(--color-ink-soft)" style={{ flexShrink: 0 }} />
               <div style={{ flex: 1 }}>
-                <p style={{ fontSize: 14.5, color: '#1F2E15', margin: 0, fontWeight: 500 }}>Relatórios de uso</p>
-                <p style={{ fontSize: 12, color: '#A0AE90', margin: 0 }}>Margem, receita e comparativo por sítio</p>
+                <p style={{ fontSize: 14.5, color: 'var(--color-ink)', margin: 0, fontWeight: 500 }}>Relatórios de uso</p>
+                <p style={{ fontSize: 12, color: 'var(--color-ink-faint)', margin: 0 }}>Margem, receita e comparativo por sítio</p>
               </div>
-              <ChevronRight size={16} color="#B0BCA0" />
+              <ChevronRight size={16} color="var(--color-ink-faint)" />
             </div>
           </Link>
         </div>
@@ -343,8 +343,8 @@ function AdminSettings({ session }: { session: any }) {
         <div
           style={{
             borderRadius: 18,
-            background: '#FFFDF8',
-            border: '1px solid #EDE3CC',
+            background: 'var(--color-surface)',
+            border: '1px solid var(--color-line)',
             overflow: 'hidden',
           }}
         >
@@ -373,8 +373,8 @@ function AdminSettings({ session }: { session: any }) {
         <div
           style={{
             borderRadius: 18,
-            background: '#FFFDF8',
-            border: '1px solid #EDE3CC',
+            background: 'var(--color-surface)',
+            border: '1px solid var(--color-line)',
             overflow: 'hidden',
           }}
         >
@@ -396,7 +396,7 @@ function AdminSettings({ session }: { session: any }) {
       {/* Aparência */}
       <div style={{ marginBottom: 22 }}>
         <SectionLabel>Aparência</SectionLabel>
-        <div style={{ borderRadius: 18, background: '#FFFDF8', border: '1px solid #EDE3CC', overflow: 'hidden' }}>
+        <div style={{ borderRadius: 18, background: 'var(--color-surface)', border: '1px solid var(--color-line)', overflow: 'hidden' }}>
           <div
             style={{
               display: 'flex',
@@ -406,11 +406,11 @@ function AdminSettings({ session }: { session: any }) {
               padding: '0 16px',
             }}
           >
-            <div style={{ color: '#6B7A5A', flexShrink: 0 }}>
+            <div style={{ color: 'var(--color-ink-soft)', flexShrink: 0 }}>
               {darkMode ? <Moon size={19} strokeWidth={1.9} /> : <Sun size={19} strokeWidth={1.9} />}
             </div>
             <div style={{ flex: 1 }}>
-              <p style={{ fontSize: 14.5, color: '#1F2E15', margin: 0, fontWeight: 500 }}>Tema</p>
+              <p style={{ fontSize: 14.5, color: 'var(--color-ink)', margin: 0, fontWeight: 500 }}>Tema</p>
             </div>
             <button
               onClick={toggleDarkMode}
@@ -421,7 +421,7 @@ function AdminSettings({ session }: { session: any }) {
                 height: 32,
                 padding: '0 14px',
                 borderRadius: 20,
-                border: '1.5px solid #C8BCA5',
+                border: '1.5px solid var(--color-line-strong)',
                 background: darkMode ? '#2C3E1F' : '#F5ECD7',
                 fontSize: 12.5,
                 fontWeight: 700,
@@ -442,8 +442,8 @@ function AdminSettings({ session }: { session: any }) {
         <div
           style={{
             borderRadius: 18,
-            background: '#FFFDF8',
-            border: '1px solid #EDE3CC',
+            background: 'var(--color-surface)',
+            border: '1px solid var(--color-line)',
             overflow: 'hidden',
           }}
         >
@@ -487,7 +487,7 @@ function AdminSettings({ session }: { session: any }) {
         Sair
       </button>
 
-      <p style={{ textAlign: 'center', fontSize: 12, color: '#B0BCA0', margin: 0 }}>
+      <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--color-ink-faint)', margin: 0 }}>
         IGUE Bananas · v{APP_VERSION} · 27 talhões mapeados
       </p>
     </div>
@@ -512,7 +512,7 @@ export default function ConfiguracoesPage() {
   // Fallback
   return (
     <div style={{ padding: 20 }}>
-      <p style={{ color: '#6B7A5A' }}>Acesso restrito.</p>
+      <p style={{ color: 'var(--color-ink-soft)' }}>Acesso restrito.</p>
     </div>
   )
 }

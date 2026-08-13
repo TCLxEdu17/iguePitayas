@@ -73,7 +73,7 @@ export default function HistoricoProducaoPage() {
           fontFamily: 'var(--font-bricolage)',
           fontSize: 26,
           fontWeight: 700,
-          color: '#1F2E15',
+          color: 'var(--color-ink)',
           margin: '0 0 16px',
         }}
       >
@@ -125,8 +125,8 @@ export default function HistoricoProducaoPage() {
           style={{
             flex: 1,
             borderRadius: 16,
-            background: '#FFFDF8',
-            border: '1px solid #EDE3CC',
+            background: 'var(--color-surface)',
+            border: '1px solid var(--color-line)',
             padding: 14,
           }}
         >
@@ -134,7 +134,7 @@ export default function HistoricoProducaoPage() {
             style={{
               fontSize: 11,
               fontWeight: 600,
-              color: '#6B7A5A',
+              color: 'var(--color-ink-soft)',
               textTransform: 'uppercase',
               letterSpacing: '0.1em',
               margin: '0 0 6px',
@@ -147,7 +147,7 @@ export default function HistoricoProducaoPage() {
               fontFamily: 'var(--font-bricolage)',
               fontSize: 25,
               fontWeight: 700,
-              color: '#1F2E15',
+              color: 'var(--color-ink)',
               margin: '0 0 2px',
               lineHeight: 1,
             }}
@@ -169,7 +169,7 @@ export default function HistoricoProducaoPage() {
             style={{
               fontSize: 11.5,
               fontWeight: 700,
-              color: '#9AA88A',
+              color: 'var(--color-ink-faint)',
               textTransform: 'uppercase',
               letterSpacing: '0.14em',
               margin: '0 0 10px',
@@ -186,8 +186,8 @@ export default function HistoricoProducaoPage() {
                   key={pt}
                   style={{
                     borderRadius: 16,
-                    background: '#FFFDF8',
-                    border: '1px solid #EDE3CC',
+                    background: 'var(--color-surface)',
+                    border: '1px solid var(--color-line)',
                     padding: '12px 14px',
                     display: 'flex',
                     alignItems: 'center',
@@ -205,8 +205,8 @@ export default function HistoricoProducaoPage() {
                     }}
                   />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: 14.5, fontWeight: 700, color: '#1F2E15', margin: 0 }}>{label}</p>
-                    <p style={{ fontSize: 12.5, color: '#8B9A7A', margin: '2px 0 0' }}>
+                    <p style={{ fontSize: 14.5, fontWeight: 700, color: 'var(--color-ink)', margin: 0 }}>{label}</p>
+                    <p style={{ fontSize: 12.5, color: 'var(--color-ink-faint)', margin: '2px 0 0' }}>
                       {data.qty.toLocaleString('pt-BR')} unid.
                     </p>
                   </div>
@@ -235,7 +235,7 @@ export default function HistoricoProducaoPage() {
           style={{
             fontSize: 11.5,
             fontWeight: 700,
-            color: '#9AA88A',
+            color: 'var(--color-ink-faint)',
             textTransform: 'uppercase',
             letterSpacing: '0.14em',
             margin: '0 0 10px',
@@ -245,7 +245,7 @@ export default function HistoricoProducaoPage() {
         </p>
 
         {harvests.length === 0 ? (
-          <p style={{ textAlign: 'center', fontSize: 13.5, color: '#6B7A5A', paddingTop: 24 }}>
+          <p style={{ textAlign: 'center', fontSize: 13.5, color: 'var(--color-ink-soft)', paddingTop: 24 }}>
             Nenhuma colheita neste período.
           </p>
         ) : (
@@ -268,8 +268,8 @@ export default function HistoricoProducaoPage() {
                   key={h.id}
                   style={{
                     borderRadius: 14,
-                    background: '#FFFDF8',
-                    border: '1px solid #EDE3CC',
+                    background: 'var(--color-surface)',
+                    border: '1px solid var(--color-line)',
                     padding: '12px 14px',
                     display: 'flex',
                     alignItems: 'center',
@@ -283,14 +283,14 @@ export default function HistoricoProducaoPage() {
                         fontFamily: 'var(--font-bricolage)',
                         fontSize: 17,
                         fontWeight: 700,
-                        color: '#1F2E15',
+                        color: 'var(--color-ink)',
                         margin: 0,
                         lineHeight: 1,
                       }}
                     >
                       {day}
                     </p>
-                    <p style={{ fontSize: 10.5, color: '#B0BCA0', textTransform: 'uppercase', margin: '2px 0 0' }}>
+                    <p style={{ fontSize: 10.5, color: 'var(--color-ink-faint)', textTransform: 'uppercase', margin: '2px 0 0' }}>
                       {MONTH_LABELS[monthIdx]}
                     </p>
                   </div>
@@ -300,13 +300,13 @@ export default function HistoricoProducaoPage() {
 
                   {/* Info */}
                   <div style={{ flex: 1, minWidth: 0, paddingLeft: 2 }}>
-                    <p style={{ fontSize: 14, fontWeight: 700, color: '#1F2E15', margin: 0 }}>
+                    <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-ink)', margin: 0 }}>
                       {qty} · {productLabel.toLowerCase()}
                     </p>
                     <p
                       style={{
                         fontSize: 12,
-                        color: '#8B9A7A',
+                        color: 'var(--color-ink-faint)',
                         margin: '2px 0 0',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
