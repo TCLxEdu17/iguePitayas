@@ -12,7 +12,7 @@ import { getApiUrl } from '@/lib/api-url'
 import { syncAll, getPendingCount } from '@/lib/offline/sync'
 import { useUIStore } from '@/stores/ui.store'
 
-const APP_VERSION = '0.1.3'
+const APP_VERSION = '0.1.5'
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
