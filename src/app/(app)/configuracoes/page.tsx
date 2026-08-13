@@ -4,12 +4,13 @@ import { useState } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useQuery } from '@tanstack/react-query'
 import {
-  Map, Pencil, Bell, WifiOff, DollarSign, Tag, Wheat, RefreshCw, Clock, Users, ChevronRight,
+  Map, Pencil, Bell, WifiOff, DollarSign, Tag, Wheat, RefreshCw, Clock, Users, ChevronRight, Moon, Sun,
 } from 'lucide-react'
 import Link from 'next/link'
 import { useSyncStore } from '@/stores/sync.store'
 import { getApiUrl } from '@/lib/api-url'
 import { syncAll, getPendingCount } from '@/lib/offline/sync'
+import { useUIStore } from '@/stores/ui.store'
 
 const APP_VERSION = '0.1.3'
 
@@ -70,6 +71,8 @@ function OperatorProfile({ session }: { session: any }) {
   const pendingCount = useSyncStore(s => s.pendingCount)
   const setPending = useSyncStore(s => s.setPending)
   const [syncing, setSyncing] = useState(false)
+  const darkMode = useUIStore(s => s.darkMode)
+  const toggleDarkMode = useUIStore(s => s.toggleDarkMode)
 
   async function handleSync() {
     if (syncing) return
@@ -221,8 +224,43 @@ function OperatorProfile({ session }: { session: any }) {
             icon={<WifiOff size={19} strokeWidth={1.9} />}
             label="Modo economia"
             value="Auto"
-            isLast
           />
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              minHeight: 52,
+              padding: '0 16px',
+            }}
+          >
+            <div style={{ color: '#6B7A5A', flexShrink: 0 }}>
+              {darkMode ? <Moon size={19} strokeWidth={1.9} /> : <Sun size={19} strokeWidth={1.9} />}
+            </div>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: 14.5, color: '#1F2E15', margin: 0, fontWeight: 500 }}>Aparência</p>
+            </div>
+            <button
+              onClick={toggleDarkMode}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                height: 32,
+                padding: '0 14px',
+                borderRadius: 20,
+                border: '1.5px solid #C8BCA5',
+                background: darkMode ? '#2C3E1F' : '#F5ECD7',
+                fontSize: 12.5,
+                fontWeight: 700,
+                color: darkMode ? '#D4A843' : '#3D5A2E',
+                cursor: 'pointer',
+                minHeight: 32,
+              }}
+            >
+              {darkMode ? 'Escuro' : 'Claro'}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -255,6 +293,9 @@ function OperatorProfile({ session }: { session: any }) {
 }
 
 function AdminSettings({ session }: { session: any }) {
+  const darkMode = useUIStore(s => s.darkMode)
+  const toggleDarkMode = useUIStore(s => s.toggleDarkMode)
+
   return (
     <div style={{ padding: '20px 20px', paddingBottom: 'calc(env(safe-area-inset-bottom) + 80px)' }}>
       <h1
@@ -320,7 +361,7 @@ function AdminSettings({ session }: { session: any }) {
           <SettingsRow
             icon={<Tag size={19} strokeWidth={1.9} />}
             label="Tipos de atividade"
-            value="12"
+            value="15"
             isLast
           />
         </div>
@@ -349,6 +390,49 @@ function AdminSettings({ session }: { session: any }) {
             value="27"
             isLast
           />
+        </div>
+      </div>
+
+      {/* Aparência */}
+      <div style={{ marginBottom: 22 }}>
+        <SectionLabel>Aparência</SectionLabel>
+        <div style={{ borderRadius: 18, background: '#FFFDF8', border: '1px solid #EDE3CC', overflow: 'hidden' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              minHeight: 52,
+              padding: '0 16px',
+            }}
+          >
+            <div style={{ color: '#6B7A5A', flexShrink: 0 }}>
+              {darkMode ? <Moon size={19} strokeWidth={1.9} /> : <Sun size={19} strokeWidth={1.9} />}
+            </div>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: 14.5, color: '#1F2E15', margin: 0, fontWeight: 500 }}>Tema</p>
+            </div>
+            <button
+              onClick={toggleDarkMode}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                height: 32,
+                padding: '0 14px',
+                borderRadius: 20,
+                border: '1.5px solid #C8BCA5',
+                background: darkMode ? '#2C3E1F' : '#F5ECD7',
+                fontSize: 12.5,
+                fontWeight: 700,
+                color: darkMode ? '#D4A843' : '#3D5A2E',
+                cursor: 'pointer',
+                minHeight: 32,
+              }}
+            >
+              {darkMode ? 'Escuro' : 'Claro'}
+            </button>
+          </div>
         </div>
       </div>
 

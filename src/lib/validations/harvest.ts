@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const ALL_UNITS = ['KG', 'CAIXA', 'CACHO', 'PENCA', 'DUZIA', 'UNIDADE', 'SACO', 'TONELADA'] as const
+const ALL_UNITS = ['KG', 'LITRO', 'CACHO', 'UNIDADE', 'SACO', 'CAIXA'] as const
 const ALL_PRODUCTS = ['BANANA_PRATA', 'BANANA_NANICA', 'PITAYA'] as const
 
 export const createHarvestSchema = z.object({

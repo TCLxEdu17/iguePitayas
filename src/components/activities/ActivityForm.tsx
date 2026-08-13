@@ -27,11 +27,11 @@ export function ActivityForm() {
   const setPending = useSyncStore(s => s.setPending)
 
   const plotId = params.get('plotId') ?? ''
-  const [tipo, setTipo] = useState<ActivityType>('PULVERIZACAO')
+  const [tipo, setTipo] = useState<ActivityType>('CORTE_BANANA')
   const [dia, setDia] = useState<string>('hoje')
   const [dataManual, setDataManual] = useState(new Date().toISOString().slice(0, 10))
   const [qtd, setQtd] = useState(0)
-  const [unidade, setUnidade] = useState<Unit>(ACTIVITY_DEFAULT_UNIT['PULVERIZACAO'])
+  const [unidade, setUnidade] = useState<Unit>(ACTIVITY_DEFAULT_UNIT['CORTE_BANANA'])
   const [horas, setHoras] = useState('')
   const [responsavel, setResponsavel] = useState('')
   const [notas, setNotas] = useState('')
