@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import { Sidebar } from './Sidebar'
 import { BottomNav } from './BottomNav'
@@ -10,6 +11,7 @@ import { PrimaryAdminEffects } from './PrimaryAdminEffects'
 import { VersionBadge } from './VersionBadge'
 import { useUIStore } from '@/stores/ui.store'
 import { useSyncStore } from '@/stores/sync.store'
+import { syncAll, getPendingCount } from '@/lib/offline/sync'
 import { Menu, X } from 'lucide-react'
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -52,6 +54,66 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, [isOnline, demoOffline, pendingCount])
 
   const showStrip = stripState !== 'hidden'
+
+  // ── Pull-to-refresh (todos os perfis) ────────────────────────────────
+  const setPending      = useSyncStore(s => s.setPending)
+  const [pullY,         setPullY]        = useState(0)
+  const [isRefreshing,  setIsRefreshing] = useState(false)
+  const pullYRef        = useRef(0)
+  const isRefreshingRef = useRef(false)
+  const startYRef       = useRef(0)
+  const PULL_THRESHOLD  = 64
+
+  const triggerRefresh = useCallback(async () => {
+    isRefreshingRef.current = true
+    setIsRefreshing(true)
+    setPullY(PULL_THRESHOLD)
+    setStripState('syncing')
+    try {
+      await syncAll()
+      setPending(await getPendingCount())
+      setStripState('synced')
+      if (stripTimer.current) clearTimeout(stripTimer.current)
+      stripTimer.current = setTimeout(() => setStripState('hidden'), 2000)
+    } finally {
+      setTimeout(() => {
+        isRefreshingRef.current = false
+        setIsRefreshing(false)
+        pullYRef.current = 0
+        setPullY(0)
+      }, 1400)
+    }
+  }, [setPending])
+
+  useEffect(() => {
+    const onStart = (e: TouchEvent) => { startYRef.current = e.touches[0].clientY }
+    const onMove  = (e: TouchEvent) => {
+      if (isRefreshingRef.current) return
+      const scrollTop = document.documentElement.scrollTop || document.body.scrollTop
+      if (scrollTop > 2) return
+      const dy = e.touches[0].clientY - startYRef.current
+      if (dy <= 0) { if (pullYRef.current > 0) { pullYRef.current = 0; setPullY(0) }; return }
+      e.preventDefault()
+      const py = Math.min(dy * 0.5, 80)
+      pullYRef.current = py
+      setPullY(py)
+    }
+    const onEnd = () => {
+      if (isRefreshingRef.current) return
+      if (pullYRef.current >= PULL_THRESHOLD * 0.5) triggerRefresh()
+      else { pullYRef.current = 0; setPullY(0) }
+    }
+    window.addEventListener('touchstart', onStart, { passive: true  })
+    window.addEventListener('touchmove',  onMove,  { passive: false })
+    window.addEventListener('touchend',   onEnd,   { passive: true  })
+    return () => {
+      window.removeEventListener('touchstart', onStart)
+      window.removeEventListener('touchmove',  onMove)
+      window.removeEventListener('touchend',   onEnd)
+    }
+  }, [triggerRefresh])
+
+  const logoRotation = isRefreshing ? undefined : Math.round((pullY / PULL_THRESHOLD) * 180)
 
   return (
     <div className="flex min-h-screen" style={{ background: 'var(--color-paper)' }}>
@@ -119,8 +181,29 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           className="flex-1 overflow-auto"
           style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 5rem)' }}
         >
+          {/* PTR indicator */}
+          <div style={{
+            display: 'flex', justifyContent: 'center', alignItems: 'center',
+            height:  pullY, overflow: 'hidden', pointerEvents: 'none',
+            transition: (pullY === 0 && !isRefreshing) ? 'height 300ms cubic-bezier(.2,.9,.2,1)' : 'none',
+          }} aria-hidden>
+            <Image
+              src="/logo.png"
+              alt=""
+              width={30}
+              height={30}
+              style={{
+                borderRadius: '50%',
+                objectFit:    'cover',
+                opacity:      Math.min(1, pullY / PULL_THRESHOLD),
+                transform:    isRefreshing ? undefined : `rotate(${logoRotation}deg)`,
+                animation:    isRefreshing ? 'igue-spin 1s linear infinite' : 'none',
+              }}
+            />
+          </div>
           {children}
         </main>
+        <style>{`@keyframes igue-spin { to { transform: rotate(360deg); } }`}</style>
       </div>
 
       <BottomNav />
