@@ -49,7 +49,7 @@ export default function LoginPage() {
     <div
       style={{
         minHeight: '100svh',
-        background: 'linear-gradient(180deg, #FBF6EA 0%, #F1E6CC 100%)',
+        background: 'var(--color-paper)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
